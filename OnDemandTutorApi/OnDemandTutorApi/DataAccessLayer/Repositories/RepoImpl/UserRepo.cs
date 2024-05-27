@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using OnDemandTutorApi.BusinessLogicLayer.DTO;
 using OnDemandTutorApi.DataAccessLayer.DAO;
 using OnDemandTutorApi.DataAccessLayer.Entity;
 using OnDemandTutorApi.DataAccessLayer.Repositories.Contracts;
@@ -26,6 +27,11 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl
             return await _userDAO.DeleteUserAsync(deletedUser);
         }
 
+        public async Task<TokenDTO> GenerateTokenAsync(User user)
+        {
+            return await _userDAO.GenerateTokenAsync(user);
+        }
+
         public async Task<User> GetByEmailAndPasswordAsync(string email, string password)
         {
             return await _userDAO.GetUserByEmailAndPasswordAsync(email, password);
@@ -44,6 +50,11 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl
         public async Task<IEnumerable<User>> GetUsersAsync()
         {
            return await _userDAO.GetUsersAsync();
+        }
+
+        public async Task<IdentityResult> ResetUserPass(User resetUser, string token, string newPass)
+        {
+            return await _userDAO.ResetPassAsync(resetUser, token, newPass);
         }
 
         public async Task<IdentityResult> UpdateUserAsync(User updatedUser)

@@ -5,9 +5,9 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.IServices
 {
     public interface IUserService
     {
-        public Task<IdentityResult> SignUpAsync(UserRequestDTO userRequestDTO);
-        public Task<string> SignInAsync(UserAuthenDTO userAuthen);
-        public Task<IdentityResult> UpdateProfileUserAsync(UserProfileUpdateDTO userDTO, string userId);
-        public Task<UserProfileUpdateDTO> GetUserProfileAsync(string userId);  
+        public Task<ResponseDTO<IdentityResult>> SignUpAsync(UserRequestDTO userRequestDTO);
+        public Task<ResponseDTO<TokenDTO>> SignInAsync(UserAuthenDTO userAuthen);
+
+        public Task<ResponseDTO<TokenDTO>> RenewTokenAsync(TokenDTO tokenDTO);
     }
 }

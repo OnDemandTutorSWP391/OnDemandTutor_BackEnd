@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OnDemandTutorApi.BusinessLogicLayer.DTO;
 using OnDemandTutorApi.BusinessLogicLayer.Services.IServices;
@@ -33,62 +34,166 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             _context = context;
         }
 
-        public async Task<UserProfileUpdateDTO> GetUserProfileAsync(string userId)
+        public async Task<ResponseDTO<TokenDTO>> RenewTokenAsync(TokenDTO tokenDTO)
         {
-            var user = await _userRepo.GetByIdAsync(userId);
-            if (user == null)
+            var jwtTokenHandler = new JwtSecurityTokenHandler();
+            var secretKeyBytes = Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]);
+            var tokenValidateParam = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
             {
-                return null;
-            }
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidAudience = _configuration["JWT:ValidAudience"],
+                ValidIssuer = _configuration["JWT:ValidIssuer"],
+                IssuerSigningKey = new SymmetricSecurityKey(secretKeyBytes),
+                ClockSkew = TimeSpan.Zero,
 
-            return _mapper.Map<UserProfileUpdateDTO>(user);
+                ValidateLifetime = false //ko kiểm tra token hết hạn
+            };
+
+            try
+            {
+                //check 1: AccessToken valid format
+                var tokenInVerification = jwtTokenHandler.ValidateToken(tokenDTO.AccessToken, tokenValidateParam, out var validatedToken);
+
+                //check 2: Check alg
+                if (validatedToken is JwtSecurityToken jwtSecurityToken)
+                {
+                    Console.WriteLine("Algorithm: " + jwtSecurityToken.Header.Alg);
+                    Console.WriteLine(SecurityAlgorithms.HmacSha512);
+                    var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase);
+                    if (!result)//false
+                    {
+                        return new ResponseDTO<TokenDTO>
+                        {
+                            Success = false,
+                            Message = "Invalid token"
+                        };
+                    }
+                }
+
+                //check 3: Check accessToken expire?
+                var utcExpireDate = long.Parse(tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
+
+                var expireDate = ConvertUnixTimeToDateTime(utcExpireDate);
+                if (expireDate > DateTime.UtcNow)
+                {
+                    return new ResponseDTO<TokenDTO>
+                    {
+                        Success = false,
+                        Message = "Access token has not yet expired"
+                    };
+                }
+
+                //check 4: Check refreshtoken exist in DB
+                var storedToken = _context.RefreshTokens.FirstOrDefault(x => x.Token == tokenDTO.RefreshToken);
+                if (storedToken == null)
+                {
+                    return new ResponseDTO<TokenDTO>
+                    {
+                        Success = false,
+                        Message = "Refresh token does not exist"
+                    };
+                }
+
+                //check 5: check refreshToken is used/revoked?
+                if (storedToken.IsUsed)
+                {
+                    return new ResponseDTO<TokenDTO>
+                    {
+                        Success = false,
+                        Message = "Refresh token has been used"
+                    };
+                }
+                if (storedToken.IsRevoked)
+                {
+                    return new ResponseDTO<TokenDTO>
+                    {
+                        Success = false,
+                        Message = "Refresh token has been revoked"
+                    };
+                }
+
+                //check 6: AccessToken id == JwtId in RefreshToken
+                var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
+                if (storedToken.JwtId != jti)
+                {
+                    return new ResponseDTO<TokenDTO>
+                    {
+                        Success = false,
+                        Message = "Token doesn't match"
+                    };
+                }
+
+                //create new token
+                var user = await _context.Users.SingleOrDefaultAsync(user => user.Id == storedToken.UserId);
+                var token = await _userRepo.GenerateTokenAsync(user);
+
+                return new ResponseDTO<TokenDTO>
+                {
+                    Success = true,
+                    Message = "Renew token success",
+                    Data = token
+                };
+            }
+            catch (Exception ex) 
+            {
+                return new ResponseDTO<TokenDTO>
+                {
+                    Success = false,
+                    Message = ex.Message,
+                };
+            }
         }
 
-        public async Task<string> SignInAsync(UserAuthenDTO userAuthen)
+        public async Task<ResponseDTO<TokenDTO>> SignInAsync(UserAuthenDTO userAuthen)
         {
             var user = await _userRepo.GetUserByEmailAsync(userAuthen.Email);
             var passwordValid = await _userManager.CheckPasswordAsync(user, userAuthen.Password);
 
             if (user == null || !passwordValid)
             {
-                return string.Empty;
+                return new ResponseDTO<TokenDTO>
+                {
+                    Success = false,
+                    Message = "Invalid email or password"
+                };
             }
 
-            var authClaims = new List<Claim>
+            var token = await _userRepo.GenerateTokenAsync(user);
+
+            return new ResponseDTO<TokenDTO>
             {
-                new Claim(ClaimTypes.Email, userAuthen.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                Success = true,
+                Message = "Authenticate succesfull",
+                Data = token
             };
-
-            var userRoles = await _userManager.GetRolesAsync(user);
-            foreach (var role in userRoles)
-            {
-                authClaims.Add(new Claim(ClaimTypes.Role, role.ToString()));
-            }
-
-            var authenKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["JWT:ValidIssuer"],
-                audience: _configuration["JWT:ValidAudience"],
-                expires: DateTime.Now.AddMinutes(20),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(authenKey, SecurityAlgorithms.HmacSha512Signature)
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public async Task<IdentityResult> SignUpAsync(UserRequestDTO userRequestDTO)
+        public async Task<ResponseDTO<IdentityResult>> SignUpAsync(UserRequestDTO userRequestDTO)
         {
             //check role valid
             var validRoles = new List<string> { RoleDTO.Tutor, RoleDTO.Student };
             if (!validRoles.Contains(userRequestDTO.Role))
             {
-                return IdentityResult.Failed(new IdentityError { Description = "Invalid role. Choose either Tutor or Student." });
+                return new ResponseDTO<IdentityResult> 
+                {
+                    Success = false,
+                    Message = "Invalid Role. Choose either Tutor and Student",
+                };
             }
             // Map UserDTORequest to User entity
             var user = _mapper.Map<User>(userRequestDTO);
+
+            //check User exist
+            var existedUser = await _userManager.FindByEmailAsync(userRequestDTO.Email);
+            if(existedUser != null)
+            {
+                return new ResponseDTO<IdentityResult>
+                {
+                    Success = false,
+                    Message = "User email existed",
+                };
+            }    
 
             user.UserName = userRequestDTO.Email;
 
@@ -119,22 +224,20 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 }
             }
 
-            return result;
+            return new ResponseDTO<IdentityResult> 
+            {
+                Success = true,
+                Message = "Sign up successfully",
+            };
 
         }
 
-
-        public async Task<IdentityResult> UpdateProfileUserAsync(UserProfileUpdateDTO userDTO, string userId)
+        private DateTime ConvertUnixTimeToDateTime(long utcExpireDate)
         {
-            var user = await _userRepo.GetByIdAsync(userId);
-            if (user == null)
-            {
-                return IdentityResult.Failed(new IdentityError { Description = "User not found." });
-            }
+            var dateTimeInterval = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            dateTimeInterval.AddSeconds(utcExpireDate).ToUniversalTime();
 
-            _mapper.Map(userDTO, user);
-
-            return await _userRepo.UpdateUserAsync(user);
+            return dateTimeInterval;
         }
     }
 }

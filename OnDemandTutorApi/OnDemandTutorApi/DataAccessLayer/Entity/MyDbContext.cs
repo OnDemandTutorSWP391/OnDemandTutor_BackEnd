@@ -17,6 +17,8 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         }
 
         #region DbSet
+        public virtual DbSet<IdentityUserToken<string>> UserTokens {  get; set; }
+        public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
         public virtual DbSet<User> Users {  get; set; }
         public virtual DbSet<Tutor> Tutors { get; set; }
         #endregion
@@ -111,7 +113,7 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
                       .HasColumnName("work_place");
                 entity.Property(e => e.OnlineStatus)
                       .HasMaxLength(50)
-                      .HasColumnName("onine_status");
+                      .HasColumnName("online_status");
                 entity.Property(e => e.AverageStar)
                       .HasMaxLength(10)
                       .HasColumnName("average_star");
@@ -124,8 +126,6 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
                 entity.Property(e => e.UserId).HasMaxLength(450).HasColumnName("user_id");
 
             });
-
-
         }
     }
 }

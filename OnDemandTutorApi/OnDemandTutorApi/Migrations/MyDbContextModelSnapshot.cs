@@ -160,6 +160,42 @@ namespace OnDemandTutorApi.Migrations
                     b.ToTable("UserToken", "dbo");
                 });
 
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.RefreshToken", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("ExpiredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("IssuedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("JwtId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens", "dbo");
+                });
+
             modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.Tutor", b =>
                 {
                     b.Property<int>("TutorId")
@@ -192,7 +228,7 @@ namespace OnDemandTutorApi.Migrations
                     b.Property<string>("OnlineStatus")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
-                        .HasColumnName("onine_status");
+                        .HasColumnName("online_status");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -364,6 +400,17 @@ namespace OnDemandTutorApi.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.RefreshToken", b =>
+                {
+                    b.HasOne("OnDemandTutorApi.DataAccessLayer.Entity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

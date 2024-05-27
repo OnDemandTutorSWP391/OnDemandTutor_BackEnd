@@ -58,6 +58,10 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         public string? Password { get; set; }
     }
 
+    public class UserResetPassDTO
+    {
+        public string? Email { get; set; }
+    }
     public class UserProfileUpdateDTO
     {
         public string? FullName { get; set; } = null!;

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace OnDemandTutorApi.Migrations
 {
-    public partial class Init1 : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -36,7 +36,7 @@ namespace OnDemandTutorApi.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     academic_level = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     work_place = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    onine_status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    online_status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     average_star = table.Column<double>(type: "float", maxLength: 10, nullable: false),
                     degree = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     credit_car = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
@@ -100,6 +100,32 @@ namespace OnDemandTutorApi.Migrations
                         principalSchema: "dbo",
                         principalTable: "Roles",
                         principalColumn: "role_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                schema: "dbo",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    JwtId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "bit", nullable: false),
+                    IssuedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiredAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "dbo",
+                        principalTable: "Users",
+                        principalColumn: "user_id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -198,6 +224,12 @@ namespace OnDemandTutorApi.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_UserId",
+                schema: "dbo",
+                table: "RefreshTokens",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RoleClaim_RoleId",
                 schema: "dbo",
                 table: "RoleClaim",
@@ -246,6 +278,10 @@ namespace OnDemandTutorApi.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "RefreshTokens",
+                schema: "dbo");
+
             migrationBuilder.DropTable(
                 name: "RoleClaim",
                 schema: "dbo");

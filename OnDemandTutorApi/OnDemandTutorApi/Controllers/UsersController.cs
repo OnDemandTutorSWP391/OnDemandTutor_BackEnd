@@ -9,7 +9,6 @@ namespace OnDemandTutorApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -24,11 +23,11 @@ namespace OnDemandTutorApi.Controllers
         public async Task<IActionResult> SignUp(UserRequestDTO userDto)
         {
             var result = await _userService.SignUpAsync(userDto);
-            if (result.Succeeded)
+            if (result.Success)
             {
-                return Ok();
+                return Ok(result);
             }
-            return BadRequest(result.Errors);
+            return BadRequest(result);
         }
 
         [HttpPost("SignIn")]
@@ -36,23 +35,23 @@ namespace OnDemandTutorApi.Controllers
         public async Task<IActionResult> SignIn(UserAuthenDTO userAuthen)
         {
             var result = await _userService.SignInAsync(userAuthen);
-            if(string.IsNullOrEmpty(result))
+            if(!result.Success)
             {
                 return Unauthorized();
             }
             return Ok(result);
         }
 
-        [HttpGet("ViewProfile")]
-        [Authorize] 
-        public async Task<IActionResult> ViewProfile(string userId)
+        [HttpPost("RenewToken")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RenewToken(TokenDTO tokenDTO)
         {
-            var result = await _userService.GetUserProfileAsync(userId);
-            if(result == null) 
+            var result = await _userService.RenewTokenAsync(tokenDTO);
+            if(!result.Success)
             {
-                return NotFound();
+                return BadRequest(result);
             }
             return Ok(result);
-        } 
+        }
     }
 }
