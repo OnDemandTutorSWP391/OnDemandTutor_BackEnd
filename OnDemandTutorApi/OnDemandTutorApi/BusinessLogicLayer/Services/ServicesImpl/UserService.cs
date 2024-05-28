@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OnDemandTutorApi.BusinessLogicLayer.DTO;
@@ -9,6 +10,7 @@ using OnDemandTutorApi.DataAccessLayer.Entity;
 using OnDemandTutorApi.DataAccessLayer.Repositories.Contracts;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Policy;
 using System.Text;
 
 namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
@@ -33,6 +35,9 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             _tutorRepo = tutorRepo;
             _context = context;
         }
+
+        
+
 
         public async Task<ResponseDTO<TokenDTO>> RenewTokenAsync(TokenDTO tokenDTO)
         {
@@ -145,6 +150,38 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
         }
 
+        public async Task<ResponseDTO> ResetPassAsync(UserResetPassDTO userReset)
+        {
+            var user = await _userRepo.GetUserByEmailAsync(userReset.Email);
+
+            if (user == null)
+            {
+                return new ResponseDTO
+                {
+                    Success = false,
+                    Message = "Email not found!!!"
+                };
+            }
+
+            var result = await _userRepo.ResetUserPass(user, userReset.Token, userReset.NewPassword);
+            await _context.SaveChangesAsync();
+
+            if (!result.Succeeded)
+            {
+                return new ResponseDTO
+                {
+                    Success = false,
+                    Message = "Changes password failed, please check your email again!!!"
+                };
+            }
+
+            return new ResponseDTO
+            {
+                Success = true,
+                Message = "Your password has been changed"
+            };
+        }
+
         public async Task<ResponseDTO<TokenDTO>> SignInAsync(UserAuthenDTO userAuthen)
         {
             var user = await _userRepo.GetUserByEmailAsync(userAuthen.Email);
@@ -169,13 +206,24 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             };
         }
 
-        public async Task<ResponseDTO<IdentityResult>> SignUpAsync(UserRequestDTO userRequestDTO)
+        public async Task<ResponseDTO> SignUpAsync(UserRequestDTO userRequestDTO)
         {
+            //check User exist
+            var existedUser = await _userManager.FindByEmailAsync(userRequestDTO.Email);
+            if (existedUser != null)
+            {
+                return new ResponseDTO
+                {
+                    Success = false,
+                    Message = "Email already existed",
+                };
+            }
+
             //check role valid
             var validRoles = new List<string> { RoleDTO.Tutor, RoleDTO.Student };
             if (!validRoles.Contains(userRequestDTO.Role))
             {
-                return new ResponseDTO<IdentityResult> 
+                return new ResponseDTO 
                 {
                     Success = false,
                     Message = "Invalid Role. Choose either Tutor and Student",
@@ -183,52 +231,49 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
             // Map UserDTORequest to User entity
             var user = _mapper.Map<User>(userRequestDTO);
-
-            //check User exist
-            var existedUser = await _userManager.FindByEmailAsync(userRequestDTO.Email);
-            if(existedUser != null)
-            {
-                return new ResponseDTO<IdentityResult>
-                {
-                    Success = false,
-                    Message = "User email existed",
-                };
-            }    
-
             user.UserName = userRequestDTO.Email;
 
-            // Call repository to save the user
-            var result = await _userRepo.AddUserAsync(user, userRequestDTO.Password);
-            await _context.SaveChangesAsync();
-
-            if (result.Succeeded)
+            //Check role exist ?
+            if(await _roleManager.RoleExistsAsync(userRequestDTO.Role))
             {
-                // Ensure the role exists
-                if (!await _roleManager.RoleExistsAsync(userRequestDTO.Role))
+                var result = await _userRepo.AddUserAsync(user, userRequestDTO.Password);
+                await _context.SaveChangesAsync();
+                if(!result.Succeeded)
                 {
-                    await _roleManager.CreateAsync(new IdentityRole(userRequestDTO.Role));
-                    await _context.SaveChangesAsync();
+                    return new ResponseDTO
+                    {
+                        Success = false,
+                        Message = "User failed to create"
+                    };
                 }
 
-                // Add user to the role
+                //Add role to the user here...
                 await _userManager.AddToRoleAsync(user, userRequestDTO.Role);
                 await _context.SaveChangesAsync();
 
                 //check if role == Tutor
                 if (userRequestDTO.Role.Equals(RoleDTO.Tutor))
                 {
-                    var tutorDTO = new TutorDTO();
-                    tutorDTO.UserId = user.Id;
-                    var tutor = _mapper.Map<Tutor>(tutorDTO);
-                    await _tutorRepo.AddTutorAsync(tutor);
+                        var tutorDTO = new TutorDTO();
+                        tutorDTO.UserId = user.Id;
+                        var tutor = _mapper.Map<Tutor>(tutorDTO);
+                        await _tutorRepo.AddTutorAsync(tutor);
                 }
-            }
 
-            return new ResponseDTO<IdentityResult> 
+                return new ResponseDTO
+                {
+                    Success = true,
+                    Message = "Sign up successfully"
+                };
+            }
+            else
             {
-                Success = true,
-                Message = "Sign up successfully",
-            };
+                return new ResponseDTO
+                {
+                    Success = false,
+                    Message = "This role does not exist"
+                };
+            }
 
         }
 

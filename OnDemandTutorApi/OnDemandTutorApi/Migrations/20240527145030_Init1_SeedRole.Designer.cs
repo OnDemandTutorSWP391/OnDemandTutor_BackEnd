@@ -12,8 +12,8 @@ using OnDemandTutorApi.DataAccessLayer.Entity;
 namespace OnDemandTutorApi.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20240526115238_Init")]
-    partial class Init
+    [Migration("20240527145030_Init1_SeedRole")]
+    partial class Init1_SeedRole
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -52,6 +52,36 @@ namespace OnDemandTutorApi.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("Roles", "dbo");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "a701c4ba-d961-4474-859a-0796967e5c5a",
+                            ConcurrencyStamp = "1",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "45a43684-c665-4331-81fe-3312be3ccf1b",
+                            ConcurrencyStamp = "2",
+                            Name = "Moderator",
+                            NormalizedName = "MODERATOR"
+                        },
+                        new
+                        {
+                            Id = "b8e576f9-b58a-448e-8371-64e23dc42718",
+                            ConcurrencyStamp = "3",
+                            Name = "Tutor",
+                            NormalizedName = "TUTOR"
+                        },
+                        new
+                        {
+                            Id = "0b5e6a3f-cfc5-44b7-8db9-7cd636697455",
+                            ConcurrencyStamp = "4",
+                            Name = "Student",
+                            NormalizedName = "STUDENT"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

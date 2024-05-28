@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OnDemandTutorApi.BusinessLogicLayer.Helper;
 using OnDemandTutorApi.BusinessLogicLayer.Services.IServices;
 using OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl;
 using OnDemandTutorApi.DataAccessLayer.DAO;
@@ -73,8 +74,15 @@ builder.Services.AddScoped<ITutorRepo, TutorRepo>();
 //Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITutorService, TutorService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
-//add authentication
+//Add config for Required Email
+//builder.Services.Configure<IdentityOptions>(opts => opts.SignIn.RequireConfirmedEmail = true);
+
+//Add config for verify token
+builder.Services.Configure<DataProtectionTokenProviderOptions>(opts => opts.TokenLifespan = TimeSpan.FromHours(1));
+
+//Add authentication
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -93,6 +101,10 @@ builder.Services.AddAuthentication(options => {
         ValidateLifetime = true,
     };
 });
+
+//Add Email Config
+var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
 
 var app = builder.Build();
 

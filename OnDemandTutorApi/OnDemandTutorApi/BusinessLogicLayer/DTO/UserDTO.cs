@@ -29,21 +29,29 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
     {
         [Required]
         public string? FullName { get; set; } = null!;
-        [Required, EmailAddress]
+
+        [Required(ErrorMessage = "Email is required"), EmailAddress]
         public string Email { get; set; } = null!;
-        [Required]
+
+        [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; } = null!;
-        [Required]
+
+        [Required(ErrorMessage = "ConfirmedPassword is required")]
+        [Compare("Password", ErrorMessage = "The confirmed password does not match password")]
         public string ConfirmedPassword { get; set; } = null!;
+
         [Required]
         public string? IdentityCard { get; set; } = null!;
 
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}",
                 ApplyFormatInEditMode = true)]
         public DateTime? Dob { get; set; }
+
         [Required]
         public string Phone {  get; set; } = null!;
+
         public string? Gender { get; set; } = null!;
+
         public string? Avatar { get; set; } = null!;
 
         [Required]
@@ -58,10 +66,25 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         public string? Password { get; set; }
     }
 
-    public class UserResetPassDTO
+    public class UserForgotPassDTO
     {
         public string? Email { get; set; }
     }
+
+    public class UserResetPassDTO
+    {
+        [Required]
+        public string NewPassword { get; set; } = null!;
+
+        [Required]
+        [Compare("NewPassword", ErrorMessage = "Confirmed New Password does not match New Password.")]
+        public string ConfirmedNewPassword { get; set; } = null!;
+
+        public string Email { get; set; } = null!;
+        public string Token { get; set; } = null!;
+    }
+
+
     public class UserProfileUpdateDTO
     {
         public string? FullName { get; set; } = null!;

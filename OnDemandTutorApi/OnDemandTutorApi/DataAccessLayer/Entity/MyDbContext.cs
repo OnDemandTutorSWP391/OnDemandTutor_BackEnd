@@ -94,6 +94,7 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
                       .HasMaxLength(100)
                       .HasColumnName("role_name");
             });
+            SeedRoles(modelBuilder);
 
             modelBuilder.Entity<IdentityUserClaim<string>>(entity => { entity.ToTable(name: "UserClaim"); });
             modelBuilder.Entity<IdentityUserLogin<string>>(entity => { entity.ToTable(name: "UserLogin"); });
@@ -126,6 +127,17 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
                 entity.Property(e => e.UserId).HasMaxLength(450).HasColumnName("user_id");
 
             });
+        }
+
+        private static void SeedRoles(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<IdentityRole>().HasData
+                (
+                    new IdentityRole() { Name = "Admin", ConcurrencyStamp = "1", NormalizedName = "ADMIN"},
+                    new IdentityRole() { Name = "Moderator", ConcurrencyStamp = "2", NormalizedName = "MODERATOR" },
+                    new IdentityRole() { Name = "Tutor", ConcurrencyStamp = "3", NormalizedName = "TUTOR" },
+                    new IdentityRole() { Name = "Student", ConcurrencyStamp = "4", NormalizedName = "STUDENT" }
+                );
         }
     }
 }

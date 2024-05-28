@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace OnDemandTutorApi.Migrations
 {
-    public partial class Init : Migration
+    public partial class Init1_SeedRole : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -221,6 +221,18 @@ namespace OnDemandTutorApi.Migrations
                         principalTable: "Users",
                         principalColumn: "user_id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                schema: "dbo",
+                table: "Roles",
+                columns: new[] { "role_id", "ConcurrencyStamp", "role_name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "0b5e6a3f-cfc5-44b7-8db9-7cd636697455", "4", "Student", "STUDENT" },
+                    { "45a43684-c665-4331-81fe-3312be3ccf1b", "2", "Moderator", "MODERATOR" },
+                    { "a701c4ba-d961-4474-859a-0796967e5c5a", "1", "Admin", "ADMIN" },
+                    { "b8e576f9-b58a-448e-8371-64e23dc42718", "3", "Tutor", "TUTOR" }
                 });
 
             migrationBuilder.CreateIndex(
