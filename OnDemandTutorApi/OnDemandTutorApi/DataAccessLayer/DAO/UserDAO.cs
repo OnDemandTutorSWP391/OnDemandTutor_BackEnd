@@ -110,7 +110,8 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("Id", user.Id)
             };
             //
             var userRoles = await _userManager.GetRolesAsync(user);
@@ -124,7 +125,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             var token = new JwtSecurityToken(
                 issuer: _configuration["JWT:ValidIssuer"],
                 audience: _configuration["JWT:ValidAudience"],
-                expires: DateTime.UtcNow.AddSeconds(20),
+                expires: DateTime.UtcNow.AddMinutes(20),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authenKey, SecurityAlgorithms.HmacSha512)
             );

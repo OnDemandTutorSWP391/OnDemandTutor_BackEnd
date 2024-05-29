@@ -84,12 +84,32 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         public string Token { get; set; } = null!;
     }
 
+    public class UserGetProfileDTO
+    {
+        public string? FullName { get; set; } = null!;
+        public string Email { get; set; } = null!;
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}",
+                ApplyFormatInEditMode = true)]
+        public DateTime Dob { get; set; }
+        public string Gender { get; set; } = null!;
+        public string Avatar { get; set; } = null!;
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}",
+                ApplyFormatInEditMode = true)]
+        public DateTime CreatedDate { get; set; }
+    }
+
 
     public class UserProfileUpdateDTO
     {
         public string? FullName { get; set; } = null!;
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}",
+                ApplyFormatInEditMode = true)]
         public DateTime Dob { get; set; }
         public string Gender { get; set; } = null!;
         public string Avatar { get; set; } = null!;
+
     }
 }

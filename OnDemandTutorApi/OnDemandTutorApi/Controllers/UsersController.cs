@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -6,10 +7,12 @@ using OnDemandTutorApi.BusinessLogicLayer.DTO;
 using OnDemandTutorApi.BusinessLogicLayer.Services.IServices;
 using OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl;
 using OnDemandTutorApi.DataAccessLayer.Entity;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 
 namespace OnDemandTutorApi.Controllers
 {
+    [Authorize(Roles = "Tutor, Student")]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -17,12 +20,16 @@ namespace OnDemandTutorApi.Controllers
         private readonly IUserService _userService;
         private readonly IEmailService _emailService;
         private readonly UserManager<User> _userManager;
+        private readonly IMapper _mapper;
+        private readonly MyDbContext _context;
 
-        public UsersController(IUserService userService, IEmailService emailService, UserManager<User> userManager)
+        public UsersController(IUserService userService, IEmailService emailService, UserManager<User> userManager, IMapper mapper, MyDbContext context)
         {
             _userService = userService;
             _emailService = emailService;
             _userManager = userManager;
+            _mapper = mapper;
+            _context = context; 
         }
 
         [HttpPost("SignUp")]
@@ -115,6 +122,79 @@ namespace OnDemandTutorApi.Controllers
             }
 
             return Ok(result);
+        }
+
+        [Authorize]
+        [HttpGet("GetUserProfile")]
+        public async Task<IActionResult> GetUserProfileAysnc()
+        {
+            var userId = HttpContext.User.FindFirstValue("Id");
+
+            Console.BackgroundColor = ConsoleColor.Green;
+            Console.WriteLine("1:" + userId);
+            Console.ResetColor();
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            Console.WriteLine("user id " + user.Id);
+
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, new ResponseDTO<UserGetProfileDTO>
+                {
+                    Success = false,
+                    Message = "User not found",
+                });
+            }
+
+            var userProfile = _mapper.Map<UserGetProfileDTO>(user);
+
+            return StatusCode(StatusCodes.Status200OK, new ResponseDTO<UserGetProfileDTO>
+            {
+                Success = true,
+                Message = "Get user profile successfully",
+                Data = userProfile
+            });
+        }
+
+        [Authorize]
+        [HttpPut("UpdatUserProfile")]
+        public async Task<IActionResult> UpdatUserProfile(UserProfileUpdateDTO userUpdate)
+        {
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, new ResponseDTO<UserGetProfileDTO>
+                {
+                    Success = false,
+                    Message = "User not found",
+                });
+            }
+
+            var userProfileUpdate = _mapper.Map(userUpdate, user);
+
+            var result = await _userManager.UpdateAsync(userProfileUpdate);
+            await _context.SaveChangesAsync();
+
+            if(!result.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new ResponseDTO<UserGetProfileDTO>
+                {
+                    Success = false,
+                    Message = "Error occur when update user profile, please try again"
+                });
+            }
+
+            var userProfile = _mapper.Map<UserGetProfileDTO>(user);
+
+            return StatusCode(StatusCodes.Status200OK, new ResponseDTO<UserGetProfileDTO>
+            {
+                Success = true,
+                Message = "Update user profile successfully",
+                Data = userProfile
+            });
         }
     }
 }

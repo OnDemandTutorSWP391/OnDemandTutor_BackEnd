@@ -13,7 +13,6 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         public bool Status { get; set; }
         public string Gender { get; set; } = null!;
         public string Avatar { get; set; } = null!;
-       
     }
 
 }

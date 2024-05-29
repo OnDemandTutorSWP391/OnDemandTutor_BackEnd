@@ -36,9 +36,6 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             _context = context;
         }
 
-        
-
-
         public async Task<ResponseDTO<TokenDTO>> RenewTokenAsync(TokenDTO tokenDTO)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
