@@ -65,16 +65,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
         //UPDATE USER
         public async Task<IdentityResult> UpdateUserAsync(User updatedUser)
         {
-            var user = await _userManager.FindByIdAsync(updatedUser.Id);
-            if (user == null)
-            {
-                return IdentityResult.Failed();
-            }
-
-            // Update the user entity with the updated values
-            user = updatedUser;
-
-            var result = await _userManager.UpdateAsync(user);
+            var result = await _userManager.UpdateAsync(updatedUser);
             return result;
         }
 
@@ -88,12 +79,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
         //DELETE USER
         public async Task<IdentityResult> DeleteUserAsync(User deletedUser)
         {
-            var user = await _userManager.FindByIdAsync(deletedUser.Id);
-            if (user == null)
-            {
-                return IdentityResult.Failed();
-            }
-            return await _userManager.DeleteAsync(user);
+            return await _userManager.DeleteAsync(deletedUser);
         }
 
         //GET USER BY EMAIL

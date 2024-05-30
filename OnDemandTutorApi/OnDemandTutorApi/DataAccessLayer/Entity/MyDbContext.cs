@@ -94,6 +94,8 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
                       .HasMaxLength(100)
                       .HasColumnName("role_name");
             });
+
+            //auto add role for DB
             SeedRoles(modelBuilder);
 
             modelBuilder.Entity<IdentityUserClaim<string>>(entity => { entity.ToTable(name: "UserClaim"); });

@@ -48,7 +48,13 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 //set up policy
-builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+builder.Services.AddCors(opts =>
+{
+    opts.AddPolicy("corspolicy", build =>
+    {
+        build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+    });
+});
 
 //set up identity framework
 builder.Services.AddIdentity<User, IdentityRole>()
@@ -75,6 +81,7 @@ builder.Services.AddScoped<ITutorRepo, TutorRepo>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITutorService, TutorService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 //Add config for Required Email
 //builder.Services.Configure<IdentityOptions>(opts => opts.SignIn.RequireConfirmedEmail = true);

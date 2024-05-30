@@ -79,7 +79,7 @@ namespace OnDemandTutorApi.Controllers
                 return BadRequest(new ResponseDTO
                 {
                     Success = false,
-                    Message = "Could not send link to email, please try again"
+                    Message = "Could not send link to email, please try again. \nYour email does not exist in system."
                 });
             }
 
@@ -98,7 +98,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(new ResponseDTO
             {
                 Success = true,
-                Message = $"Password changed request is sent on your Email {user.Email}.Please open your email and click the link"
+                Message = $"Password changed request is sent on your Email {user.Email}.Please open your email and click the link."
             });
         }
 
@@ -143,7 +143,7 @@ namespace OnDemandTutorApi.Controllers
                 return StatusCode(StatusCodes.Status404NotFound, new ResponseDTO<UserGetProfileDTO>
                 {
                     Success = false,
-                    Message = "User not found",
+                    Message = "User not found.",
                 });
             }
 
@@ -152,7 +152,7 @@ namespace OnDemandTutorApi.Controllers
             return StatusCode(StatusCodes.Status200OK, new ResponseDTO<UserGetProfileDTO>
             {
                 Success = true,
-                Message = "Get user profile successfully",
+                Message = "Get user profile successfully.",
                 Data = userProfile
             });
         }
@@ -169,7 +169,7 @@ namespace OnDemandTutorApi.Controllers
                 return StatusCode(StatusCodes.Status404NotFound, new ResponseDTO<UserGetProfileDTO>
                 {
                     Success = false,
-                    Message = "User not found",
+                    Message = "User not found.",
                 });
             }
 
@@ -183,7 +183,7 @@ namespace OnDemandTutorApi.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, new ResponseDTO<UserGetProfileDTO>
                 {
                     Success = false,
-                    Message = "Error occur when update user profile, please try again"
+                    Message = "Error occur when update user profile, please try again."
                 });
             }
 
@@ -192,7 +192,7 @@ namespace OnDemandTutorApi.Controllers
             return StatusCode(StatusCodes.Status200OK, new ResponseDTO<UserGetProfileDTO>
             {
                 Success = true,
-                Message = "Update user profile successfully",
+                Message = "Update user profile successfully.",
                 Data = userProfile
             });
         }

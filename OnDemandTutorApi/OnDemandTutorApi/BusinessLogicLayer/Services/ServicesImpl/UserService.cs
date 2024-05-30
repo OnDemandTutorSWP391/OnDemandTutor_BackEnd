@@ -68,7 +68,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                         return new ResponseDTO<TokenDTO>
                         {
                             Success = false,
-                            Message = "Invalid token"
+                            Message = "Invalid token."
                         };
                     }
                 }
@@ -82,7 +82,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     return new ResponseDTO<TokenDTO>
                     {
                         Success = false,
-                        Message = "Access token has not yet expired"
+                        Message = "Access token has not yet expired."
                     };
                 }
 
@@ -93,7 +93,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     return new ResponseDTO<TokenDTO>
                     {
                         Success = false,
-                        Message = "Refresh token does not exist"
+                        Message = "Refresh token does not exist."
                     };
                 }
 
@@ -103,7 +103,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     return new ResponseDTO<TokenDTO>
                     {
                         Success = false,
-                        Message = "Refresh token has been used"
+                        Message = "Refresh token has been used."
                     };
                 }
                 if (storedToken.IsRevoked)
@@ -111,7 +111,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     return new ResponseDTO<TokenDTO>
                     {
                         Success = false,
-                        Message = "Refresh token has been revoked"
+                        Message = "Refresh token has been revoked."
                     };
                 }
 
@@ -122,7 +122,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     return new ResponseDTO<TokenDTO>
                     {
                         Success = false,
-                        Message = "Token doesn't match"
+                        Message = "Token doesn't match."
                     };
                 }
 
@@ -133,7 +133,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 return new ResponseDTO<TokenDTO>
                 {
                     Success = true,
-                    Message = "Renew token success",
+                    Message = "Renew token success.",
                     Data = token
                 };
             }
@@ -168,7 +168,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 return new ResponseDTO
                 {
                     Success = false,
-                    Message = "Changes password failed, please check your email again!!!"
+                    Message = "Changes password failed, please check your email again!!! \nPassword phai co chu hoa, chu thuong, va ki tu dac biet."
                 };
             }
 
@@ -181,6 +181,32 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
         public async Task<ResponseDTO<TokenDTO>> SignInAsync(UserAuthenDTO userAuthen)
         {
+            var adminEmail = _configuration["Admin:Email"];
+            
+            if(userAuthen.Email.Equals(adminEmail))
+            {
+                var admin = await _userRepo.GetUserByEmailAsync(userAuthen.Email);
+                var adminPasswordValid = await _userManager.CheckPasswordAsync(admin, userAuthen.Password);
+
+                if (admin == null || !adminPasswordValid)
+                {
+                    return new ResponseDTO<TokenDTO>
+                    {
+                        Success = false,
+                        Message = "Invalid password for admin."
+                    };
+                }
+
+                var adminToken = await _userRepo.GenerateTokenAsync(admin);
+
+                return new ResponseDTO<TokenDTO>
+                {
+                    Success = true,
+                    Message = "Welcome to admin account.",
+                    Data = adminToken
+                };
+            }
+
             var user = await _userRepo.GetUserByEmailAsync(userAuthen.Email);
             var passwordValid = await _userManager.CheckPasswordAsync(user, userAuthen.Password);
 
@@ -189,7 +215,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 return new ResponseDTO<TokenDTO>
                 {
                     Success = false,
-                    Message = "Invalid email or password"
+                    Message = "Invalid email or password."
                 };
             }
 
@@ -198,7 +224,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             return new ResponseDTO<TokenDTO>
             {
                 Success = true,
-                Message = "Authenticate succesfull",
+                Message = "Authenticate succesfull.",
                 Data = token
             };
         }
@@ -212,7 +238,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 return new ResponseDTO
                 {
                     Success = false,
-                    Message = "Email already existed",
+                    Message = "Email already existed.",
                 };
             }
 
@@ -223,7 +249,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 return new ResponseDTO 
                 {
                     Success = false,
-                    Message = "Invalid Role. Choose either Tutor and Student",
+                    Message = "Invalid Role. Choose either Tutor and Student.",
                 };
             }
             // Map UserDTORequest to User entity
@@ -240,7 +266,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     return new ResponseDTO
                     {
                         Success = false,
-                        Message = "User failed to create"
+                        Message = "User failed to create. \nPlease check your information. \nPassword phai co chu hoa, chu thuong, va ki tu dac biet."
                     };
                 }
 
@@ -260,7 +286,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 return new ResponseDTO
                 {
                     Success = true,
-                    Message = "Sign up successfully"
+                    Message = "Sign up successfully."
                 };
             }
             else
@@ -268,7 +294,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 return new ResponseDTO
                 {
                     Success = false,
-                    Message = "This role does not exist"
+                    Message = "This role does not exist."
                 };
             }
 

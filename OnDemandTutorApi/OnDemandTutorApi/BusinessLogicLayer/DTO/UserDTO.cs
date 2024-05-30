@@ -48,7 +48,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         public DateTime? Dob { get; set; }
 
         [Required]
-        public string Phone {  get; set; } = null!;
+        public string PhoneNumber {  get; set; } = null!;
 
         public string? Gender { get; set; } = null!;
 
@@ -60,7 +60,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
 
     public class UserAuthenDTO
     {
-        [Required]
+        [Required, EmailAddress]
         public string? Email { get; set; }
         [Required]
         public string? Password { get; set; }
@@ -100,7 +100,6 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         public DateTime CreatedDate { get; set; }
     }
 
-
     public class UserProfileUpdateDTO
     {
         public string? FullName { get; set; } = null!;
@@ -111,5 +110,66 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         public string Gender { get; set; } = null!;
         public string Avatar { get; set; } = null!;
 
+    }
+
+    public class UserUpdateDTO
+    {
+        [Required]
+        public string? FullName { get; set; } = null!;
+
+        [Required(ErrorMessage = "Email is required"), EmailAddress]
+        public string Email { get; set; } = null!;
+
+        [Required(ErrorMessage = "Password is required")]
+        public string Password { get; set; } = null!;
+
+        [Required(ErrorMessage = "ConfirmedPassword is required")]
+        [Compare("Password", ErrorMessage = "The confirmed password does not match password")]
+        public string ConfirmedPassword { get; set; } = null!;
+
+        [Required]
+        public string? IdentityCard { get; set; } = null!;
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}",
+                ApplyFormatInEditMode = true)]
+        public DateTime? Dob { get; set; }
+
+        [Required]
+        public string PhoneNumber { get; set; } = null!;
+
+        public string? Gender { get; set; } = null!;
+
+        public string? Avatar { get; set; } = null!;
+    }
+
+    public class UserResponseDTO
+    {
+        [Required]
+        public string Id { get; set; }
+        [Required]
+        public string? FullName { get; set; } = null!;
+
+        [Required(ErrorMessage = "Email is required"), EmailAddress]
+        public string Email { get; set; } = null!;
+
+        [Required(ErrorMessage = "Password is required")]
+        public string PasswordHash { get; set; } = null!;
+
+        [Required]
+        public string? IdentityCard { get; set; } = null!;
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}",
+                ApplyFormatInEditMode = true)]
+        public DateTime? Dob { get; set; }
+
+        [Required]
+        public string PhoneNumber { get; set; } = null!;
+
+        public string? Gender { get; set; } = null!;
+
+        public string? Avatar { get; set; } = null!;
+
+        [Required]
+        public IList<string> Roles { get; set; } = null!;
     }
 }

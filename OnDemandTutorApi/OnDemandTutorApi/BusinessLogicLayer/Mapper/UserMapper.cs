@@ -9,8 +9,10 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Mapper
         public UserMapper()
         {
             CreateMap<User, UserRequestDTO>().ReverseMap();
+            CreateMap<User, UserResponseDTO>().ReverseMap();
             CreateMap<User, UserGetProfileDTO>().ReverseMap();
             CreateMap<UserProfileUpdateDTO, User>().ReverseMap();
+            CreateMap<UserUpdateDTO, User>().ReverseMap();
         }
     }
 }

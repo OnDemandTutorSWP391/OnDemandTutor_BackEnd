@@ -17,9 +17,19 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl
             return await _tutorDAO.SaveTutorAsync(tutor);
         }
 
+        public async Task DeleteTutorAsync(Tutor tutor)
+        {
+             await _tutorDAO.DeleteTutorAsync(tutor);
+        }
+
         public async Task<Tutor> GetByIdAsync(int id)
         {
             return await _tutorDAO.GetByIdAsync(id);
+        }
+
+        public async Task<Tutor?> GetTutorByUserIdAsync(string userId)
+        {
+           return await _tutorDAO.GetTutorByUserIdAsync(userId);
         }
 
         public async Task<IEnumerable<Tutor>> GetTutorsAsync()

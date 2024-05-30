@@ -26,16 +26,16 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
         //GET TUTOR BY TUTOR ID
         public async Task<Tutor> GetByIdAsync(int id)
         {
-            Tutor? tutor = new Tutor();
             try
             {
-                tutor = await _context.Tutors.SingleOrDefaultAsync(t => t.TutorId == id);
+                var tutor = await _context.Tutors.SingleOrDefaultAsync(t => t.TutorId == id);
+                return tutor;
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-            return tutor;
+            
         }
 
         //SAVE Tutor
@@ -53,6 +53,19 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             }
 
             return tutor.TutorId;
+        }
+
+        //GET TUTOR BY USERID
+        public async Task<Tutor?> GetTutorByUserIdAsync(string userId)
+        {
+            return await _context.Tutors.SingleOrDefaultAsync(t => t.UserId == userId);
+        }
+
+        //DELETE TUTOR
+        public async Task DeleteTutorAsync(Tutor tutor)
+        {
+            _context.Tutors.Remove(tutor);
+            await _context.SaveChangesAsync();
         }
 
         internal static string GenerateTutorId()
