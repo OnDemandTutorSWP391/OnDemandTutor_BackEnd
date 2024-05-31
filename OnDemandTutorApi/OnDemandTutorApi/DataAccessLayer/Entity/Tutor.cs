@@ -1,4 +1,4 @@
-﻿using MessagePack;
+﻿
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
@@ -6,10 +6,10 @@ using System.Text.Json.Serialization;
 
 namespace OnDemandTutorApi.DataAccessLayer.Entity
 {
-    [Table("Tutors")]
+    [Table("Tutor")]
     public class Tutor
     {
-        
+        [Key]
         public int TutorId { get; set; }
         [AllowNull]
         public string? AcademicLevel { get; set; }
@@ -26,7 +26,16 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         [Required]
         [MaxLength(450)]
         public string UserId { get; set; }
-        
 
+        [AllowNull]
+        public string? Status { get; set; }
+        [AllowNull]
+        public string? TutorServiceName { get; set; }
+        [AllowNull]
+        public string? TutorServiceDescription { get; set; }
+        [AllowNull]
+        public string? TutorServiceVideo { get; set;}
+        [AllowNull]
+        public string? LearningMaterialDemo { get; set; }
     }
 }

@@ -4,11 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnDemandTutorApi.DataAccessLayer.Entity
 {
-    [Table("RefreshTokens")]
+    [Table("RefreshToken")]
     public class RefreshToken
     {
         [Key]
         public string Id { get; set; }
+        [MaxLength(450)]
         public string UserId { get; set; }
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }

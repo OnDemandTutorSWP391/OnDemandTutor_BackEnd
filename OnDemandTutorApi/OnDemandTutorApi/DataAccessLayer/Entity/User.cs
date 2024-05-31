@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnDemandTutorApi.DataAccessLayer.Entity
 {
-    [Table("Users")]
+    [Table("User")]
     public class User : IdentityUser
     {
         public string? FullName { get; set; } = null!;
