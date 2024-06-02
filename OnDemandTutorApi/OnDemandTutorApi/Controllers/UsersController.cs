@@ -8,6 +8,7 @@ using OnDemandTutorApi.BusinessLogicLayer.Services.IServices;
 using OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl;
 using OnDemandTutorApi.DataAccessLayer.Entity;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 
 namespace OnDemandTutorApi.Controllers
@@ -22,14 +23,17 @@ namespace OnDemandTutorApi.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly MyDbContext _context;
+        private readonly IRequestService _requestService;
 
-        public UsersController(IUserService userService, IEmailService emailService, UserManager<User> userManager, IMapper mapper, MyDbContext context)
+
+        public UsersController(IUserService userService, IEmailService emailService, UserManager<User> userManager, IMapper mapper, MyDbContext context, IRequestService requestService)
         {
             _userService = userService;
             _emailService = emailService;
             _userManager = userManager;
             _mapper = mapper;
-            _context = context; 
+            _context = context;
+            _requestService = requestService;
         }
 
         [HttpPost("SignUp")]
@@ -178,7 +182,7 @@ namespace OnDemandTutorApi.Controllers
             var result = await _userManager.UpdateAsync(userProfileUpdate);
             await _context.SaveChangesAsync();
 
-            if(!result.Succeeded)
+            if (!result.Succeeded)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, new ResponseDTO<UserGetProfileDTO>
                 {
@@ -195,6 +199,83 @@ namespace OnDemandTutorApi.Controllers
                 Message = "Update user profile successfully.",
                 Data = userProfile
             });
+
         }
+        [HttpGet("GetAllRequest")]
+        public async Task<IActionResult> GetAllRequestAsync(string? search, string? sortBy, int pageIndex = 1)
+        {
+            var result = await _requestService.GetAllRequestAsync(search, sortBy, pageIndex);
+
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, result);
+            }
+
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
+        [HttpGet("GetUserByRequestID")]
+        public async Task<IActionResult> GetRequestByRequestIDAsync(int id, string? search, string? sortBy, int pageIndex = 1)
+        {
+            var result = await _requestService.GetRequestByRequestIDAsync(id, search, sortBy, pageIndex);
+
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, result);
+            }
+
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
+        [HttpGet("GetUserByUserID")]
+        public async Task<IActionResult> GetRequestByUserIDAsync(string id, string? search, string? sortBy, int pageIndex = 1)
+        {
+            var result = await _requestService.GetRequestByUserIDAsync(id, search, sortBy, pageIndex);
+
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, result);
+            }
+
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
+        [HttpPost("CreateRequest")]
+        public async Task<IActionResult> CreateRequestAsync(RequestDTO Request)
+        {
+            var result = await _requestService.CreateRequestAsync(Request);
+
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, result);
+            }
+
+            return StatusCode(StatusCodes.Status200OK, result);
+
+        }
+
+        [HttpPut("UpdateRequest")]
+        public async Task<IActionResult> UpdateRequestAsync(int id, RequestDTO Request)
+        {
+            var result = await _requestService.UpdateRequestAsync(id, Request);
+
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, result);
+            }
+
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
+
+        [HttpDelete("DeleteRequest")]
+        public async Task<IActionResult> DeleteRequestAsync(int id)
+        {
+            var result = await _requestService.DeleteRequestAsync(id);
+
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, result);
+            }
+
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
+        
     }
 }

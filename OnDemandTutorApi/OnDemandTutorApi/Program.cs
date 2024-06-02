@@ -71,17 +71,20 @@ builder.Services.AddAutoMapper(typeof(Program));
 //DAO
 builder.Services.AddScoped<UserDAO>();
 builder.Services.AddScoped<TutorDAO>();
+builder.Services.AddScoped<RequestDAO>();
+
 
 //Repositories
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<ITutorRepo, TutorRepo>();
-
+builder.Services.AddScoped<IRequestRepo, RequestRepo>();
 
 //Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITutorService, TutorService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IRequestService, RequestService>();
 
 //Add config for Required Email
 //builder.Services.Configure<IdentityOptions>(opts => opts.SignIn.RequireConfirmedEmail = true);
