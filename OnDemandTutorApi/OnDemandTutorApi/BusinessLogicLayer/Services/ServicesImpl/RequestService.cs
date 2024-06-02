@@ -1,5 +1,6 @@
 using System.Drawing.Printing;
 using AutoMapper;
+using Mailjet.Client.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using OnDemandTutorApi.BusinessLogicLayer.DTO;
@@ -27,7 +28,21 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
         public async Task<ResponseDTO> CreateRequestAsync(RequestDTO userRequest)
         {
-            throw new NotImplementedException();
+            var existedRequest = await _requestRepo.GetRequestByRequestIDAsync(userRequest.Id);
+            if(existedRequest != null)
+            {
+                return new ResponseDTO
+                {
+                    Success = false,
+                    Message = "Request has already exist",
+                };
+            }
+            var request = _mapper.Map<RequestDTO>(userRequest);
+            return new ResponseDTO
+            {
+                Success = true,
+                Message = "Add request successfully."
+            };
         }
 
         public async Task<ResponseDTO> DeleteRequestAsync(int id)
@@ -101,14 +116,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
 
             // Map the users to UserResponseDTOs
-            var userResponseDTOs = new List<UserResponseDTO>();
-
-            foreach (var user in result)
-            {
-                // Assuming User class has a property "Roles"
-                var userDto = _mapper.Map<UserResponseDTO>(user);
-                userResponseDTOs.Add(userDto);
-            }
+            var requestResponseDTOs = new List<RequestDTO>();
 
             return new ResponseDTO<IEnumerable<RequestDTO>>
             {
