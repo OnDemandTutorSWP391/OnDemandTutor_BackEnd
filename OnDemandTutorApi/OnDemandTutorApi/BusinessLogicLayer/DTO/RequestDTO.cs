@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OnDemandTutorApi.DataAccessLayer.Entity { 
+namespace OnDemandTutorApi.DataAccessLayer.Entity
+{
     public class RequestDTO
     {
         [Required]
@@ -12,6 +13,11 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity {
         public string UserId { get; set; }
         public string Description { get; set; } = null!;
         public DateTime CreatedDate { get; set; }
+        /*
+            bussiness logic:
+            status should be in range: ["", "" ,""] -> disable, enable, on-going,....
+            create enum -> define type: -> disable, enable, on-going,....
+         */
         public string Status { get; set; } = null!;
     }
 }

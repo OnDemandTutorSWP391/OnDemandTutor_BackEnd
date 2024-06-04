@@ -1,14 +1,9 @@
-using System.Drawing.Printing;
 using AutoMapper;
-using Mailjet.Client.Resources;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 using OnDemandTutorApi.BusinessLogicLayer.DTO;
 using OnDemandTutorApi.BusinessLogicLayer.Helper;
 using OnDemandTutorApi.BusinessLogicLayer.Services.IServices;
 using OnDemandTutorApi.DataAccessLayer.Entity;
 using OnDemandTutorApi.DataAccessLayer.Repositories.Contracts;
-using OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl;
 
 namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 {
@@ -28,8 +23,16 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
         public async Task<ResponseDTO> CreateRequestAsync(RequestDTO userRequest)
         {
+            /*
+             service layer would validate the constraint request
+             which mean validate relationship related to RequestDTO
+             */
+
+            // check requestCategory is exist or not then go ahead
+
+            // check duplicate request 
             var existedRequest = await _requestRepo.GetRequestByRequestIDAsync(userRequest.Id);
-            if(existedRequest != null)
+            if (existedRequest != null)
             {
                 return new ResponseDTO
                 {
@@ -37,12 +40,25 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Message = "Request has already exist",
                 };
             }
-            var request = _mapper.Map<RequestDTO>(userRequest);
+            // convert dto to entity
+            // assume valid request
+            var request = _mapper.Map<Request>(userRequest);
+            // forward request to the last layer ( Persistant Layer: layer handle request between app and DB )
+            Task<int> successRow = _requestRepo.AddRequestAsync(request);
+            if (successRow.GetAwaiter().GetResult() > 0)
+            {
+                return new ResponseDTO
+                {
+                    Success = true,
+                    Message = "Add request successfully."
+                };
+            }
             return new ResponseDTO
             {
-                Success = true,
-                Message = "Add request successfully."
+                Success = false,
+                Message = "Can not add request.",
             };
+
         }
 
         public async Task<ResponseDTO> DeleteRequestAsync(int id)
@@ -215,7 +231,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         }
 
 
-        public async Task<ResponseDTO> UpdateRequestAsync(int id,RequestDTO requestDTO)
+        public async Task<ResponseDTO> UpdateRequestAsync(int id, RequestDTO requestDTO)
         {
             var existingRequest = await _context.Requests.FindAsync(id);
             if (existingRequest == null)

@@ -1,16 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OnDemandTutorApi.BusinessLogicLayer.DTO;
+using OnDemandTutorApi.BusinessLogicLayer.Helper;
 using OnDemandTutorApi.BusinessLogicLayer.Services.IServices;
-using OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl;
-using OnDemandTutorApi.DataAccessLayer.DAO;
 using OnDemandTutorApi.DataAccessLayer.Entity;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.RegularExpressions;
 
 namespace OnDemandTutorApi.Controllers
 {
@@ -54,7 +50,7 @@ namespace OnDemandTutorApi.Controllers
         public async Task<IActionResult> SignIn(UserAuthenDTO userAuthen)
         {
             var result = await _userService.SignInAsync(userAuthen);
-            if(!result.Success)
+            if (!result.Success)
             {
                 return Unauthorized(result);
             }
@@ -66,7 +62,7 @@ namespace OnDemandTutorApi.Controllers
         public async Task<IActionResult> RenewToken(TokenDTO tokenDTO)
         {
             var result = await _userService.RenewTokenAsync(tokenDTO);
-            if(!result.Success)
+            if (!result.Success)
             {
                 return BadRequest(result);
             }
@@ -89,7 +85,7 @@ namespace OnDemandTutorApi.Controllers
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var forgotPasswordLink = Url.Action(nameof(ResetPasswordView), "Users", new {token, email = user.Email}, Request.Scheme);
+            var forgotPasswordLink = Url.Action(nameof(ResetPasswordView), "Users", new { token, email = user.Email }, Request.Scheme);
             Console.WriteLine("Link: " + forgotPasswordLink);
             var message = new EmailDTO
                 (
@@ -112,7 +108,7 @@ namespace OnDemandTutorApi.Controllers
         public async Task<IActionResult> ResetPasswordView(string token, string email)
         {
             var resetPassVM = new UserResetPassDTO { Token = token, Email = email };
-            return Ok(new {resetPassVM});
+            return Ok(new { resetPassVM });
         }
 
         [HttpPost("ResetPassword")]
@@ -121,7 +117,7 @@ namespace OnDemandTutorApi.Controllers
         public async Task<IActionResult> ResetPassAsync(UserResetPassDTO userReset)
         {
             var result = await _userService.ResetPassAsync(userReset);
-            if(!result.Success) 
+            if (!result.Success)
             {
                 return BadRequest(result);
             }
@@ -238,17 +234,46 @@ namespace OnDemandTutorApi.Controllers
 
             return StatusCode(StatusCodes.Status200OK, result);
         }
+
+        /* [HttpPost("CreateRequest")]
+         public async Task<IActionResult> CreateRequestAsync(RequestDTO Request)
+         {
+             var result = await _requestService.CreateRequestAsync(Request);
+
+             if (!result.Success)
+             {
+                 return StatusCode(StatusCodes.Status400BadRequest, result);
+             }
+
+             return StatusCode(StatusCodes.Status200OK, result);
+         }
+        */
+
         [HttpPost("CreateRequest")]
         public async Task<IActionResult> CreateRequestAsync(RequestDTO Request)
         {
-            var result = await _requestService.CreateRequestAsync(Request);
-
-            if (!result.Success)
+            /*
+             -- handle bussiness logic
+            example 
+            bussiness logic:
+            status should be in range: ["", "" ,""] -> disable, enable, on-going,....
+            create enum -> define type: -> disable, enable, on-going,....
+             */
+            if (Constants.LIST_STATUS.Contains(Request.Status))
             {
-                return StatusCode(StatusCodes.Status400BadRequest, result);
-            }
+                var result = await _requestService.CreateRequestAsync(Request);
 
-            return StatusCode(StatusCodes.Status200OK, result);
+                if (!result.Success)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, result);
+                }
+
+                return StatusCode(StatusCodes.Status200OK, result);
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, "Invalid status state");
+            }
 
         }
 
