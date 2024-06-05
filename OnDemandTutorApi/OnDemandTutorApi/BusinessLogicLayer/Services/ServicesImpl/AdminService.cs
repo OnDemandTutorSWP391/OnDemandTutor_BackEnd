@@ -22,10 +22,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly IConfiguration _configuration;
         private readonly ITutorService _tutorService;
         private readonly MyDbContext _context;
+        private readonly ICoinManagementRepo _coinManagementRepo;
 
         public static int PAGE_SIZE { get; set; } = 5;
 
-        public AdminService(IUserRepo userRepo, IMapper mapper, RoleManager<IdentityRole> roleManager, UserManager<User> userManager, IConfiguration configuration, ITutorService tutorService, MyDbContext context)
+        public AdminService(IUserRepo userRepo, IMapper mapper, RoleManager<IdentityRole> roleManager, UserManager<User> userManager, IConfiguration configuration, 
+            ITutorService tutorService, MyDbContext context, ICoinManagementRepo coinManagementRepo)
         {
             _userRepo = userRepo;
             _mapper = mapper;
@@ -34,6 +36,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             _configuration = configuration;
             _tutorService = tutorService;
             _context = context;
+            _coinManagementRepo = coinManagementRepo;
         }
 
         public async Task<ResponseDTO> CreateUserAsync(UserRequestDTO userRequest)
@@ -379,6 +382,51 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
+        }
+
+        public async Task<ResponseDTO<IEnumerable<CoinDTOWithId>>> GetTransactionsAsync(string? search, DateTime? from, DateTime? to, string? sortBy, int page = 1)
+        {
+            var records = await _coinManagementRepo.GetAllAsync();
+
+            if(!string.IsNullOrEmpty(search))
+            {
+                records = records.Where(x => x.UserId == search);
+            }
+
+            if(from.HasValue)
+            {
+                records = records.Where(x => x.Date >= from.Value);
+            }
+
+            if(to.HasValue)
+            {
+                records = records.Where(x => x.Date <= to.Value);
+            }
+
+            records = records.OrderBy(x => x.Date);
+
+            if(!string.IsNullOrEmpty(sortBy))
+            {
+                switch (sortBy)
+                {
+                    case "des": records = records.OrderByDescending(x => x.Date); break;
+                }
+            }
+
+            var result = PaginatedList<CoinManagement>.Create(records, page, PAGE_SIZE);
+
+            return new ResponseDTO<IEnumerable<CoinDTOWithId>>
+            {
+                Success = true,
+                Message = "Đây là danh sách các giao dịch của người dùng",
+                Data = result.Select(x => new CoinDTOWithId
+                {
+                    Id = x.Id,
+                    UserId = x.UserId,
+                    Coin = x.Coin,
+                    Date = x.Date,
+                })
+            };
         }
     }
 }

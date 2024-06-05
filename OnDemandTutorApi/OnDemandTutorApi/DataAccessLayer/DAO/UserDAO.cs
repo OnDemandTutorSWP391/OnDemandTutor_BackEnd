@@ -111,7 +111,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             var token = new JwtSecurityToken(
                 issuer: _configuration["JWT:ValidIssuer"],
                 audience: _configuration["JWT:ValidAudience"],
-                expires: DateTime.UtcNow.AddMinutes(20),
+                expires: DateTime.Now.AddMinutes(20),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authenKey, SecurityAlgorithms.HmacSha512)
             );
@@ -145,8 +145,8 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
                 Token = refreshToken,
                 IsUsed = false,
                 IsRevoked = false,
-                IssuedAt = DateTime.UtcNow,
-                ExpiredAt = DateTime.UtcNow.AddHours(1),
+                IssuedAt = DateTime.Now,
+                ExpiredAt = DateTime.Now.AddHours(1),
             };
 
             //remove token(nếu có), trước khi thêm token mới

@@ -84,5 +84,18 @@ namespace OnDemandTutorApi.Controllers
 
             return StatusCode(StatusCodes.Status200OK, result);
         }
+
+        [HttpGet("get-all-transaction")]
+        public async Task<IActionResult> GetTransactionsAsync(string? search, DateTime? from, DateTime? to, string? sortBy, int page = 1)
+        {
+            var result = await _adminService.GetTransactionsAsync(search, from, to, sortBy, page);
+
+            if(!result.Success)
+            {
+                return BadRequest("Hệ thống xảy ra lỗi khi cố truy cập vào danh sách các giao dịch của người dùng.");
+            }
+
+            return Ok(result);
+        }
     }
 }

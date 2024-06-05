@@ -47,6 +47,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
                 ApplyFormatInEditMode = true)]
         public DateTime? Dob { get; set; }
 
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
+
         [Required]
         public string PhoneNumber {  get; set; } = null!;
 

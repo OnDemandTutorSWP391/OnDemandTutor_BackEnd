@@ -84,7 +84,8 @@ namespace OnDemandTutorApi.Controllers
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var forgotPasswordLink = Url.Action(nameof(ResetPasswordView), "Users", new {token, email = user.Email}, Request.Scheme);
+            string action = "https://localhost:5173/api/Users/reset-password-view";
+            var forgotPasswordLink = Url.Action(action, "Users", new {token, email = user.Email}, Request.Scheme);
             Console.WriteLine("Link: " + forgotPasswordLink);
             var message = new EmailDTO
                 (
@@ -102,7 +103,7 @@ namespace OnDemandTutorApi.Controllers
             });
         }
 
-        [HttpGet("ResetPasswordView")]
+        [HttpGet("reset-password-view")]
         [AllowAnonymous]
         public async Task<IActionResult> ResetPasswordView(string token, string email)
         {
@@ -130,71 +131,29 @@ namespace OnDemandTutorApi.Controllers
         {
             var userId = HttpContext.User.FindFirstValue("Id");
 
-            Console.BackgroundColor = ConsoleColor.Green;
-            Console.WriteLine("1:" + userId);
-            Console.ResetColor();
+            var result = await _userService.GetUserProfileAysnc(userId);
 
-            var user = await _userManager.FindByIdAsync(userId);
-
-            Console.WriteLine("user id " + user.Id);
-
-            if (user == null)
+            if (!result.Success)
             {
-                return StatusCode(StatusCodes.Status404NotFound, new ResponseDTO<UserGetProfileDTO>
-                {
-                    Success = false,
-                    Message = "User not found.",
-                });
+                return StatusCode(StatusCodes.Status404NotFound, result);
             }
 
-            var userProfile = _mapper.Map<UserGetProfileDTO>(user);
-
-            return StatusCode(StatusCodes.Status200OK, new ResponseDTO<UserGetProfileDTO>
-            {
-                Success = true,
-                Message = "Get user profile successfully.",
-                Data = userProfile
-            });
+            return StatusCode(StatusCodes.Status200OK, result);
         }
 
         [Authorize]
-        [HttpPut("UpdatUserProfile")]
-        public async Task<IActionResult> UpdatUserProfile(UserProfileUpdateDTO userUpdate)
+        [HttpPut("UpdateUserProfile")]
+        public async Task<IActionResult> UpdatUserProfileAsync(UserProfileUpdateDTO userUpdate)
         {
             var userId = HttpContext.User.FindFirstValue("Id");
-            var user = await _userManager.FindByIdAsync(userId);
+            var result = await _userService.UpdatUserProfileAsync(userId, userUpdate);
 
-            if (user == null)
+            if (!result.Success)
             {
-                return StatusCode(StatusCodes.Status404NotFound, new ResponseDTO<UserGetProfileDTO>
-                {
-                    Success = false,
-                    Message = "User not found.",
-                });
+                return StatusCode(StatusCodes.Status400BadRequest, result);
             }
 
-            var userProfileUpdate = _mapper.Map(userUpdate, user);
-
-            var result = await _userManager.UpdateAsync(userProfileUpdate);
-            await _context.SaveChangesAsync();
-
-            if(!result.Succeeded)
-            {
-                return StatusCode(StatusCodes.Status400BadRequest, new ResponseDTO<UserGetProfileDTO>
-                {
-                    Success = false,
-                    Message = "Error occur when update user profile, please try again."
-                });
-            }
-
-            var userProfile = _mapper.Map<UserGetProfileDTO>(user);
-
-            return StatusCode(StatusCodes.Status200OK, new ResponseDTO<UserGetProfileDTO>
-            {
-                Success = true,
-                Message = "Update user profile successfully.",
-                Data = userProfile
-            });
+            return StatusCode(StatusCodes.Status200OK, result);
         }
     }
 }

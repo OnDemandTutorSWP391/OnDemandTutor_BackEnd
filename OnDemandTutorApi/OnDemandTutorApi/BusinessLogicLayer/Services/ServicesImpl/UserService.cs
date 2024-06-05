@@ -24,8 +24,9 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly IConfiguration _configuration;
         private readonly ITutorRepo _tutorRepo;
         private readonly MyDbContext _context;
+        private readonly IEmailService _emailService;
 
-        public UserService(IUserRepo userRepo, IMapper mapper, RoleManager<IdentityRole> roleManager, UserManager<User> userManager, IConfiguration configuration, ITutorRepo tutorRepo, MyDbContext context)
+        public UserService(IUserRepo userRepo, IMapper mapper, RoleManager<IdentityRole> roleManager, UserManager<User> userManager, IConfiguration configuration, ITutorRepo tutorRepo, MyDbContext context, IEmailService emailService)
         {
             _userRepo = userRepo;
             _mapper = mapper;
@@ -34,6 +35,30 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             _configuration = configuration;
             _tutorRepo = tutorRepo;
             _context = context;
+            _emailService = emailService;
+        }
+
+        public async Task<ResponseDTO<UserGetProfileDTO>> GetUserProfileAysnc(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return new ResponseDTO<UserGetProfileDTO>
+                {
+                    Success = false,
+                    Message = "User not found.",
+                };
+            }
+
+            var userProfile = _mapper.Map<UserGetProfileDTO>(user);
+
+            return new ResponseDTO<UserGetProfileDTO>
+            {
+                Success = true,
+                Message = "Get user profile successfully.",
+                Data = userProfile
+            };
         }
 
         public async Task<ResponseDTO<TokenDTO>> RenewTokenAsync(TokenDTO tokenDTO)
@@ -298,6 +323,43 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
+        }
+
+        public async Task<ResponseDTO<UserGetProfileDTO>> UpdatUserProfileAsync(string id, UserProfileUpdateDTO userUpdate)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return new ResponseDTO<UserGetProfileDTO>
+                {
+                    Success = false,
+                    Message = "User not found.",
+                };
+            }
+
+            var userProfileUpdate = _mapper.Map(userUpdate, user);
+
+            var result = await _userManager.UpdateAsync(userProfileUpdate);
+            await _context.SaveChangesAsync();
+
+            if (!result.Succeeded)
+            {
+                return new ResponseDTO<UserGetProfileDTO>
+                {
+                    Success = false,
+                    Message = "Error occur when update user profile, please try again."
+                };
+            }
+
+            var userProfile = _mapper.Map<UserGetProfileDTO>(user);
+
+            return new ResponseDTO<UserGetProfileDTO>
+            {
+                Success = true,
+                Message = "Update user profile successfully.",
+                Data = userProfile
+            };
         }
 
         private DateTime ConvertUnixTimeToDateTime(long utcExpireDate)

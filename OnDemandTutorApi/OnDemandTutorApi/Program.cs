@@ -71,10 +71,12 @@ builder.Services.AddAutoMapper(typeof(Program));
 //DAO
 builder.Services.AddScoped<UserDAO>();
 builder.Services.AddScoped<TutorDAO>();
+builder.Services.AddScoped<CoinManagementDAO>();
 
 //Repositories
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<ITutorRepo, TutorRepo>();
+builder.Services.AddScoped<ICoinManagementRepo, CoinManagementRepo>();
 
 
 //Services
@@ -82,6 +84,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITutorService, TutorService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddHttpClient();
+builder.Services.AddSingleton<IVnPayService, VnPayService>();
+builder.Services.AddScoped<ICoinManagementService, CoinManagementService>();
+
 
 //Add config for Required Email
 //builder.Services.Configure<IdentityOptions>(opts => opts.SignIn.RequireConfirmedEmail = true);
@@ -113,6 +119,10 @@ builder.Services.AddAuthentication(options => {
 var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
 builder.Services.AddSingleton(emailConfig);
 
+//Add VnPay Config
+var vnPayConfig = builder.Configuration.GetSection("VnPayConfiguration").Get<VnPayConfiguration>();
+builder.Services.AddSingleton(vnPayConfig);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -123,6 +133,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("corspolicy");
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
