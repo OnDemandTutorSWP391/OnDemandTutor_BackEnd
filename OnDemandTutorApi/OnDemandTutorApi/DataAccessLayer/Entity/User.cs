@@ -9,7 +9,7 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         public string? FullName { get; set; } = null!;
         public string? IdentityCard { get; set; } = null!;
         public DateTime Dob { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
         public bool Status { get; set; }
         public string Gender { get; set; } = null!;
         public string Avatar { get; set; } = null!;

@@ -12,40 +12,49 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
     public class CoinManagementService : ICoinManagementService
     {
         private readonly ICoinManagementRepo _coinManagementRepo;
+        private readonly IUserRepo _userRepo;   
         private readonly IMapper _mapper;
 
         public static int PAGE_SIZE { get; set; } = 5;
 
-        public CoinManagementService(ICoinManagementRepo coinManagementRepo, IMapper mapper)
+        public CoinManagementService(ICoinManagementRepo coinManagementRepo, IMapper mapper, IUserRepo userRepo)
         {
             _coinManagementRepo = coinManagementRepo;
+            _userRepo = userRepo;
             _mapper = mapper;
         }
 
         //DEPOSIT
-        public async Task<ResponseDTO<CoinDTO>> DepositAsync(CoinDTO coinRequest)
+        public async Task<ResponseApiDTO<CoinResponseDTO>> DepositAsync(CoinDTO coinRequest)
         {
             var coinRecord = _mapper.Map<CoinManagement>(coinRequest);
 
+            var user = await _userRepo.GetByIdAsync(coinRecord.UserId);
+
             await _coinManagementRepo.CreateCoinRecord(coinRecord);
 
-            return new ResponseDTO<CoinDTO>
+            return new ResponseApiDTO<CoinResponseDTO>
             {
                 Success = true,
                 Message = "Deposit successfully",
-                Data = coinRequest
+                Data = new CoinResponseDTO
+                {
+                    Coin = coinRecord.Coin,
+                    Date = coinRecord.Date,
+                    FullName = user.FullName
+                }
             }; 
         }
 
 
         //GET TOTAL COIN
-        public async Task<ResponseDTO<float>> GetTotalCoinForUserAsync(string userId)
+        public async Task<ResponseApiDTO<float>> GetTotalCoinForUserAsync(string userId)
         {
             var result = await _coinManagementRepo.GetTotalCoinForUserAsync(userId);
 
             if(result == 0)
             {
-                return new ResponseDTO<float>
+                return new ResponseApiDTO<float>
                 {
                     Success = true,
                     Message = "Bạn hiện đang có 0 coin trong tài khoản của mình. Hãy nạp thêm coin vào để trải nghiệm dịch vụ",
@@ -53,7 +62,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
-            return new ResponseDTO<float>
+            return new ResponseApiDTO<float>
             {
                 Success = true,
                 Message = "Đây là số dư hiện tại của bạn",
@@ -63,7 +72,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
 
         //GET COIN RECORD BY USER ID
-        public async Task<ResponseDTO<IEnumerable<CoinDTO>>> GetTransactionForUserAsync(string userId, DateTime? from, DateTime? to, string? sortBy, int page = 1)
+        public async Task<ResponseApiDTO<IEnumerable<CoinResponseDTO>>> GetTransactionForUserAsync(string userId, DateTime? from, DateTime? to, string? sortBy, int page = 1)
         {
             var records = await _coinManagementRepo.GetByUserIdAsync(userId);
 
@@ -91,20 +100,20 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (result.IsNullOrEmpty())
             {
-                return new ResponseDTO<IEnumerable<CoinDTO>>
+                return new ResponseApiDTO<IEnumerable<CoinResponseDTO>>
                 {
                     Success = true,
                     Message = "Hiện tại bạn chưa thực hiện giao dịch nào."
                 };
             }
 
-            return new ResponseDTO<IEnumerable<CoinDTO>>
+            return new ResponseApiDTO<IEnumerable<CoinResponseDTO>>
             {
                 Success = true,
                 Message = "Đây là danh sách các giao dịch của bạn.",
-                Data = result.Select(x => new CoinDTO
+                Data = result.Select(x => new CoinResponseDTO
                 {
-                    UserId = x.UserId,
+                    FullName = x.User.FullName,
                     Coin = x.Coin,
                     Date = x.Date,
                 }).ToList()

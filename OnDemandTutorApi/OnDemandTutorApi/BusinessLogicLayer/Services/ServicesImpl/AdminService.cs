@@ -39,13 +39,13 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             _coinManagementRepo = coinManagementRepo;
         }
 
-        public async Task<ResponseDTO> CreateUserAsync(UserRequestDTO userRequest)
+        public async Task<ResponseApiDTO> CreateUserAsync(UserRequestDTO userRequest)
         {
             //check User exist
             var existedUser = await _userManager.FindByEmailAsync(userRequest.Email);
             if (existedUser != null)
             {
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = false,
                     Message = "Email already existed.",
@@ -63,7 +63,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 await _context.SaveChangesAsync();
                 if (!result.Succeeded)
                 {
-                    return new ResponseDTO
+                    return new ResponseApiDTO
                     {
                         Success = false,
                         Message = "User failed to create. \nPlease check your information. \nPassword phai co chu hoa, chu thuong, va ki tu dac biet."
@@ -82,7 +82,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     await _tutorService.AddTutorAsync(tutorDTO);
                 }
 
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = true,
                     Message = "Created user successfully."
@@ -90,19 +90,19 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
             else
             {
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = false,
                     Message = "This role does not exist."
                 };
             }
         }
-        public async Task<ResponseDTO> DeleteUserAsync(string id)
+        public async Task<ResponseApiDTO> DeleteUserAsync(string id)
         {
             var deletedUser = await _userRepo.GetByIdAsync(id);
             if (deletedUser == null) 
             {
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = false,
                     Message = "User not found."
@@ -125,20 +125,20 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!result.Succeeded)
             {
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = false,
                     Message = "Delete user failed. \nPlease try again"
                 };
             }
 
-            return new ResponseDTO
+            return new ResponseApiDTO
             {
                 Success = true,
                 Message = "Delete user succesfully."
             };
         }
-        public async Task<ResponseDTO<IEnumerable<UserResponseDTO>>> GetUsersAsync(string? search, string? sortBy, int pageIndex = 1)
+        public async Task<ResponseApiDTO<IEnumerable<UserResponseDTO>>> GetUsersAsync(string? search, string? sortBy, int pageIndex = 1)
         {
             var allUsers = await _userRepo.GetUsersAsync();
 
@@ -161,7 +161,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if(result.IsNullOrEmpty())
             {
-                return new ResponseDTO<IEnumerable<UserResponseDTO>>
+                return new ResponseApiDTO<IEnumerable<UserResponseDTO>>
                 {
                     Success = true,
                     Message = "Does not have any result match your request."
@@ -178,20 +178,20 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 userResponseDTOs.Add(userDto);
             }
 
-            return new ResponseDTO<IEnumerable<UserResponseDTO>>
+            return new ResponseApiDTO<IEnumerable<UserResponseDTO>>
             {
                 Success = true,
                 Message = "Here is current users match your request.",
                 Data = userResponseDTOs
             };
         }
-        public async Task<ResponseDTO> UpdateUserAsync(string id, UserUpdateDTO userUpdateDTO)
+        public async Task<ResponseApiDTO> UpdateUserAsync(string id, UserUpdateDTO userUpdateDTO)
         {
             var updatedUser = await _userRepo.GetByIdAsync(id);
 
             if(updatedUser == null)
             {
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = true,
                     Message = "User not found, please try again."
@@ -204,26 +204,26 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!result.Succeeded)
             {
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = false,
                     Message = "Update user failed, please try again. \nPlease check your information. \nPassword phai co chu hoa, chu thuong, va ki tu dac biet."
                 };
             }
 
-            return new ResponseDTO
+            return new ResponseApiDTO
             {
                 Success = true,
                 Message = "Update user succesfully."
             };
         }
 
-        public async Task<ResponseDTO> UpdateUserRoleAsync(string id, string oldRole, string newRole, string choice)
+        public async Task<ResponseApiDTO> UpdateUserRoleAsync(string id, string oldRole, string newRole, string choice)
         {
             var updatedUser = await _userRepo.GetByIdAsync(id);
             if (updatedUser == null)
             {
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = false,
                     Message = "User not found, please try again."
@@ -247,7 +247,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     }
                     else
                     {
-                        return new ResponseDTO
+                        return new ResponseApiDTO
                         {
                             Success = false,
                             Message = $"The user does not have the role {oldRole}."
@@ -263,7 +263,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     return await DeleteUserRoleAsync(updatedUser.Id, oldRole);
 
                 default:
-                    return new ResponseDTO
+                    return new ResponseApiDTO
                     {
                         Success = false,
                         Message = "Invalid choice. Please specify 'replace', 'add', or 'remove'."
@@ -271,13 +271,13 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
         }
 
-        public async Task<ResponseDTO> AddUserRoleAsync(string id, string role)
+        public async Task<ResponseApiDTO> AddUserRoleAsync(string id, string role)
         {
             var user = await _userRepo.GetByIdAsync(id);
 
             if(user == null)
             {
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = false,
                     Message = "User not found."
@@ -297,14 +297,14 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
                 if (!result.Succeeded)
                 {
-                    return new ResponseDTO
+                    return new ResponseApiDTO
                     {
                         Success = false,
                         Message = "Add role for user failed. \nPlease try again"
                     };
                 }
 
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = true,
                     Message = "Add role for user successfully."
@@ -312,7 +312,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
             else
             {
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = false,
                     Message = "This role does not exists. \nPlease try again."
@@ -320,13 +320,13 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
         }
 
-        public async Task<ResponseDTO> DeleteUserRoleAsync(string id, string role)
+        public async Task<ResponseApiDTO> DeleteUserRoleAsync(string id, string role)
         {
             var user = await _userRepo.GetByIdAsync(id);
 
             if(user == null)
             {
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = false,
                     Message = "User not found. \nPlease try again"
@@ -351,14 +351,14 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
                     if(!result.Succeeded)
                     {
-                        return new ResponseDTO
+                        return new ResponseApiDTO
                         {
                             Success = false,
                             Message = "Delete role from user failed. \nPlease try again"
                         };
                     }
 
-                    return new ResponseDTO
+                    return new ResponseApiDTO
                     {
                         Success = true,
                         Message = "Delete role from user successfully."
@@ -366,7 +366,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 }
                 else
                 {
-                    return new ResponseDTO
+                    return new ResponseApiDTO
                     {
                         Success = false,
                         Message = "User does not have this role. \nPlease try again."
@@ -375,7 +375,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
             else
             {
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = false,
                     Message = "This role does not exist. \nPlease try again"
@@ -384,7 +384,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
         }
 
-        public async Task<ResponseDTO<IEnumerable<CoinDTOWithId>>> GetTransactionsAsync(string? search, DateTime? from, DateTime? to, string? sortBy, int page = 1)
+        public async Task<ResponseApiDTO<IEnumerable<CoinDTOWithId>>> GetTransactionsAsync(string? search, DateTime? from, DateTime? to, string? sortBy, int page = 1)
         {
             var records = await _coinManagementRepo.GetAllAsync();
 
@@ -415,7 +415,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             var result = PaginatedList<CoinManagement>.Create(records, page, PAGE_SIZE);
 
-            return new ResponseDTO<IEnumerable<CoinDTOWithId>>
+            return new ResponseApiDTO<IEnumerable<CoinDTOWithId>>
             {
                 Success = true,
                 Message = "Đây là danh sách các giao dịch của người dùng",

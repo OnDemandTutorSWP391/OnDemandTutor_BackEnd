@@ -72,11 +72,17 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<UserDAO>();
 builder.Services.AddScoped<TutorDAO>();
 builder.Services.AddScoped<CoinManagementDAO>();
+builder.Services.AddScoped<RequestCategoryDAO>();
+builder.Services.AddScoped<RequestDAO>();
+builder.Services.AddScoped<ResponseDAO>();
 
 //Repositories
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<ITutorRepo, TutorRepo>();
 builder.Services.AddScoped<ICoinManagementRepo, CoinManagementRepo>();
+builder.Services.AddScoped<IRequestCategoryRepo, RequestCategoryRepo>();
+builder.Services.AddScoped<IRequestRepo, RequestRepo>();
+builder.Services.AddScoped<IResponseRepo, ResponseRepo>();
 
 
 //Services
@@ -87,6 +93,9 @@ builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IVnPayService, VnPayService>();
 builder.Services.AddScoped<ICoinManagementService, CoinManagementService>();
+builder.Services.AddScoped<IRequestCategoryService, RequestCategoryService>();
+builder.Services.AddScoped<IRequestService, RequestService>();
+builder.Services.AddScoped<IResponseService, ResponseService>();
 
 
 //Add config for Required Email

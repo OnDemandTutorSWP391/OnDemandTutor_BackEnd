@@ -18,4 +18,11 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
     {   
         public int Id { get; set; }
     }
+
+    public class CoinResponseDTO
+    {
+        public string FullName { get; set; }
+        public float Coin { get; set; }
+        public DateTime Date { get; set; }
+    }
 }

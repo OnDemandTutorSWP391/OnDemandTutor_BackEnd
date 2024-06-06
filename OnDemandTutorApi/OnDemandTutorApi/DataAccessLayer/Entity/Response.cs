@@ -12,6 +12,8 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         [Required]
         public int RequestId {  get; set; }
         public string Description { get; set; } = null!;
-        public DateTime ResponseDate { get; set; }
+        public DateTime ResponseDate { get; set; } = DateTime.Now;
+        //
+        public virtual Request Request { get; set; } = null!;
     }
 }

@@ -33,7 +33,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
         //get record by user id
         public async Task<IEnumerable<CoinManagement>> GetByUserIdAsync(string userId)
         {
-            var records = await _context.CoinManagements
+            var records = await _context.CoinManagements.Include(x => x.User)
                                       .Where(x => x.UserId == userId)
                                       .ToListAsync();
             return records;
@@ -41,7 +41,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
 
         public async Task<IEnumerable<CoinManagement>> GetAllAsync() 
         {
-            return await _context.CoinManagements.ToListAsync();
+            return await _context.CoinManagements.Include(x => x.User).ToListAsync();
         }
     }
 }

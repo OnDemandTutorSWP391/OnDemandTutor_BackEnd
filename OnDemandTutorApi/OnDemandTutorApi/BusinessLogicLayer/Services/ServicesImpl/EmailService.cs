@@ -15,12 +15,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             _emailConfig = emailConfig;
         }
 
-        public ResponseDTO SendEmail(EmailDTO emailDTO)
+        public ResponseApiDTO SendEmail(EmailDTO emailDTO)
         {
             var emailMessage = CreateEmailMessage(emailDTO);
             Send(emailMessage);
 
-            return new ResponseDTO
+            return new ResponseApiDTO
             {
                 Success = true,
                 Message = "Email sent successfully"

@@ -38,13 +38,13 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             _emailService = emailService;
         }
 
-        public async Task<ResponseDTO<UserGetProfileDTO>> GetUserProfileAysnc(string id)
+        public async Task<ResponseApiDTO<UserGetProfileDTO>> GetUserProfileAysnc(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
 
             if (user == null)
             {
-                return new ResponseDTO<UserGetProfileDTO>
+                return new ResponseApiDTO<UserGetProfileDTO>
                 {
                     Success = false,
                     Message = "User not found.",
@@ -53,7 +53,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             var userProfile = _mapper.Map<UserGetProfileDTO>(user);
 
-            return new ResponseDTO<UserGetProfileDTO>
+            return new ResponseApiDTO<UserGetProfileDTO>
             {
                 Success = true,
                 Message = "Get user profile successfully.",
@@ -61,7 +61,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             };
         }
 
-        public async Task<ResponseDTO<TokenDTO>> RenewTokenAsync(TokenDTO tokenDTO)
+        public async Task<ResponseApiDTO<TokenDTO>> RenewTokenAsync(TokenDTO tokenDTO)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
             var secretKeyBytes = Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]);
@@ -90,7 +90,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase);
                     if (!result)//false
                     {
-                        return new ResponseDTO<TokenDTO>
+                        return new ResponseApiDTO<TokenDTO>
                         {
                             Success = false,
                             Message = "Invalid token."
@@ -104,7 +104,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 var expireDate = ConvertUnixTimeToDateTime(utcExpireDate);
                 if (expireDate > DateTime.UtcNow)
                 {
-                    return new ResponseDTO<TokenDTO>
+                    return new ResponseApiDTO<TokenDTO>
                     {
                         Success = false,
                         Message = "Access token has not yet expired."
@@ -115,7 +115,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 var storedToken = _context.RefreshTokens.FirstOrDefault(x => x.Token == tokenDTO.RefreshToken);
                 if (storedToken == null)
                 {
-                    return new ResponseDTO<TokenDTO>
+                    return new ResponseApiDTO<TokenDTO>
                     {
                         Success = false,
                         Message = "Refresh token does not exist."
@@ -125,7 +125,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 //check 5: check refreshToken is used/revoked?
                 if (storedToken.IsUsed)
                 {
-                    return new ResponseDTO<TokenDTO>
+                    return new ResponseApiDTO<TokenDTO>
                     {
                         Success = false,
                         Message = "Refresh token has been used."
@@ -133,7 +133,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 }
                 if (storedToken.IsRevoked)
                 {
-                    return new ResponseDTO<TokenDTO>
+                    return new ResponseApiDTO<TokenDTO>
                     {
                         Success = false,
                         Message = "Refresh token has been revoked."
@@ -144,7 +144,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
                 if (storedToken.JwtId != jti)
                 {
-                    return new ResponseDTO<TokenDTO>
+                    return new ResponseApiDTO<TokenDTO>
                     {
                         Success = false,
                         Message = "Token doesn't match."
@@ -155,7 +155,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 var user = await _context.Users.SingleOrDefaultAsync(user => user.Id == storedToken.UserId);
                 var token = await _userRepo.GenerateTokenAsync(user);
 
-                return new ResponseDTO<TokenDTO>
+                return new ResponseApiDTO<TokenDTO>
                 {
                     Success = true,
                     Message = "Renew token success.",
@@ -164,7 +164,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
             catch (Exception ex) 
             {
-                return new ResponseDTO<TokenDTO>
+                return new ResponseApiDTO<TokenDTO>
                 {
                     Success = false,
                     Message = ex.Message,
@@ -172,13 +172,13 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
         }
 
-        public async Task<ResponseDTO> ResetPassAsync(UserResetPassDTO userReset)
+        public async Task<ResponseApiDTO> ResetPassAsync(UserResetPassDTO userReset)
         {
             var user = await _userRepo.GetUserByEmailAsync(userReset.Email);
 
             if (user == null)
             {
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = false,
                     Message = "Email not found!!!"
@@ -190,21 +190,21 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!result.Succeeded)
             {
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = false,
                     Message = "Changes password failed, please check your email again!!! \nPassword phai co chu hoa, chu thuong, va ki tu dac biet."
                 };
             }
 
-            return new ResponseDTO
+            return new ResponseApiDTO
             {
                 Success = true,
                 Message = "Your password has been changed"
             };
         }
 
-        public async Task<ResponseDTO<TokenDTO>> SignInAsync(UserAuthenDTO userAuthen)
+        public async Task<ResponseApiDTO<TokenDTO>> SignInAsync(UserAuthenDTO userAuthen)
         {
             var adminEmail = _configuration["Admin:Email"];
             
@@ -215,7 +215,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
                 if (admin == null || !adminPasswordValid)
                 {
-                    return new ResponseDTO<TokenDTO>
+                    return new ResponseApiDTO<TokenDTO>
                     {
                         Success = false,
                         Message = "Invalid password for admin."
@@ -224,7 +224,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
                 var adminToken = await _userRepo.GenerateTokenAsync(admin);
 
-                return new ResponseDTO<TokenDTO>
+                return new ResponseApiDTO<TokenDTO>
                 {
                     Success = true,
                     Message = "Welcome to admin account.",
@@ -237,7 +237,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (user == null || !passwordValid)
             {
-                return new ResponseDTO<TokenDTO>
+                return new ResponseApiDTO<TokenDTO>
                 {
                     Success = false,
                     Message = "Invalid email or password."
@@ -246,7 +246,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             var token = await _userRepo.GenerateTokenAsync(user);
 
-            return new ResponseDTO<TokenDTO>
+            return new ResponseApiDTO<TokenDTO>
             {
                 Success = true,
                 Message = "Authenticate succesfull.",
@@ -254,13 +254,13 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             };
         }
 
-        public async Task<ResponseDTO> SignUpAsync(UserRequestDTO userRequestDTO)
+        public async Task<ResponseApiDTO> SignUpAsync(UserRequestDTO userRequestDTO)
         {
             //check User exist
             var existedUser = await _userManager.FindByEmailAsync(userRequestDTO.Email);
             if (existedUser != null)
             {
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = false,
                     Message = "Email already existed.",
@@ -271,7 +271,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             var validRoles = new List<string> { RoleDTO.Tutor, RoleDTO.Student };
             if (!validRoles.Contains(userRequestDTO.Role))
             {
-                return new ResponseDTO 
+                return new ResponseApiDTO 
                 {
                     Success = false,
                     Message = "Invalid Role. Choose either Tutor and Student.",
@@ -288,7 +288,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 await _context.SaveChangesAsync();
                 if(!result.Succeeded)
                 {
-                    return new ResponseDTO
+                    return new ResponseApiDTO
                     {
                         Success = false,
                         Message = "User failed to create. \nPlease check your information. \nPassword phai co chu hoa, chu thuong, va ki tu dac biet."
@@ -308,7 +308,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                         await _tutorRepo.AddTutorAsync(tutor);
                 }
 
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = true,
                     Message = "Sign up successfully."
@@ -316,7 +316,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
             else
             {
-                return new ResponseDTO
+                return new ResponseApiDTO
                 {
                     Success = false,
                     Message = "This role does not exist."
@@ -325,13 +325,13 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
         }
 
-        public async Task<ResponseDTO<UserGetProfileDTO>> UpdatUserProfileAsync(string id, UserProfileUpdateDTO userUpdate)
+        public async Task<ResponseApiDTO<UserGetProfileDTO>> UpdatUserProfileAsync(string id, UserProfileUpdateDTO userUpdate)
         {
             var user = await _userManager.FindByIdAsync(id);
 
             if (user == null)
             {
-                return new ResponseDTO<UserGetProfileDTO>
+                return new ResponseApiDTO<UserGetProfileDTO>
                 {
                     Success = false,
                     Message = "User not found.",
@@ -345,7 +345,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!result.Succeeded)
             {
-                return new ResponseDTO<UserGetProfileDTO>
+                return new ResponseApiDTO<UserGetProfileDTO>
                 {
                     Success = false,
                     Message = "Error occur when update user profile, please try again."
@@ -354,7 +354,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             var userProfile = _mapper.Map<UserGetProfileDTO>(user);
 
-            return new ResponseDTO<UserGetProfileDTO>
+            return new ResponseApiDTO<UserGetProfileDTO>
             {
                 Success = true,
                 Message = "Update user profile successfully.",

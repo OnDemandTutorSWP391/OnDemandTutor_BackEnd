@@ -76,7 +76,7 @@ namespace OnDemandTutorApi.Controllers
 
             if (user == null)
             {
-                return BadRequest(new ResponseDTO
+                return BadRequest(new ResponseApiDTO
                 {
                     Success = false,
                     Message = "Could not send link to email, please try again. \nYour email does not exist in system."
@@ -84,8 +84,7 @@ namespace OnDemandTutorApi.Controllers
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            string action = "https://localhost:5173/api/Users/reset-password-view";
-            var forgotPasswordLink = Url.Action(action, "Users", new {token, email = user.Email}, Request.Scheme);
+            var forgotPasswordLink = $"https://localhost:5173/api/Users/reset-password-view?token={token}&email={user.Email}";
             Console.WriteLine("Link: " + forgotPasswordLink);
             var message = new EmailDTO
                 (
@@ -96,7 +95,7 @@ namespace OnDemandTutorApi.Controllers
 
             _emailService.SendEmail(message);
 
-            return Ok(new ResponseDTO
+            return Ok(new ResponseApiDTO
             {
                 Success = true,
                 Message = $"Password changed request is sent on your Email {user.Email}.Please open your email and click the link."

@@ -15,8 +15,10 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         [MaxLength(450)]
         public string UserId { get; set; }
         public string Description { get; set; } = null!;
-        public DateTime CreatedDate { get; set; }
-        public string Status { get; set; } = null!;
-        
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public string Status { get; set; } = "Chờ xử lý";
+        //
+        public virtual RequestCategory Category { get; set; } = null!;
+        public virtual User User { get; set; } = null!;
     }
 }

@@ -49,10 +49,6 @@ namespace OnDemandTutorApi.Controllers
                 Description = $"{user.FullName} - {user.PhoneNumber}",
             };
 
-            Console.BackgroundColor = ConsoleColor.Green;
-            Console.WriteLine(paymentRequest.Amount);
-            Console.ResetColor();
-
 
             var httpClient = _httpClientFactory.CreateClient();
 

@@ -1,13 +1,30 @@
-﻿namespace OnDemandTutorApi.BusinessLogicLayer.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace OnDemandTutorApi.BusinessLogicLayer.DTO
 {
     public class ResponseDTO
     {
-        public bool Success { get; set; }
-        public string Message { get; set; } = null!;
+        public string Description { get; set; } = null!;
     }
 
-    public class ResponseDTO<T> : ResponseDTO
+    public class ResponseContentDTO
     {
-        public T Data { get; set; }
+        [Required]
+        public string Title { get; set; } = null!;
+        [Required]
+        public string Content { get; set; } = null!;
+    }
+
+    public class ResponseDTOWithData : ResponseDTO
+    {
+        [Required]
+        public int Id { get; set; }
+        [Required]
+        public int RequestId { get; set; }
+        [Required]
+        public string CategoryName { get; set; }
+        [Required]
+        public string FullName { get; set; }
+        public DateTime ResponseDate { get; set; }
     }
 }
