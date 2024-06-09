@@ -9,5 +9,6 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.Contracts
         Task<Tutor> GetByIdAsync(int id);
         Task DeleteTutorAsync(Tutor tutor);
         Task<Tutor?> GetTutorByUserIdAsync(string userId);
+        Task<bool> UpdateTutorAsync(Tutor tutor);
     }
 }

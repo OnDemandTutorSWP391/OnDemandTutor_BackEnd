@@ -36,5 +36,10 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl
         {
             return await _tutorDAO.GetTutorsAsync();
         }
+
+        public async Task<bool> UpdateTutorAsync(Tutor tutor)
+        {
+            return await _tutorDAO.UpdateTutorAsync(tutor);
+        }
     }
 }

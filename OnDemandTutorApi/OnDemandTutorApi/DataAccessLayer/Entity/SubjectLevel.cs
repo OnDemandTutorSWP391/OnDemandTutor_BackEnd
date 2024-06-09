@@ -15,5 +15,9 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         [Required]
         public int TutorId { get; set; }
         public string Description { get; set; } = null!;
+        //
+        public virtual Level Level { get; set; }
+        public virtual Subject Subject { get; set;}
+        public virtual Tutor Tutor { get; set; }
     }
 }

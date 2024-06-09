@@ -9,6 +9,10 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
     [Table("Tutor")]
     public class Tutor
     {
+        public Tutor()
+        {
+            SubjectLevels = new List<SubjectLevel>();
+        }
         [Key]
         public int TutorId { get; set; }
         [AllowNull]
@@ -28,7 +32,7 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         public string UserId { get; set; }
 
         [AllowNull]
-        public string? Status { get; set; }
+        public string? Status { get; set; } = "Chờ phê duyệt";
         [AllowNull]
         public string? TutorServiceName { get; set; }
         [AllowNull]
@@ -37,5 +41,8 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         public string? TutorServiceVideo { get; set;}
         [AllowNull]
         public string? LearningMaterialDemo { get; set; }
+        //
+        public virtual User User { get; set; }
+        public virtual ICollection<SubjectLevel> SubjectLevels { get; set; }
     }
 }

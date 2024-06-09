@@ -75,6 +75,9 @@ builder.Services.AddScoped<CoinManagementDAO>();
 builder.Services.AddScoped<RequestCategoryDAO>();
 builder.Services.AddScoped<RequestDAO>();
 builder.Services.AddScoped<ResponseDAO>();
+builder.Services.AddScoped<LevelDAO>();
+builder.Services.AddScoped<SubjectDAO>();
+builder.Services.AddScoped<SubjectLevelDAO>();
 
 //Repositories
 builder.Services.AddScoped<IUserRepo, UserRepo>();
@@ -83,6 +86,9 @@ builder.Services.AddScoped<ICoinManagementRepo, CoinManagementRepo>();
 builder.Services.AddScoped<IRequestCategoryRepo, RequestCategoryRepo>();
 builder.Services.AddScoped<IRequestRepo, RequestRepo>();
 builder.Services.AddScoped<IResponseRepo, ResponseRepo>();
+builder.Services.AddScoped<ILevelRepo, LevelRepo>();
+builder.Services.AddScoped<ISubjectRepo, SubjectRepo>();
+builder.Services.AddScoped<ISubjectLevelRepo, SubjectLevelRepo>();
 
 
 //Services
@@ -96,6 +102,9 @@ builder.Services.AddScoped<ICoinManagementService, CoinManagementService>();
 builder.Services.AddScoped<IRequestCategoryService, RequestCategoryService>();
 builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<IResponseService, ResponseService>();
+builder.Services.AddScoped<ILevelService, LevelService>();
+builder.Services.AddScoped<ISubjectService, SubjectService>();
+builder.Services.AddScoped<ISubjectLevelService, SubjectLevelService>();
 
 
 //Add config for Required Email

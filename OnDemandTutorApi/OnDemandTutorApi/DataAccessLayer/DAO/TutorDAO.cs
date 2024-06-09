@@ -28,7 +28,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
         {
             try
             {
-                var tutor = await _context.Tutors.SingleOrDefaultAsync(t => t.TutorId == id);
+                var tutor = await _context.Tutors.Include(x => x.User).SingleOrDefaultAsync(t => t.TutorId == id);
                 return tutor;
             }
             catch (Exception ex)
@@ -58,7 +58,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
         //GET TUTOR BY USERID
         public async Task<Tutor?> GetTutorByUserIdAsync(string userId)
         {
-            return await _context.Tutors.SingleOrDefaultAsync(t => t.UserId == userId);
+            return await _context.Tutors.Include(x => x.User).SingleOrDefaultAsync(t => t.UserId == userId);
         }
 
         //DELETE TUTOR
@@ -66,6 +66,21 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
         {
             _context.Tutors.Remove(tutor);
             await _context.SaveChangesAsync();
+        }
+
+        //UPDATE TUTOR
+        public async Task<bool> UpdateTutorAsync(Tutor tutor)
+        {
+            try
+            {
+                _context.Entry<Tutor>(tutor).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         internal static string GenerateTutorId()

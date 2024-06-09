@@ -9,5 +9,9 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.IServices
         public Task<Tutor> GetTutorByIdAsync(int id);
         public Task<Tutor> GetTutorByUserIdAsync(string userId);
         public Task DeleteTutorAsync(int id);
+        public Task<ResponseApiDTO> UpdateProfileAsync(string userId, ProfileRequestDTO profileTutor);
+        public Task<ResponseApiDTO<ProfileRequestDTO>> GetProfileByIdAsync(int id);
+        public Task<ResponseApiDTO<ProfileResponseDTO>> GetProfileAsync(string userId);
+        public Task<ResponseApiDTO> UpdateStatusAsync(int id, string status);
     }
 }

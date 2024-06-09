@@ -23,7 +23,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                return false;
             }
         }
 
@@ -79,7 +79,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                return false;
             }
         }
 
@@ -94,7 +94,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                return false;
             }
         }
     }
