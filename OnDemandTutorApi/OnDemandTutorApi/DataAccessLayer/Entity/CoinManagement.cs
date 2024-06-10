@@ -3,8 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnDemandTutorApi.DataAccessLayer.Entity
 {
-    [Table("CoinManagement")]
-    public class CoinManagement
+    public partial class CoinManagement
     {
         [Key]
         public int Id { get; set; }
@@ -12,8 +11,8 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         [MaxLength(450)]
         public string UserId { get; set; }
         public float Coin {  get; set; }
-        public DateTime Date { get; set; }
-
+        public DateTime Date { get; set; } = DateTime.Now;
+        //
         public virtual User User { get; set; } = null!;
     }
 }

@@ -3,8 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnDemandTutorApi.DataAccessLayer.Entity
 {
-    [Table("Level")]
-    public class Level
+    public partial class Level
     {
         public Level()
         {

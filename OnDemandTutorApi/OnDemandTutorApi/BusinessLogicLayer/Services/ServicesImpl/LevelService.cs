@@ -25,6 +25,17 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         }
         public async Task<ResponseApiDTO> CreateAsync(LevelDTO levelDTO)
         {
+            var existLevel = await _levelRepo.GetByNameAsync(levelDTO.Name);
+
+            if (existLevel != null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = $"Hệ thống đã tồn tại cấp bậc {levelDTO.Name}"
+                };
+            }
+
             var level = _mapper.Map<Level>(levelDTO);
             
             var result  = await _levelRepo.CreateAsync(level);
@@ -102,6 +113,17 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 {
                     Success = false,
                     Message = $"Hệ thống không tồn tại cấp bậc với Id: {id}."
+                };
+            }
+
+            var existLevel = await _levelRepo.GetByNameAsync(levelDTO.Name);
+
+            if (existLevel != null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = $"Hệ thống đã tồn tại cấp bậc {levelDTO.Name}"
                 };
             }
 

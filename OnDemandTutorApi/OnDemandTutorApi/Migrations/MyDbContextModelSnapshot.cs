@@ -52,28 +52,28 @@ namespace OnDemandTutorApi.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "705a805d-1ff8-4c90-a1c7-d1d045b58112",
+                            Id = "21fbb4e5-6aa0-415b-b291-cef7d067d04e",
                             ConcurrencyStamp = "1",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "407d2c70-b4f7-41d1-82ed-c0bb4c337d67",
+                            Id = "aca0397a-ca5b-4ccf-b742-14db92651480",
                             ConcurrencyStamp = "2",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         },
                         new
                         {
-                            Id = "99fe6e61-8c42-47cc-9632-5a2528bf4abc",
+                            Id = "c530249e-5b13-4566-8e5b-36f66e958ef2",
                             ConcurrencyStamp = "3",
                             Name = "Tutor",
                             NormalizedName = "TUTOR"
                         },
                         new
                         {
-                            Id = "8b0f11a7-a61b-4de3-b2a2-85706a8e1276",
+                            Id = "b378a07f-e146-434e-88ce-1cd7dd087dc2",
                             ConcurrencyStamp = "4",
                             Name = "Student",
                             NormalizedName = "STUDENT"
@@ -207,6 +207,8 @@ namespace OnDemandTutorApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("CoinManagement", "dbo");
                 });
 
@@ -217,10 +219,6 @@ namespace OnDemandTutorApi.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -255,6 +253,10 @@ namespace OnDemandTutorApi.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TutorId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Rating", "dbo");
                 });
@@ -325,6 +327,10 @@ namespace OnDemandTutorApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("RequestCategoryId");
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("Request", "dbo");
                 });
 
@@ -365,6 +371,9 @@ namespace OnDemandTutorApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("RequestId")
+                        .IsUnique();
+
                     b.ToTable("Response", "dbo");
                 });
 
@@ -376,7 +385,7 @@ namespace OnDemandTutorApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("TimeId")
+                    b.Property<int>("SubjectLevelId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -385,6 +394,10 @@ namespace OnDemandTutorApi.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SubjectLevelId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("StudentJoin", "dbo");
                 });
@@ -414,6 +427,9 @@ namespace OnDemandTutorApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<float>("Coin")
+                        .HasColumnType("real");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -427,7 +443,17 @@ namespace OnDemandTutorApi.Migrations
                     b.Property<int>("TutorId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("LevelId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("TutorId");
 
                     b.ToTable("SubjectLevel", "dbo");
                 });
@@ -440,36 +466,36 @@ namespace OnDemandTutorApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<float>("Coin")
-                        .HasColumnType("real");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("EndSlot")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("SlotName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("StartSlot")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
 
                     b.Property<int>("SubjectLevelId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TutorId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("SubjectLevelId");
 
                     b.ToTable("Time", "dbo");
                 });
 
             modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.Tutor", b =>
                 {
-                    b.Property<int>("TutorId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TutorId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("AcademicLevel")
                         .HasColumnType("nvarchar(max)");
@@ -509,7 +535,10 @@ namespace OnDemandTutorApi.Migrations
                     b.Property<string>("WorkPlace")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("TutorId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Tutor", "dbo");
                 });
@@ -653,15 +682,194 @@ namespace OnDemandTutorApi.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.CoinManagement", b =>
+                {
+                    b.HasOne("OnDemandTutorApi.DataAccessLayer.Entity.User", "User")
+                        .WithMany("CoinManagements")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_CoinManagement_User");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.Rating", b =>
+                {
+                    b.HasOne("OnDemandTutorApi.DataAccessLayer.Entity.Tutor", "Tutor")
+                        .WithMany("Ratings")
+                        .HasForeignKey("TutorId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Rating_Tutor");
+
+                    b.HasOne("OnDemandTutorApi.DataAccessLayer.Entity.User", "User")
+                        .WithMany("Ratings")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Rating_User");
+
+                    b.Navigation("Tutor");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.RefreshToken", b =>
                 {
                     b.HasOne("OnDemandTutorApi.DataAccessLayer.Entity.User", "User")
-                        .WithMany()
+                        .WithMany("RefreshTokens")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_RefreshToken_User");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.Request", b =>
+                {
+                    b.HasOne("OnDemandTutorApi.DataAccessLayer.Entity.RequestCategory", "Category")
+                        .WithMany("Requests")
+                        .HasForeignKey("RequestCategoryId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Request_RequestCategory");
+
+                    b.HasOne("OnDemandTutorApi.DataAccessLayer.Entity.User", "User")
+                        .WithMany("Requests")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Request_User");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.Response", b =>
+                {
+                    b.HasOne("OnDemandTutorApi.DataAccessLayer.Entity.Request", "Request")
+                        .WithOne("Response")
+                        .HasForeignKey("OnDemandTutorApi.DataAccessLayer.Entity.Response", "RequestId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Response_Request");
+
+                    b.Navigation("Request");
+                });
+
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.StudentJoin", b =>
+                {
+                    b.HasOne("OnDemandTutorApi.DataAccessLayer.Entity.SubjectLevel", "SubjectLevel")
+                        .WithMany("StudentJoins")
+                        .HasForeignKey("SubjectLevelId")
+                        .IsRequired()
+                        .HasConstraintName("FK_StudentJoin_SubjectLevel");
+
+                    b.HasOne("OnDemandTutorApi.DataAccessLayer.Entity.User", "User")
+                        .WithMany("StudentJoins")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_StudentJoin_User");
+
+                    b.Navigation("SubjectLevel");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.SubjectLevel", b =>
+                {
+                    b.HasOne("OnDemandTutorApi.DataAccessLayer.Entity.Level", "Level")
+                        .WithMany("SubjectLevels")
+                        .HasForeignKey("LevelId")
+                        .IsRequired()
+                        .HasConstraintName("FK_SubjectLevel_Level");
+
+                    b.HasOne("OnDemandTutorApi.DataAccessLayer.Entity.Subject", "Subject")
+                        .WithMany("SubjectLevels")
+                        .HasForeignKey("SubjectId")
+                        .IsRequired()
+                        .HasConstraintName("FK_SubjectLevel_Subject");
+
+                    b.HasOne("OnDemandTutorApi.DataAccessLayer.Entity.Tutor", "Tutor")
+                        .WithMany("SubjectLevels")
+                        .HasForeignKey("TutorId")
+                        .IsRequired()
+                        .HasConstraintName("FK_SubjectLevel_Tutor");
+
+                    b.Navigation("Level");
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("Tutor");
+                });
+
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.Time", b =>
+                {
+                    b.HasOne("OnDemandTutorApi.DataAccessLayer.Entity.SubjectLevel", "SubjectLevel")
+                        .WithMany("Times")
+                        .HasForeignKey("SubjectLevelId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Time_SubjectLevel");
+
+                    b.Navigation("SubjectLevel");
+                });
+
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.Tutor", b =>
+                {
+                    b.HasOne("OnDemandTutorApi.DataAccessLayer.Entity.User", "User")
+                        .WithOne("Tutor")
+                        .HasForeignKey("OnDemandTutorApi.DataAccessLayer.Entity.Tutor", "UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Tutor_User");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.Level", b =>
+                {
+                    b.Navigation("SubjectLevels");
+                });
+
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.Request", b =>
+                {
+                    b.Navigation("Response")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.RequestCategory", b =>
+                {
+                    b.Navigation("Requests");
+                });
+
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.Subject", b =>
+                {
+                    b.Navigation("SubjectLevels");
+                });
+
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.SubjectLevel", b =>
+                {
+                    b.Navigation("StudentJoins");
+
+                    b.Navigation("Times");
+                });
+
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.Tutor", b =>
+                {
+                    b.Navigation("Ratings");
+
+                    b.Navigation("SubjectLevels");
+                });
+
+            modelBuilder.Entity("OnDemandTutorApi.DataAccessLayer.Entity.User", b =>
+                {
+                    b.Navigation("CoinManagements");
+
+                    b.Navigation("Ratings");
+
+                    b.Navigation("RefreshTokens");
+
+                    b.Navigation("Requests");
+
+                    b.Navigation("StudentJoins");
+
+                    b.Navigation("Tutor")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

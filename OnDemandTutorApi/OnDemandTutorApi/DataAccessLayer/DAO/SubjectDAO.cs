@@ -5,67 +5,95 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
 {
     public class SubjectDAO
     {
-        private readonly MyDbContext _context;
+        //private readonly MyDbContext _context;
 
-        public SubjectDAO(MyDbContext context)
-        {
-            _context = context;
-        }
+        //public SubjectDAO(MyDbContext context)
+        //{
+        //    _context = context;
+        //}
 
         //CREATE
         public async Task<bool> CreateAsync(Subject subject)
         {
             try
             {
-                await _context.Subjects.AddAsync(subject);
-                await _context.SaveChangesAsync();
+                using (var context = new MyDbContext())
+                {
+                    await context.Subjects.AddAsync(subject);
+                    await context.SaveChangesAsync();
+                }
                 return true;
             }
             catch (Exception ex)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
                 return false;
             }
+            
         }
 
         //GET ALL
         public async Task<IEnumerable<Subject>> GetAllAsync()
         {
+            var subjects = new List<Subject>();
             try
             {
-                return await _context.Subjects.Include(x => x.SubjectLevels).ToListAsync();
+                using (var context = new MyDbContext())
+                {
+                    subjects = await context.Subjects.Include(x => x.SubjectLevels).ToListAsync();
+                }
+                
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
             }
+            return subjects;
         }
 
         //GET BY ID
         public async Task<Subject> GetByIdAsync(int id)
         {
+            var subject = new Subject();
             try
             {
-                var subject = await _context.Subjects.SingleOrDefaultAsync(s => s.Id == id);
-                return subject;
+                using (var context = new MyDbContext())
+                {
+                    subject = await context.Subjects.SingleOrDefaultAsync(s => s.Id == id);
+                }
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
             }
+            return subject;
         }
 
         //GET BY NAME
         public async Task<Subject> GetByNameAsync(string name)
         {
+            var subject = new Subject();
             try
             {
-                var subject = await _context.Subjects.SingleOrDefaultAsync(s => s.Name == name);
-                return subject;
+                using (var context = new MyDbContext())
+                {
+                    subject = await context.Subjects.SingleOrDefaultAsync(s => s.Name == name);
+                }
+                
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
             }
+            return subject;
         }
 
         //UPDATE
@@ -73,12 +101,18 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
         {
             try
             {
-                _context.Entry<Subject>(subject).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-                await _context.SaveChangesAsync();
+                using(var context = new MyDbContext())
+                {
+                    context.Entry<Subject>(subject).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    await context.SaveChangesAsync();
+                }
                 return true;
             }
             catch (Exception ex)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
                 return false;
             }
         }

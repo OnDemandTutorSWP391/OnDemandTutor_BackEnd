@@ -13,10 +13,18 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
         }
 
         //Add
-        public async Task CreateAsync(CoinManagement coinManagement)
+        public async Task<bool> CreateAsync(CoinManagement coinManagement)
         {
-            await _context.CoinManagements.AddAsync(coinManagement);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.CoinManagements.AddAsync(coinManagement);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         //Get total coin for user

@@ -24,6 +24,17 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         }
         public async Task<ResponseApiDTO> CreateAsync(RequestCategoryDTO requestCategoryDTO)
         {
+            var existCategory = await _requestCategoryRepo.GetByNameAsync(requestCategoryDTO.CategoryName);
+
+            if (existCategory != null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = $"Hệ thống đã tồn tại request {requestCategoryDTO.CategoryName}."
+                };
+            }
+            
             var category = _mapper.Map<RequestCategory>(requestCategoryDTO);
 
             var result = await _requestCategoryRepo.CreateAsync(category);
@@ -120,6 +131,17 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 {
                     Success = false,
                     Message = $"Hệ thống không tìm thấy loại yêu cầu có Id: {id}."
+                };
+            }
+
+            var existCategory = await _requestCategoryRepo.GetByNameAsync(requestCategoryDTO.CategoryName);
+
+            if (existCategory != null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = $"Hệ thống đã tồn tại request {requestCategoryDTO.CategoryName}."
                 };
             }
 

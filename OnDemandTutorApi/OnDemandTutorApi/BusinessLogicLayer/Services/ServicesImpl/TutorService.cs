@@ -34,12 +34,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             {
                 // Người dùng chưa là tutor, thêm tutor mới
                 await _tutorRepo.AddTutorAsync(tutor);
-                return tutor.TutorId;
+                return tutor.Id;
             }
             else
             {
                 // Người dùng đã là tutor, không thêm tutor mới
-                return existingTutor.TutorId; // Trả về ID của tutor hiện tại
+                return existingTutor.Id; // Trả về ID của tutor hiện tại
             }
         }
 
@@ -104,7 +104,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             var requestDTO = new RequestDTO
             {
-                Description = $"Yêu cầu phê duyệt dịch vụ giảng viên với TutorId: {tutor.TutorId}."
+                Description = $"Yêu cầu phê duyệt dịch vụ giảng viên với TutorId: {tutor.Id}."
             };
 
             var category = await _categoryRepo.GetByNameAsync("Rental Service Support");
@@ -167,7 +167,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
 
             var profile = _mapper.Map<ProfileResponseDTO>(tutor);
-            profile.Id = tutor.TutorId;
+            profile.Id = tutor.Id;
             profile.OnlineStatus = tutor.OnlineStatus;
             profile.Status = tutor.Status;
 

@@ -3,8 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnDemandTutorApi.DataAccessLayer.Entity
 {
-    [Table("Response")]
-    public class Response
+    public partial class Response
     {
         [Key]
         [Required]

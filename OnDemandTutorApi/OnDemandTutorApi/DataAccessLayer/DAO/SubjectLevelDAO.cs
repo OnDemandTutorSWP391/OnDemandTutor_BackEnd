@@ -6,24 +6,30 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
 {
     public class SubjectLevelDAO
     {
-        private readonly MyDbContext _context;
+        //private readonly MyDbContext _context;
 
-        public SubjectLevelDAO(MyDbContext context)
-        {
-            _context = context;
-        }
+        //public SubjectLevelDAO(MyDbContext context)
+        //{
+        //    _context = context;
+        //}
 
         //CREATE
         public async Task<bool> CreateAsync(SubjectLevel subjectLevel)
         {
             try
             {
-                await _context.SubjectLevels.AddAsync(subjectLevel);
-                await _context.SaveChangesAsync();
+                using (var context = new MyDbContext()) 
+                {
+                    await context.SubjectLevels.AddAsync(subjectLevel);
+                    await context.SaveChangesAsync();
+                }
                 return true;
             }
             catch (Exception ex)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
                 return false;
             }
         }
@@ -31,27 +37,47 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
         //GET ALL
         public async Task<IEnumerable<SubjectLevel>> GetAllAsync()
         {
+            var subjectLevels = new List<SubjectLevel>();
             try
             {
-                return await _context.SubjectLevels.Include(x => x.Level).Include(x => x.Subject).Include(x => x.Tutor.User).ToListAsync();
+                using (var context = new MyDbContext())
+                {
+                    subjectLevels = await context.SubjectLevels.Include(x => x.Level).Include(x => x.Subject).Include(x => x.Tutor.User).ToListAsync();
+                }
+                
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
             }
+            return subjectLevels;
         }
 
         //GET BY ID
         public async Task<SubjectLevel> GetByIdAsync(int id)
         {
+            var subjectLevel = new SubjectLevel();
             try
             {
-                return await _context.SubjectLevels.Include(x => x.Level).Include(x => x.Subject).Include(x => x.Tutor.User).SingleOrDefaultAsync(x => x.Id == id);
+                using(var context = new MyDbContext())
+                {
+                    subjectLevel = await context.SubjectLevels.Include(x => x.Level)
+                                                              .Include(x => x.Subject)
+                                                              .Include(x => x.Tutor.User)
+                                                              .Include(x => x.StudentJoins)
+                                                              .SingleOrDefaultAsync(x => x.Id == id);
+                }
+                
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
             }
+            return subjectLevel;
         }
 
         //UPDATE
@@ -59,12 +85,18 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
         {
             try
             {
-                _context.Entry<SubjectLevel>(subjectLevel).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-                await _context.SaveChangesAsync();
+                using (var context = new MyDbContext())
+                {
+                    context.Entry<SubjectLevel>(subjectLevel).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    await context.SaveChangesAsync();
+                }
                 return true;
             }
             catch (Exception ex)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
                 return false;
             }
         }
@@ -74,14 +106,22 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
         {
             try
             {
-                _context.Entry<SubjectLevel>(subjectLevel).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
-                await _context.SaveChangesAsync();
+                using (var context = new MyDbContext())
+                {
+                    context.Entry<SubjectLevel>(subjectLevel).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                    await context.SaveChangesAsync();
+                }
                 return true;
             }
             catch (Exception ex)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
                 return false;
             }
         }
+
+
     }
 }

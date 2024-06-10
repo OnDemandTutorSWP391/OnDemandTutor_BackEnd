@@ -30,75 +30,76 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             _subjectRepo = subjectRepo;
             _mapper = mapper;
         }
-        public async Task<ResponseApiDTO<SubjectLevelDTOWithId>> CreateAsync(string userId, SubjectLevelDTO subjectLevelDTO)
+        public async Task<ResponseApiDTO<SubjectLevelResponseDTO>> CreateAsync(string userId, SubjectLevelRequestDTO subjectLevelDTO)
         {
             var tutor = await _tutorRepo.GetTutorByUserIdAsync(userId);
 
             if(!tutor.Status.Equals("Chấp thuận"))
             {
-                return new ResponseApiDTO<SubjectLevelDTOWithId>
+                return new ResponseApiDTO<SubjectLevelResponseDTO>
                 {
                     Success = false,
                     Message = "Bạn chưa được cấp phép giảng dạy ở hệ thống của chúng tôi."
                 };
             }
+            subjectLevelDTO.TutorId = tutor.Id;
 
-            var level = await _levelRepo.GetByNameAsync(subjectLevelDTO.LevelName);
+            var level = await _levelRepo.GetByIdAsync(subjectLevelDTO.LevelId);
 
             if(level == null)
             {
-                return new ResponseApiDTO<SubjectLevelDTOWithId>
+                return new ResponseApiDTO<SubjectLevelResponseDTO>
                 {
                     Success = false,
-                    Message = $"Cấp bậc {subjectLevelDTO.LevelName} không tồn tại trong hệ thống."
+                    Message = $"Cấp bậc {subjectLevelDTO.LevelId} không tồn tại trong hệ thống."
                 };
             }
 
-            var subject = await _subjectRepo.GetByNameAsync(subjectLevelDTO.SubjectName);
+            var subject = await _subjectRepo.GetByIdAsync(subjectLevelDTO.SubjectId);
             if (subject == null)
             {
-                return new ResponseApiDTO<SubjectLevelDTOWithId>
+                return new ResponseApiDTO<SubjectLevelResponseDTO>
                 {
                     Success = false,
-                    Message = $"Môn học {subjectLevelDTO.SubjectName} không tồn tại trong hệ thống."
+                    Message = $"Môn học {subjectLevelDTO.SubjectId} không tồn tại trong hệ thống."
                 };
             }
 
             var subjectLevel = _mapper.Map<SubjectLevel>(subjectLevelDTO);
-            subjectLevel.TutorId = tutor.TutorId;
-            subjectLevel.LevelId = level.Id;
-            subjectLevel.SubjectId = subject.Id;
 
             var reuslt = await _subjectLevelRepo.CreateAsync(subjectLevel);
 
             if(!reuslt)
             {
-                return new ResponseApiDTO<SubjectLevelDTOWithId>
+                return new ResponseApiDTO<SubjectLevelResponseDTO>
                 {
                     Success = false,
                     Message = "Hệ thống đã gặp lỗi trong quá trình đăng kí môn giảng dạy."
                 };
             }
 
-            return new ResponseApiDTO<SubjectLevelDTOWithId>
+            return new ResponseApiDTO<SubjectLevelResponseDTO>
             {
                 Success = true,
                 Message = "Bạn đã đăng kí thành công. Đây là thông tin môn đăng kí của bạn.",
-                Data = new SubjectLevelDTOWithId
+                Data = new SubjectLevelResponseDTO
                 {
                     Id = subjectLevel.Id,
                     LevelName = level.Name,
                     SubjectName = subject.Name,
-                    Description = subjectLevel.Description
+                    TutorName = tutor.User.FullName,
+                    Description = subjectLevel.Description,
+                    Url = subjectLevel.Url,
+                    Coin = subjectLevel.Coin,
                 }
             };
         }
 
-        public async Task<ResponseApiDTO<IEnumerable<SubjectLevelDTOWithData>>> GetAllAsync(string? level, string? subject, string? tutor, int page = 1)
+        public async Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllAsync(string? level, string? subject, string? tutor, int page = 1)
         {
             var subjectLevels = await _subjectLevelRepo.GetAllAsync();
 
-            if(!string.IsNullOrEmpty(level))
+            if (!string.IsNullOrEmpty(level))
             {
                 subjectLevels = subjectLevels.Where(x => x.Level.Name == level);
             }
@@ -117,29 +118,31 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (result.IsNullOrEmpty())
             {
-                return new ResponseApiDTO<IEnumerable<SubjectLevelDTOWithData>>
+                return new ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>
                 {
                     Success = true,
                     Message = "Hiện tại chưa có dịch vụ môn học nào được thêm."
                 };
             }
 
-            return new ResponseApiDTO<IEnumerable<SubjectLevelDTOWithData>>
+            return new ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>
             {
                 Success = true,
                 Message = "Đây là danh sách các môn học của hệ thống",
-                Data = result.Select(x => new SubjectLevelDTOWithData
+                Data = result.Select(x => new SubjectLevelResponseDTO
                 {
                     Id = x.Id,
                     LevelName = x.Level.Name,
                     SubjectName = x.Subject.Name,
                     TutorName = x.Tutor.User.FullName,
                     Description = x.Description,
+                    Url = x.Url,
+                    Coin = x.Coin,
                 })
             };
         }
 
-        public async Task<ResponseApiDTO> UpdateAsync(int id, SubjectLevelDTO subjectLevelDTO)
+        public async Task<ResponseApiDTO> UpdateAsync(int id, SubjectLevelRequestDTO subjectLevelDTO)
         {
             var subjectLevel = await _subjectLevelRepo.GetByIdAsync(id);
 
@@ -172,35 +175,5 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             };
         }
 
-        public async Task<ResponseApiDTO> DeleteAsync(int id)
-        {
-            var subjectLevel = await _subjectLevelRepo.GetByIdAsync(id);
-
-            if (subjectLevel == null)
-            {
-                return new ResponseApiDTO
-                {
-                    Success = false,
-                    Message = $"Không tồn tại môn học của bạn với mã {id}."
-                };
-            }
-
-            var result = await _subjectLevelRepo.DeleteAsync(subjectLevel);
-
-            if (!result)
-            {
-                return new ResponseApiDTO
-                {
-                    Success = false,
-                    Message = "Hệ thống gặp lỗi khi xóa môn học của bạn."
-                };
-            }
-
-            return new ResponseApiDTO
-            {
-                Success = true,
-                Message = "Xóa môn học của bạn thành công."
-            };
-        }
     }
 }

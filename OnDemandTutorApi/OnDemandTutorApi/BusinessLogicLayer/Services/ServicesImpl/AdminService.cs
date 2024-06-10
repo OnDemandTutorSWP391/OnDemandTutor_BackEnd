@@ -22,12 +22,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly IConfiguration _configuration;
         private readonly ITutorService _tutorService;
         private readonly MyDbContext _context;
-        private readonly ICoinManagementRepo _coinManagementRepo;
+        private readonly DataAccessLayer.Repositories.Contracts.ICoinManagementRepo _coinManagementRepo;
 
         public static int PAGE_SIZE { get; set; } = 5;
 
         public AdminService(IUserRepo userRepo, IMapper mapper, RoleManager<IdentityRole> roleManager, UserManager<User> userManager, IConfiguration configuration, 
-            ITutorService tutorService, MyDbContext context, ICoinManagementRepo coinManagementRepo)
+            ITutorService tutorService, MyDbContext context, DataAccessLayer.Repositories.Contracts.ICoinManagementRepo coinManagementRepo)
         {
             _userRepo = userRepo;
             _mapper = mapper;
@@ -114,7 +114,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             if (deletedUserRoles.Contains(RoleDTO.Tutor))
             {
                 var tutor = await _tutorService.GetTutorByUserIdAsync(deletedUser.Id);
-                await _tutorService.DeleteTutorAsync(tutor.TutorId);
+                await _tutorService.DeleteTutorAsync(tutor.Id);
             }
 
             await _userManager.RemoveFromRolesAsync(deletedUser, deletedUserRoles);
@@ -346,7 +346,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     if(role.Equals(RoleDTO.Tutor))
                     {
                         var tutor = await _tutorService.GetTutorByUserIdAsync(user.Id);
-                        await _tutorService.DeleteTutorAsync(tutor.TutorId);
+                        await _tutorService.DeleteTutorAsync(tutor.Id);
                     } 
 
                     if(!result.Succeeded)

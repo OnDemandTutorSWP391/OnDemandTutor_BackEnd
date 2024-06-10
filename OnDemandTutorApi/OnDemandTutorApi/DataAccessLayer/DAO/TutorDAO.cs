@@ -28,7 +28,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
         {
             try
             {
-                var tutor = await _context.Tutors.Include(x => x.User).SingleOrDefaultAsync(t => t.TutorId == id);
+                var tutor = await _context.Tutors.Include(x => x.User).SingleOrDefaultAsync(t => t.Id == id);
                 return tutor;
             }
             catch (Exception ex)
@@ -52,7 +52,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
                 throw new Exception(ex.Message);
             }
 
-            return tutor.TutorId;
+            return tutor.Id;
         }
 
         //GET TUTOR BY USERID

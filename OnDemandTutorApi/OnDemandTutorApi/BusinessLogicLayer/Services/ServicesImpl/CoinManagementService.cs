@@ -9,15 +9,15 @@ using OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl;
 
 namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 {
-    public class CoinManagementService : ICoinManagementService
+    public class CoinManagementService : IServices.ICoinManagementService
     {
-        private readonly ICoinManagementRepo _coinManagementRepo;
+        private readonly DataAccessLayer.Repositories.Contracts.ICoinManagementRepo _coinManagementRepo;
         private readonly IUserRepo _userRepo;   
         private readonly IMapper _mapper;
 
         public static int PAGE_SIZE { get; set; } = 5;
 
-        public CoinManagementService(ICoinManagementRepo coinManagementRepo, IMapper mapper, IUserRepo userRepo)
+        public CoinManagementService(DataAccessLayer.Repositories.Contracts.ICoinManagementRepo coinManagementRepo, IMapper mapper, IUserRepo userRepo)
         {
             _coinManagementRepo = coinManagementRepo;
             _userRepo = userRepo;
@@ -31,12 +31,21 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             var user = await _userRepo.GetByIdAsync(coinRecord.UserId);
 
-            await _coinManagementRepo.CreateCoinRecord(coinRecord);
+            var result = await _coinManagementRepo.CreateCoinRecord(coinRecord);
+
+            if(!result)
+            {
+                return new ResponseApiDTO<CoinResponseDTO>
+                {
+                    Success = false,
+                    Message = "Hệ thống gặp lỗi khi lưu lại giao dịch của người dùng"
+                };
+            }
 
             return new ResponseApiDTO<CoinResponseDTO>
             {
                 Success = true,
-                Message = "Deposit successfully",
+                Message = "Lưu giao dịch thành công.",
                 Data = new CoinResponseDTO
                 {
                     Coin = coinRecord.Coin,

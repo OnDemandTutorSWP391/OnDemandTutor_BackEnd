@@ -6,15 +6,15 @@ using System.Text.Json.Serialization;
 
 namespace OnDemandTutorApi.DataAccessLayer.Entity
 {
-    [Table("Tutor")]
-    public class Tutor
+    public partial class Tutor
     {
         public Tutor()
         {
             SubjectLevels = new List<SubjectLevel>();
+            Ratings = new List<Rating>();
         }
         [Key]
-        public int TutorId { get; set; }
+        public int Id { get; set; }
         [AllowNull]
         public string? AcademicLevel { get; set; }
         [AllowNull]
@@ -44,5 +44,6 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         //
         public virtual User User { get; set; }
         public virtual ICollection<SubjectLevel> SubjectLevels { get; set; }
+        public virtual ICollection<Rating> Ratings { get; set; }
     }
 }

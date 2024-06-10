@@ -13,9 +13,9 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl
             _coinManagementDAO = coinManagementDAO;
         }
 
-        public async Task CreateCoinRecord(CoinManagement coinManagement)
+        public async Task<bool> CreateCoinRecord(CoinManagement coinManagement)
         {
-             await _coinManagementDAO.CreateAsync(coinManagement);
+             return await _coinManagementDAO.CreateAsync(coinManagement);
         }
 
         public async Task<float> GetTotalCoinForUserAsync(string userId)

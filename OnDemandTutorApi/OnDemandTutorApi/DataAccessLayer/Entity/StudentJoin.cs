@@ -3,8 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnDemandTutorApi.DataAccessLayer.Entity
 {
-    [Table("StudentJoin")]
-    public class StudentJoin
+    public partial class StudentJoin
     {
         [Key]
         public int Id { get; set; }
@@ -12,6 +11,9 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         [MaxLength(450)]
         public string UserId { get; set; }
         [Required]
-        public int TimeId { get; set; }
+        public int SubjectLevelId { get; set; }
+        //
+        public virtual User User { get; set; }
+        public virtual SubjectLevel SubjectLevel { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Mapper
     {
         public SubjectLevelMapper()
         {
-            CreateMap<SubjectLevel, SubjectLevelDTO>().ReverseMap();
+            CreateMap<SubjectLevel, SubjectLevelRequestDTO>().ReverseMap();
             CreateMap<SubjectLevel, SubjectDTOWithId>().ReverseMap();
         }
     }

@@ -3,8 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnDemandTutorApi.DataAccessLayer.Entity
 {
-    [Table("Request")]
-    public class Request
+    public partial class Request
     {
         [Key]
         [Required]
@@ -20,5 +19,6 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         //
         public virtual RequestCategory Category { get; set; } = null!;
         public virtual User User { get; set; } = null!;
+        public virtual Response Response { get; set; } = null!;
     }
 }

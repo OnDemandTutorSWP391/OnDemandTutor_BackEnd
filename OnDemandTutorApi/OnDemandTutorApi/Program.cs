@@ -78,17 +78,21 @@ builder.Services.AddScoped<ResponseDAO>();
 builder.Services.AddScoped<LevelDAO>();
 builder.Services.AddScoped<SubjectDAO>();
 builder.Services.AddScoped<SubjectLevelDAO>();
+builder.Services.AddScoped<StudentJoinDAO>();
+builder.Services.AddScoped<TimeDAO>();
 
 //Repositories
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<ITutorRepo, TutorRepo>();
-builder.Services.AddScoped<ICoinManagementRepo, CoinManagementRepo>();
+builder.Services.AddScoped<OnDemandTutorApi.DataAccessLayer.Repositories.Contracts.ICoinManagementRepo, CoinManagementRepo>();
 builder.Services.AddScoped<IRequestCategoryRepo, RequestCategoryRepo>();
 builder.Services.AddScoped<IRequestRepo, RequestRepo>();
 builder.Services.AddScoped<IResponseRepo, ResponseRepo>();
 builder.Services.AddScoped<ILevelRepo, LevelRepo>();
 builder.Services.AddScoped<ISubjectRepo, SubjectRepo>();
 builder.Services.AddScoped<ISubjectLevelRepo, SubjectLevelRepo>();
+builder.Services.AddScoped<IStudentJoinRepo, StudentJoinRepo>();
+builder.Services.AddScoped<ITimeRepo, TimeRepo>();
 
 
 //Services
@@ -98,13 +102,15 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IVnPayService, VnPayService>();
-builder.Services.AddScoped<ICoinManagementService, CoinManagementService>();
+builder.Services.AddScoped<OnDemandTutorApi.BusinessLogicLayer.Services.IServices.ICoinManagementService, CoinManagementService>();
 builder.Services.AddScoped<IRequestCategoryService, RequestCategoryService>();
 builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<IResponseService, ResponseService>();
 builder.Services.AddScoped<ILevelService, LevelService>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<ISubjectLevelService, SubjectLevelService>();
+builder.Services.AddScoped<IStudentJoinService, StudentJoinService>();
+builder.Services.AddScoped<ITimeService, TimeService>();
 
 
 //Add config for Required Email

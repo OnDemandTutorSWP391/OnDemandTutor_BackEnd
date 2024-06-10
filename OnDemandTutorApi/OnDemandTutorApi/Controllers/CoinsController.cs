@@ -13,7 +13,7 @@ using System.Security.Claims;
 
 namespace OnDemandTutorApi.Controllers
 {
-    [Authorize(Roles = "Student")]
+    [Authorize(Roles = "Student, Tutor")]
     [Route("api/[controller]")]
     [ApiController]
     public class CoinsController : ControllerBase
@@ -71,11 +71,16 @@ namespace OnDemandTutorApi.Controllers
 
             if(!vnPayResponse.Success || !vnPayResponse.VnPayResponseCode.Equals("00"))
             {
-                return BadRequest($"{vnPayResponse.Message} - Could not save your transaction.");
+                return BadRequest($"{vnPayResponse.Message}");
             }
 
             // Add record to db
             var result = await _coinManagementService.DepositAsync(new CoinDTO { UserId = userId, Coin = (vnPayResponse.Amount / 100000)});
+
+            if(!result.Success)
+            {
+                return BadRequest(result);
+            }
 
             return Ok(result);
         }
