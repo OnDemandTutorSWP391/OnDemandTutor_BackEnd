@@ -55,7 +55,7 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
             modelBuilder.Entity<IdentityRole>(entity => { entity.ToTable(name: "Role"); });
 
             //auto add role for DB
-            SeedRoles(modelBuilder);
+            //SeedRoles(modelBuilder);
 
             modelBuilder.Entity<IdentityUserClaim<string>>(entity => { entity.ToTable(name: "UserClaim"); });
             modelBuilder.Entity<IdentityUserLogin<string>>(entity => { entity.ToTable(name: "UserLogin"); });
@@ -207,15 +207,15 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-        private static void SeedRoles(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<IdentityRole>().HasData
-                (
-                    new IdentityRole() { Name = "Admin", ConcurrencyStamp = "1", NormalizedName = "ADMIN"},
-                    new IdentityRole() { Name = "Moderator", ConcurrencyStamp = "2", NormalizedName = "MODERATOR" },
-                    new IdentityRole() { Name = "Tutor", ConcurrencyStamp = "3", NormalizedName = "TUTOR" },
-                    new IdentityRole() { Name = "Student", ConcurrencyStamp = "4", NormalizedName = "STUDENT" }
-                );
-        }
+        //private static void SeedRoles(ModelBuilder modelBuilder)
+        //{
+        //    modelBuilder.Entity<IdentityRole>().HasData
+        //        (
+        //            new IdentityRole() { Name = "Admin", ConcurrencyStamp = "1", NormalizedName = "ADMIN"},
+        //            new IdentityRole() { Name = "Moderator", ConcurrencyStamp = "2", NormalizedName = "MODERATOR" },
+        //            new IdentityRole() { Name = "Tutor", ConcurrencyStamp = "3", NormalizedName = "TUTOR" },
+        //            new IdentityRole() { Name = "Student", ConcurrencyStamp = "4", NormalizedName = "STUDENT" }
+        //        );
+        //}
     }
 }

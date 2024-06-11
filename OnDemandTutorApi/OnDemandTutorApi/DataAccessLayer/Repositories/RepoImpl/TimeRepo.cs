@@ -16,5 +16,25 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl
         {
             return await _timeDAO.CreateAsync(time);
         }
+
+        public async Task<IEnumerable<Time>> GetAllAsycn()
+        {
+            return await _timeDAO.GetAllAsync();
+        }
+
+        public async Task<IEnumerable<Time>> GetAllByUserIdAsync(string studentId)
+        {
+            return await _timeDAO.GetAllByUserIdAsync(studentId);
+        }
+
+        public async Task<Time> GetByDateAsync(DateTime startSlot, DateTime endSlot, DateTime date)
+        {
+            return await _timeDAO.GetByDateAsync(startSlot, endSlot, date); 
+        }
+
+        public async Task<Time> GetByIdAsync(int id)
+        {
+            return await _timeDAO.GetByIdAsync(id);
+        }
     }
 }

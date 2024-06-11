@@ -24,7 +24,7 @@ namespace OnDemandTutorApi.Controllers
         public async Task<IActionResult> CreateAsync(string categoryName, RequestDTO requestDTO)
         {
             var userId = HttpContext.User.FindFirstValue("Id");
-            var result = await _requestService.CreateAsync(userId, categoryName, requestDTO);
+            var result = await _requestService.CreateAsync(userId, requestDTO);
 
             if(!result.Success)
             {

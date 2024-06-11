@@ -4,8 +4,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
 {
     public class RequestDTO
     {
-        
-        [Required]
+        public int RequestCategoryId { get; set; }
+        public string UserId { get; set; } = null!;
         public string Description { get; set; } = null!;
     }
 

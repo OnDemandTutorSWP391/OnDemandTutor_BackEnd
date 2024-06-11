@@ -28,7 +28,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             _requestCategoryRepo = requestCategoryRepo;
             _mapper = mapper;
         }
-        public async Task<ResponseApiDTO> CreateAsync(string userId, string categoryName, RequestDTO requestDTO)
+        public async Task<ResponseApiDTO> CreateAsync(string userId, RequestDTO requestDTO)
         {
             var user = await _userRepo.GetByIdAsync(userId);
 
@@ -41,20 +41,19 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
-            var category = await _requestCategoryRepo.GetByNameAsync(categoryName);
+            var category = await _requestCategoryRepo.GetByIdAsync(requestDTO.RequestCategoryId);
 
             if(category == null)
             {
                 return new ResponseApiDTO
                 {
                     Success = false,
-                    Message = $"Loại yêu cầu {categoryName} không tồn tại trong hệ thống."
+                    Message = $"Loại yêu cầu {category.CategoryName} không tồn tại trong hệ thống."
                 };
             }
 
+            requestDTO.UserId = userId;
             var request = _mapper.Map<Request>(requestDTO);
-            request.UserId = userId;
-            request.RequestCategoryId = category.Id;
 
             var result = await _requestRepo.CreateAsync(request);
 

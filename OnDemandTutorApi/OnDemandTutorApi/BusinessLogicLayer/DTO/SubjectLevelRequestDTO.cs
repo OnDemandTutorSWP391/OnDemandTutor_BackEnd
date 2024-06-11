@@ -12,11 +12,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         [Required]
         public int TutorId { get; set; }
         [Required]
-        public string Description { get; set; }
+        public string Description { get; set; } = null!;
         [Required]
-        public string Url { get; set; }
+        public string Url { get; set; } = null!;
         [Required]
         public float Coin { get; set; }
+        public int LimitMember { get; set; }
     }
 
     #endregion
@@ -32,6 +33,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         public string Description { get; set; } = null!;
         public string Url { get; set; } = null!;
         public float Coin { get; set; }
+        public string LimitMember { get; set; } = null!;
     }
     #endregion
 

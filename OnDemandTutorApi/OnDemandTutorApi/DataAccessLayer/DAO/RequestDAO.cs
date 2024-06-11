@@ -58,7 +58,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
         {
             try
             {
-                var request = await _context.Requests.Include(x => x.User).SingleOrDefaultAsync(r => r.Id == id);
+                var request = await _context.Requests.Include(x => x.User).Include(x => x.Category).SingleOrDefaultAsync(r => r.Id == id);
                 return request;
             }
             catch (Exception ex)

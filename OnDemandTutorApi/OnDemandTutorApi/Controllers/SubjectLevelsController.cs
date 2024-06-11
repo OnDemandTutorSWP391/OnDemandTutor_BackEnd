@@ -53,7 +53,8 @@ namespace OnDemandTutorApi.Controllers
         [HttpPut("update-subject-level")]
         public async Task<IActionResult> UpdateAsync(int id, SubjectLevelRequestDTO subjectLevelDTO)
         {
-            var result = await _subjectLevelService.UpdateAsync(id, subjectLevelDTO);
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var result = await _subjectLevelService.UpdateAsync(id, userId, subjectLevelDTO);
             if(!result.Success)
             {
                 return BadRequest(result);

@@ -102,15 +102,17 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
+            var category = await _categoryRepo.GetByNameAsync("Rental Service Support");
+
             var requestDTO = new RequestDTO
             {
+                RequestCategoryId = category.Id,
+                UserId = userId,
                 Description = $"Yêu cầu phê duyệt dịch vụ giảng viên với TutorId: {tutor.Id}."
             };
 
-            var category = await _categoryRepo.GetByNameAsync("Rental Service Support");
+           
             var request = _mapper.Map<Request>(requestDTO);
-            request.UserId = userId;
-            request.RequestCategoryId = category.Id;
 
             var result = await _requestRepo.CreateAsync(request);
 

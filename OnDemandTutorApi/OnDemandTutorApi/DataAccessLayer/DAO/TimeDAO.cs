@@ -29,5 +29,85 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             }
             return true;
         }
+
+        //GET BY ID
+        public async Task<Time> GetByIdAsync(int id)
+        {
+            var time = new Time();
+            try
+            {
+                time = await _context.Times.Include(x => x.SubjectLevel).SingleOrDefaultAsync(x => x.Id == id);
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor= ConsoleColor.Red;
+                Console.WriteLine(ex.Message);
+                Console.ResetColor();
+            }
+            return time;
+        }
+
+        //GET BY DATE
+        public async Task<Time> GetByDateAsync(DateTime startSlot, DateTime endSlot, DateTime date)
+        {
+            var time = new Time();
+            try
+            {
+                time = await _context.Times
+                             .Include(x => x.SubjectLevel)
+                             .SingleOrDefaultAsync(x => x.StartSlot == startSlot || x.EndSlot == endSlot || x.Date == date);
+
+            }
+            catch(Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.Message);
+                Console.ResetColor();
+            }
+            return time;
+        }
+
+
+        //GET ALL
+        public async Task<IEnumerable<Time>> GetAllAsync()
+        {
+            var times = new List<Time>();
+            try
+            {
+                times = await _context.Times.Include(x => x.SubjectLevel).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.Message);
+                Console.ResetColor();
+            }
+            return times;
+        }
+
+        //GET ALL BY UserID 
+        public async Task<IEnumerable<Time>> GetAllByUserIdAsync(string studentId)
+        {
+            var times = new List<Time>();
+
+            try
+            {
+                times = await (from time in _context.Times.Include(x => x.SubjectLevel)
+                               join subjectLevel in _context.SubjectLevels on time.SubjectLevelId equals subjectLevel.Id
+                               join studentJoin in _context.StudentJoins on subjectLevel.Id equals studentJoin.SubjectLevelId
+                               where studentJoin.UserId == studentId
+                               select time).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.Message);
+                Console.ResetColor();
+            }
+            return times;
+        }
+
+
+
     }
 }

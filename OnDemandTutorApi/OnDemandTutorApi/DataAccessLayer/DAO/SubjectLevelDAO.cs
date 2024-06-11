@@ -42,7 +42,12 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             {
                 using (var context = new MyDbContext())
                 {
-                    subjectLevels = await context.SubjectLevels.Include(x => x.Level).Include(x => x.Subject).Include(x => x.Tutor.User).ToListAsync();
+                    subjectLevels = await context.SubjectLevels.Include(x => x.Level)
+                                                               .Include(x => x.Subject)
+                                                               .Include(x => x.Tutor.User)
+                                                               .Include(x => x.StudentJoins)
+                                                               .Include(x => x.Times)
+                                                               .ToListAsync();
                 }
                 
             }
@@ -67,6 +72,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
                                                               .Include(x => x.Subject)
                                                               .Include(x => x.Tutor.User)
                                                               .Include(x => x.StudentJoins)
+                                                              .Include(x => x.Times)
                                                               .SingleOrDefaultAsync(x => x.Id == id);
                 }
                 

@@ -91,6 +91,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Description = subjectLevel.Description,
                     Url = subjectLevel.Url,
                     Coin = subjectLevel.Coin,
+                    LimitMember = $"{subjectLevel.LimitMember}",
                 }
             };
         }
@@ -125,24 +126,28 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
+            var subjectLevelResponses = new List<SubjectLevelResponseDTO>();
+            foreach (var subjectLevel in result)
+            {
+                var studentJoins = subjectLevel.StudentJoins;
+                var count = studentJoins.Count();
+                var subjectLevelResponse = _mapper.Map<SubjectLevelResponseDTO>(subjectLevel);
+                subjectLevelResponse.LevelName = subjectLevel.Level.Name;
+                subjectLevelResponse.SubjectName = subjectLevel.Subject.Name;
+                subjectLevelResponse.TutorName = subjectLevel.Tutor.User.FullName;
+                subjectLevelResponse.LimitMember = $"{count}/{subjectLevel.LimitMember}";
+                subjectLevelResponses.Add(subjectLevelResponse);
+            }
+
             return new ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>
             {
                 Success = true,
                 Message = "Đây là danh sách các môn học của hệ thống",
-                Data = result.Select(x => new SubjectLevelResponseDTO
-                {
-                    Id = x.Id,
-                    LevelName = x.Level.Name,
-                    SubjectName = x.Subject.Name,
-                    TutorName = x.Tutor.User.FullName,
-                    Description = x.Description,
-                    Url = x.Url,
-                    Coin = x.Coin,
-                })
+                Data = subjectLevelResponses
             };
         }
 
-        public async Task<ResponseApiDTO> UpdateAsync(int id, SubjectLevelRequestDTO subjectLevelDTO)
+        public async Task<ResponseApiDTO> UpdateAsync(int id, string userId, SubjectLevelRequestDTO subjectLevelDTO)
         {
             var subjectLevel = await _subjectLevelRepo.GetByIdAsync(id);
 
@@ -152,6 +157,15 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 {
                     Success = false,
                     Message = $"Không tồn tại môn học của bạn với mã {id}."
+                };
+            }
+
+            if(subjectLevel.Tutor.User.Id != userId)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = $"Bạn không thể cập nhật thông tin khóa học của giảng viên khác."
                 };
             }
 
