@@ -107,12 +107,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             var requestDTO = new RequestDTO
             {
                 RequestCategoryId = category.Id,
-                UserId = userId,
                 Description = $"Yêu cầu phê duyệt dịch vụ giảng viên với TutorId: {tutor.Id}."
             };
 
            
             var request = _mapper.Map<Request>(requestDTO);
+            request.UserId = userId;
 
             var result = await _requestRepo.CreateAsync(request);
 

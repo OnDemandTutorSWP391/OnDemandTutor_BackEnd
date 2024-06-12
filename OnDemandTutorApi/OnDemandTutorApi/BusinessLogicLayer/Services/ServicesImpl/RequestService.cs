@@ -52,8 +52,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
-            requestDTO.UserId = userId;
             var request = _mapper.Map<Request>(requestDTO);
+            request.UserId = userId;    
 
             var result = await _requestRepo.CreateAsync(request);
 
