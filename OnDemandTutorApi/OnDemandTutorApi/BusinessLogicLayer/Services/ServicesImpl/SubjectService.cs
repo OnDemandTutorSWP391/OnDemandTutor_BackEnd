@@ -62,7 +62,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!string.IsNullOrEmpty(search))
             {
-                subjects = subjects.Where(x => x.Name == search);
+                subjects = subjects.Where(x => x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
             }
 
             if (!string.IsNullOrEmpty(subjectId))

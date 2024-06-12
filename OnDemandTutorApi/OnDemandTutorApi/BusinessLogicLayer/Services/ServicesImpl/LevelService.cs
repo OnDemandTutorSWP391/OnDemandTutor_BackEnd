@@ -62,7 +62,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!string.IsNullOrEmpty(search))
             {
-                levels = levels.Where(x => x.Name == search);
+                levels = levels.Where(x => x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
             }
 
             if (!string.IsNullOrEmpty(levelId))

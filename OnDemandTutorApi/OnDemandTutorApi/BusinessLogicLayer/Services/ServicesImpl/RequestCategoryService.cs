@@ -61,8 +61,9 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!string.IsNullOrEmpty(search))
             {
-                categories = categories.Where(x => x.CategoryName == search);
+                categories = categories.Where(x => x.CategoryName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
             }
+
 
             categories = categories.OrderBy(x => x.CategoryName);
 

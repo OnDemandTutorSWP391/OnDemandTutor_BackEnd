@@ -79,10 +79,10 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!string.IsNullOrEmpty(search))
             {
-                userRequests = userRequests.Where(x => x.Category.CategoryName == search);
+                userRequests = userRequests.Where(x => x.Category.CategoryName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
             }
 
-            if(from.HasValue)
+            if (from.HasValue)
             {
                 userRequests = userRequests.Where(x => x.CreatedDate >= from.Value);
             }
@@ -135,7 +135,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!string.IsNullOrEmpty(search))
             {
-                requests = requests.Where(x => x.Category.CategoryName == search);
+                requests = requests.Where(x => x.Category.CategoryName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
             }
 
             if (!string.IsNullOrEmpty(userId))

@@ -102,17 +102,17 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!string.IsNullOrEmpty(level))
             {
-                subjectLevels = subjectLevels.Where(x => x.Level.Name == level);
+                subjectLevels = subjectLevels.Where(x => x.Level.Name.IndexOf(level, StringComparison.OrdinalIgnoreCase) >= 0);
             }
 
             if (!string.IsNullOrEmpty(subject))
             {
-                subjectLevels = subjectLevels.Where(x => x.Subject.Name == subject);
+                subjectLevels = subjectLevels.Where(x => x.Subject.Name.IndexOf(subject, StringComparison.OrdinalIgnoreCase) >= 0);
             }
 
             if (!string.IsNullOrEmpty(tutor))
             {
-                subjectLevels = subjectLevels.Where(x => x.Tutor.User.FullName == tutor);
+                subjectLevels = subjectLevels.Where(x => x.Tutor.User.FullName.IndexOf(tutor, StringComparison.OrdinalIgnoreCase) >= 0);
             }
 
             var result = PaginatedList<SubjectLevel>.Create(subjectLevels, page, PAGE_SIZE);
