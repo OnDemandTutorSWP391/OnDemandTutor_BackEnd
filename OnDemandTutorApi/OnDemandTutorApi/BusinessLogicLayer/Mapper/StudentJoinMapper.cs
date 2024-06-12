@@ -8,7 +8,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Mapper
     {
         public StudentJoinMapper()
         {
-            CreateMap<StudentJoin, StudentJoinDTO>().ReverseMap();
+            CreateMap<StudentJoin, StudentJoinRequestDTO>().ReverseMap();
         }
     }
 }

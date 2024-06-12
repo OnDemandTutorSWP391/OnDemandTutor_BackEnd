@@ -17,6 +17,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         public string Url { get; set; } = null!;
         [Required]
         public float Coin { get; set; }
+        [Range(0, 5, ErrorMessage = "Để đảm bảo chất lượng giảng dạy, số lượng thành viên tối đa không được lớn hơn 5")]
         public int LimitMember { get; set; }
     }
 

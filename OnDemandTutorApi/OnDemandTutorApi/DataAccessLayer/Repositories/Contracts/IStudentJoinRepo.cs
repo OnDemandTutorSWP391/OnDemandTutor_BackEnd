@@ -6,5 +6,7 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.Contracts
     {
         public Task<bool> CreateAsync(StudentJoin studentJoin);
         public Task<StudentJoin> GetByIdAsync(int id);
+        public Task<IEnumerable<StudentJoin>> GetBySubjectLevelIdAsync(int id);
+        public Task<IEnumerable<StudentJoin>> GetAllAsync();
     }   
 }

@@ -53,5 +53,50 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             }
             return studentJoin;
         }
+
+        //GET BY SUBJECT LEVEL Id
+        public async Task<IEnumerable<StudentJoin>> GetBySubjectLevelIdAsync(int id)
+        {
+            var studentJoins = new List<StudentJoin>();
+            try
+            {
+                using (var context = new MyDbContext())
+                {
+                    studentJoins = await context.StudentJoins.Include(x => x.SubjectLevel)
+                                                             .Include(x => x.User)
+                                                             .Where(x => x.SubjectLevelId == id)
+                                                             .ToListAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
+            }
+            return studentJoins;
+        }
+
+        //GET ALL
+        public async Task<IEnumerable<StudentJoin>> GetAllAsync()
+        {
+            var studentJoins = new List<StudentJoin>();
+            try
+            {
+                using (var context = new MyDbContext())
+                {
+                    studentJoins = await context.StudentJoins.Include(x => x.SubjectLevel)
+                                                             .Include(x => x.User)
+                                                             .ToListAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
+            }
+            return studentJoins;
+        }
     }
 }

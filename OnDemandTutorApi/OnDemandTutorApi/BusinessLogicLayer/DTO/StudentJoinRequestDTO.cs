@@ -2,7 +2,7 @@
 
 namespace OnDemandTutorApi.BusinessLogicLayer.DTO
 {
-    public class StudentJoinDTO
+    public class StudentJoinRequestDTO
     {
         [Required]
         public string UserId { get; set; }
@@ -11,9 +11,11 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
 
     }
 
-    public class StudentJoinDTOWithId : StudentJoinDTO
+    public class StudentJoinResponseDTO : StudentJoinRequestDTO
     {
         [Required]
         public int Id { get; set; }
+        public string FullName { get; set; } = null!;
+        public string Email { get; set; } = null!;
     }
 }
