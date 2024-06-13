@@ -85,6 +85,18 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        [HttpPost("transfer-coin")]
+        public async Task<IActionResult> TransferAsync(string receiverId, float coin)
+        {
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var result = await _coinManagementService.TransferAsync(userId, receiverId, coin);
+            if(!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
         [HttpGet("get-total-coin")]
         public async Task<IActionResult> GetTotalCoinAsync()
         {

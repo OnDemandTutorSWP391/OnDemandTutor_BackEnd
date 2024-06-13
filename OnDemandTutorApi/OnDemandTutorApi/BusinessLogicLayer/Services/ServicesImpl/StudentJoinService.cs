@@ -69,6 +69,16 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 }
             }
 
+            var totalCoinStudent = await _coinManagementService.GetTotalCoinForUserAsync(studentJoinDTO.UserId);
+            if (totalCoinStudent.Data < 0)
+            {
+                return new ResponseApiDTO<StudentJoinResponseDTO>
+                {
+                    Success = false,
+                    Message = "Số dư của bạn không đủ. Hãy nạp thêm coin để sử dụng dịch vụ"
+                };
+            }
+
             var transactionStudent = await _coinManagementService.DepositAsync(new CoinDTO
             {
                 UserId = studentJoinDTO.UserId,

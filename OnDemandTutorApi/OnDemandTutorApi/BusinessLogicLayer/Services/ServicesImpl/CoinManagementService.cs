@@ -3,25 +3,28 @@ using Microsoft.IdentityModel.Tokens;
 using OnDemandTutorApi.BusinessLogicLayer.DTO;
 using OnDemandTutorApi.BusinessLogicLayer.Helper;
 using OnDemandTutorApi.BusinessLogicLayer.Services.IServices;
+using OnDemandTutorApi.DataAccessLayer.DAO;
 using OnDemandTutorApi.DataAccessLayer.Entity;
 using OnDemandTutorApi.DataAccessLayer.Repositories.Contracts;
 using OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl;
 
 namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 {
-    public class CoinManagementService : IServices.ICoinManagementService
+    public class CoinManagementService : ICoinManagementService
     {
-        private readonly DataAccessLayer.Repositories.Contracts.ICoinManagementRepo _coinManagementRepo;
+        private readonly ICoinManagementRepo _coinManagementRepo;
         private readonly IUserRepo _userRepo;   
         private readonly IMapper _mapper;
+        private readonly IEmailService _emailService;
 
         public static int PAGE_SIZE { get; set; } = 5;
 
-        public CoinManagementService(DataAccessLayer.Repositories.Contracts.ICoinManagementRepo coinManagementRepo, IMapper mapper, IUserRepo userRepo)
+        public CoinManagementService(ICoinManagementRepo coinManagementRepo, IMapper mapper, IUserRepo userRepo, IEmailService emailService)
         {
             _coinManagementRepo = coinManagementRepo;
             _userRepo = userRepo;
             _mapper = mapper;
+            _emailService = emailService;
         }
 
         //DEPOSIT
@@ -126,6 +129,87 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Coin = x.Coin,
                     Date = x.Date,
                 }).ToList()
+            };
+        }
+
+        //TRANSFER
+        public async Task<ResponseApiDTO<CoinTransferResponseDTO>> TransferAsync(string userId, string receiverId, float coin)
+        {
+            var sender = await _userRepo.GetByIdAsync(userId);
+
+            var receiver = await _userRepo.GetByIdAsync(receiverId);
+
+            if(receiver == null)
+            {
+                return new ResponseApiDTO<CoinTransferResponseDTO>
+                {
+                    Success = false,
+                    Message = "Người dùng không tồn tại trong hệ thống."
+                };
+            }
+
+            var senderCoin = _mapper.Map<CoinManagement>(new CoinDTO { UserId = userId, Coin = -coin });
+            var send = await _coinManagementRepo.CreateCoinRecord(senderCoin);
+            if(!send)
+            {
+                return new ResponseApiDTO<CoinTransferResponseDTO>
+                {
+                    Success = false,
+                    Message = "Hệ thống gặp lỗi trong quá trình chuyển coin."
+                };
+            }
+
+            var titleSender = $"Thư xác nhận chuyển coin thành công!";
+            var contentSender = @$"- Hệ thống đã xác nhận chuyển coin thành công.
+                             - Người nhận - Id: {receiverId}
+                             - Số coin: {coin}
+                             - Thời gian chuyển: {senderCoin.Date}";
+            var messageSender = new EmailDTO
+            (
+                new string[] { sender.Email! },
+                    titleSender,
+                    contentSender!
+            );
+            _emailService.SendEmail(messageSender);
+
+            var receiverCoin = _mapper.Map<CoinManagement>(new CoinDTO { UserId = receiverId, Coin = coin });
+            var receive = await _coinManagementRepo.CreateCoinRecord(receiverCoin);
+            if(!receive)
+            {
+                return new ResponseApiDTO<CoinTransferResponseDTO>
+                {
+                    Success = false,
+                    Message = "Hệ thống gặp lỗi trong quá trình chuyển coin. Người dùng chưa thể nhận được coin từ bạn."
+                };
+            }
+
+            var titleReceiver = $"Thư xác nhận chuyển coin thành công!";
+            var contentReceiver = @$"- Hệ thống đã xác nhận chuyển coin thành công.
+                             - Người chuyển - Id: {userId}
+                             - Số coin: {coin}
+                             - Thời gian nhận: {receiverCoin.Date}";
+            var messageReceiver = new EmailDTO
+            (
+                new string[] { receiver.Email! },
+                    titleReceiver,
+                    contentReceiver!
+            );
+            _emailService.SendEmail(messageReceiver);
+
+            return new ResponseApiDTO<CoinTransferResponseDTO>
+            {
+                Success = true,
+                Message = "Chuyển coin thành công.",
+                Data = new CoinTransferResponseDTO
+                {
+                    Id = senderCoin.Id,
+                    SenderId = userId,
+                    SenderName = sender.FullName,
+                    ReceiverId = receiverId,
+                    ReceiverName = receiver.FullName,
+                    Coin = coin,
+                    Date = receiverCoin.Date,
+                }
             };
         }
     }
