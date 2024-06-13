@@ -22,9 +22,14 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl
             return await _timeDAO.GetAllAsync();
         }
 
-        public async Task<IEnumerable<Time>> GetAllByUserIdAsync(string studentId)
+        public async Task<IEnumerable<Time>> GetAllByStudentIdAsync(string studentId)
         {
-            return await _timeDAO.GetAllByUserIdAsync(studentId);
+            return await _timeDAO.GetAllByStudentIdAsync(studentId);
+        }
+
+        public async Task<IEnumerable<Time>> GetAllByTutorIdAsync(int tutorId)
+        {
+            return await _timeDAO.GetAllByTutorIdAsync(tutorId);
         }
 
         public async Task<Time> GetByDateAsync(DateTime startSlot, DateTime endSlot, DateTime date)

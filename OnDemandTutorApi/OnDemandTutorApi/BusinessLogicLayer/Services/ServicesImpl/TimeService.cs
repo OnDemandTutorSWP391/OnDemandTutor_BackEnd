@@ -30,25 +30,6 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             _emailService = emailService;
         }
 
-        public ResponseApiDTO CheckValidTime(Time time)
-        {
-            //check 1:
-            if (time.StartSlot < DateTime.Now || time.EndSlot < DateTime.Now || time.Date < DateTime.Now)
-            {
-                return new ResponseApiDTO
-                {
-                    Success = false,
-                    Message = ""
-                };
-            }
-
-            return new ResponseApiDTO
-            {
-                Success = true,
-                Message = ""
-            };
-        }
-
         public async Task<ResponseApiDTO<TimeResponseDTO>> CreateAsync(TimeRequestDTO timeRequestDTO)
         {
             var subjectLevel = await _subjectLevelRepo.GetByIdAsync(timeRequestDTO.SubjectLevelId);
@@ -59,6 +40,16 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 {
                     Success = false,
                     Message = $"Không tồn tại khóa học với Id: {timeRequestDTO.SubjectLevelId}."
+                };
+            }
+
+            var check = await CheckValidTime(timeRequestDTO, subjectLevel.TutorId);
+            if(!check.Success)
+            {
+                return new ResponseApiDTO<TimeResponseDTO>
+                {
+                    Success = false,
+                    Message = check.Message
                 };
             }
 
@@ -111,16 +102,16 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Id = time.Id,
                     SubjectLevelId = time.SubjectLevelId,
                     SlotName = time.SlotName,
-                    StartSlot = time.StartSlot,
-                    EndSlot = time.EndSlot,
-                    Date = time.Date,
+                    StartSlot = time.StartSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
+                    EndSlot = time.EndSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
+                    Date = time.Date.Date.ToString("dd/MM/yyyy"),
                 }
             };
         }
 
         public async Task<ResponseApiDTO<IEnumerable<TimeResponseDTO>>> GetAllForStudentAsync(string userId, string? timeId, string? sortBy, DateTime? from, DateTime? to, int page = 1)
         {
-            var times =  await _timeRepo.GetAllByUserIdAsync(userId);
+            var times =  await _timeRepo.GetAllByStudentIdAsync(userId);
 
             if(!string.IsNullOrEmpty(timeId))
             {
@@ -167,10 +158,80 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Id = x.Id,
                     SubjectLevelId = x.SubjectLevelId,
                     SlotName = x.SlotName,
-                    StartSlot = x.StartSlot,
-                    EndSlot = x.EndSlot,
-                    Date = x.Date,
+                    StartSlot = x.StartSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
+                    EndSlot = x.EndSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
+                    Date = x.Date.Date.ToString("dd/MM/yyyy"),
                 })
+            };
+        }
+
+        public async Task<ResponseApiDTO> CheckValidTime(TimeRequestDTO timeRequestDTO, int tutorId)
+        {
+            if(timeRequestDTO.StartSlot.Date != timeRequestDTO.EndSlot.Date ||
+                timeRequestDTO.StartSlot.Date != timeRequestDTO.Date || timeRequestDTO.EndSlot.Date != timeRequestDTO.Date)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Thời gian bắt đầu và thời gian kết thúc buổi học phải cùng một ngày."
+                };
+            }
+
+            // Kiểm tra không được đặt lịch vào thời gian ở quá khứ
+            DateTime currentDateTime = DateTime.Now;
+            TimeSpan currentTime = currentDateTime.TimeOfDay;
+
+            if (timeRequestDTO.Date < currentDateTime.Date ||
+                (timeRequestDTO.Date == currentDateTime.Date && timeRequestDTO.StartSlot.TimeOfDay < currentTime))
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Bạn không thể đặt lịch vào thời gian ở quá khứ!!!"
+                };
+            }
+
+            var times = await _timeRepo.GetAllByTutorIdAsync(tutorId);
+
+            // Danh sách các lớp trong cùng một ngày
+            var timesInSameDay = times.Where(t => t.Date == timeRequestDTO.Date).ToList();
+
+            // Kiểm tra số lượng lớp trong ngày
+            if (timesInSameDay.Count >= 5)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Bạn không thể đặt lịch dạy quá 5 buổi trong cùng một ngày!!!"
+                };
+            }
+
+            // Kiểm tra trùng giờ
+            foreach (var time in timesInSameDay)
+            {
+                if ((timeRequestDTO.StartSlot.TimeOfDay - time.EndSlot.TimeOfDay).TotalHours < 1)
+                {
+                    return new ResponseApiDTO
+                    {
+                        Success = false,
+                        Message = "Các lịch học phải cách nhau ít nhất 1 tiếng"
+                    };
+                }
+            }
+
+            // Kiểm tra khoảng cách giữa StartSlot và EndSlot ít nhất 2 giờ
+            if ((timeRequestDTO.EndSlot - timeRequestDTO.StartSlot).TotalHours < 2)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Thời gian giữa StartSlot và EndSlot phải cách nhau ít nhất 2 giờ!!!"
+                };
+            }
+
+            return new ResponseApiDTO
+            {
+                Success = true,
             };
         }
     }

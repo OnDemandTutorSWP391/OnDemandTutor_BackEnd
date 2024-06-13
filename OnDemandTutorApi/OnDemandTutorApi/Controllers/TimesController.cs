@@ -35,7 +35,7 @@ namespace OnDemandTutorApi.Controllers
 
         [Authorize(Roles = "Student")]
         [HttpGet("times-for-student")]
-        public async Task<IActionResult> GetAllForUserAsync(string? timeId, string? sortBy, DateTime? from, DateTime? to, int page = 1)
+        public async Task<IActionResult> GetAllForStudentAsync(string? timeId, string? sortBy, DateTime? from, DateTime? to, int page = 1)
         {
             var userId = HttpContext.User.FindFirstValue("Id");
 

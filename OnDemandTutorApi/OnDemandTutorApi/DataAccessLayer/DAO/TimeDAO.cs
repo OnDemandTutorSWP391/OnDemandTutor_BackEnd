@@ -85,8 +85,8 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             return times;
         }
 
-        //GET ALL BY UserID 
-        public async Task<IEnumerable<Time>> GetAllByUserIdAsync(string studentId)
+        //GET ALL BY StudentID 
+        public async Task<IEnumerable<Time>> GetAllByStudentIdAsync(string studentId)
         {
             var times = new List<Time>();
 
@@ -107,7 +107,26 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             return times;
         }
 
+        //GET ALL BY TutorID 
+        public async Task<IEnumerable<Time>> GetAllByTutorIdAsync(int tutorId)
+        {
+            var times = new List<Time>();
 
+            try
+            {
+                times = await (from time in _context.Times.Include(x => x.SubjectLevel)
+                               join subjectLevel in _context.SubjectLevels on time.SubjectLevelId equals subjectLevel.Id
+                               where subjectLevel.TutorId == tutorId
+                               select time).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.Message);
+                Console.ResetColor();
+            }
+            return times;
+        }
 
     }
 }
