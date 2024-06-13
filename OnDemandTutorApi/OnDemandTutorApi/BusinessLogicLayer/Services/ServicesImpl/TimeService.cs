@@ -55,16 +55,6 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             var time = _mapper.Map<Time>(timeRequestDTO);
 
-            var existTime = await _timeRepo.GetByDateAsync(time.StartSlot, time.EndSlot, time.Date);
-            if(existTime != null)
-            {
-                return new ResponseApiDTO<TimeResponseDTO>
-                {
-                    Success = false,
-                    Message = $"Lịch học đã trùng với lịch có Id: {existTime.Id}."
-                };
-            }
-
             var result = await _timeRepo.CreateAsync(time);
 
             if(!result)
@@ -197,7 +187,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             var timesInSameDay = times.Where(t => t.Date == timeRequestDTO.Date).ToList();
 
             // Kiểm tra số lượng lớp trong ngày
-            if (timesInSameDay.Count >= 5)
+            if (timesInSameDay.Count > 5)
             {
                 return new ResponseApiDTO
                 {
@@ -209,12 +199,13 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             // Kiểm tra trùng giờ
             foreach (var time in timesInSameDay)
             {
-                if ((timeRequestDTO.StartSlot.TimeOfDay - time.EndSlot.TimeOfDay).TotalHours < 1)
+                if ((time.StartSlot.TimeOfDay <= timeRequestDTO.EndSlot.TimeOfDay && timeRequestDTO.StartSlot.TimeOfDay <= time.EndSlot.TimeOfDay) ||
+                   (timeRequestDTO.StartSlot.TimeOfDay <= time.EndSlot.TimeOfDay && time.StartSlot.TimeOfDay <= timeRequestDTO.EndSlot.TimeOfDay))
                 {
                     return new ResponseApiDTO
                     {
                         Success = false,
-                        Message = "Các lịch học phải cách nhau ít nhất 1 tiếng"
+                        Message = $"Bạn không thể đặt lịch dạy trùng giờ nhau trong cùng một ngày!!!. Lịch đã trùng với lịch có Id: {time.Id}"
                     };
                 }
             }
