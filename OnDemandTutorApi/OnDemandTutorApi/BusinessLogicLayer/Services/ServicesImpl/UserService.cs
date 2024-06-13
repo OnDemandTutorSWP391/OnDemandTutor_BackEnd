@@ -325,6 +325,11 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
         }
 
+        public Task<ResponseApiDTO> UpdateUserStatus(string userId, bool status)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<ResponseApiDTO<UserGetProfileDTO>> UpdatUserProfileAsync(string id, UserProfileUpdateDTO userUpdate)
         {
             var user = await _userManager.FindByIdAsync(id);

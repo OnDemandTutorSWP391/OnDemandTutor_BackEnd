@@ -18,6 +18,11 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl
            return await _studentJoinDAO.CreateAsync(studentJoin);
         }
 
+        public async Task<bool> DeleteAsync(StudentJoin studentJoin)
+        {
+            return await _studentJoinDAO.DeleteAysnc(studentJoin);
+        }
+
         public async Task<IEnumerable<StudentJoin>> GetAllAsync()
         {
             return await _studentJoinDAO.GetAllAsync();
@@ -28,9 +33,14 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl
             return await _studentJoinDAO.GetByIdAsync(id);
         }
 
-        public async Task<IEnumerable<StudentJoin>> GetBySubjectLevelIdAsync(int id)
+        public async Task<IEnumerable<StudentJoin>> GetAllBySubjectLevelIdAsync(int id)
         {
             return await _studentJoinDAO.GetBySubjectLevelIdAsync(id);
+        }
+
+        public async Task<StudentJoin> GetByUserIdAsync(string userId)
+        {
+            return await _studentJoinDAO.GetByUserIdAsync(userId);
         }
     }
 }

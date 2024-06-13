@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using OnDemandTutorApi.BusinessLogicLayer.DTO;
 using OnDemandTutorApi.BusinessLogicLayer.Helper;
 using OnDemandTutorApi.BusinessLogicLayer.Services.IServices;
+using OnDemandTutorApi.DataAccessLayer.DAO;
 using OnDemandTutorApi.DataAccessLayer.Entity;
 using OnDemandTutorApi.DataAccessLayer.Repositories.Contracts;
 using OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl;
@@ -47,6 +48,27 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
+            var existStudentJoins = await _studentJoinRepo.GetAllBySubjectLevelIdAsync(studentJoinDTO.SubjectLevelId);
+            if(existStudentJoins.Count() >= existSubjectLevel.LimitMember)
+            {
+                return new ResponseApiDTO<StudentJoinResponseDTO>
+                {
+                    Success = false,
+                    Message = "Khóa đã đủ học sinh tham gia."
+                };
+            }
+            foreach (var join in existStudentJoins)
+            {
+                if (join.UserId == studentJoinDTO.UserId)
+                {
+                    return new ResponseApiDTO<StudentJoinResponseDTO>
+                    {
+                        Success = false,
+                        Message = "Bạn đã đăng kí khóa học này rồi."
+                    };
+                }
+            }
+
             var transactionStudent = await _coinManagementService.DepositAsync(new CoinDTO
             {
                 UserId = studentJoinDTO.UserId,
@@ -76,7 +98,6 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Message = "Giao dịch không thành công. Vui lòng thử lại lần nữa."
                 };
             }
-
 
             var studentJoin = _mapper.Map<StudentJoin>(studentJoinDTO);
             var result = await _studentJoinRepo.CreateAsync(studentJoin);
@@ -126,15 +147,15 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Id = studentJoin.Id,
                     UserId = studentJoin.UserId,
                     SubjectLevelId = studentJoin.SubjectLevelId,
-                    FullName = studentJoin.User.FullName,
-                    Email = studentJoin.User.Email,
+                    FullName = student.FullName,
+                    Email = student.Email,
                 }
             };
         }
 
-        public async Task<ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>> GetBySubjectLevelIdAsync(string subjectLevelId, string? userId, int page = 1)
+        public async Task<ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>> GetAllBySubjectLevelIdAsync(string subjectLevelId, string? userId, int page = 1)
         {
-            var studentJoins = await _studentJoinRepo.GetBySubjectLevelIdAsync(Convert.ToInt32(subjectLevelId));
+            var studentJoins = await _studentJoinRepo.GetAllBySubjectLevelIdAsync(Convert.ToInt32(subjectLevelId));
 
             if(!string.IsNullOrEmpty(userId))
             {
@@ -202,6 +223,110 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     FullName = x.User.FullName,
                     Email = x.User.Email,
                 })
+            };
+        }
+
+        public async Task<ResponseApiDTO> DeleteForTutorAsync(int studentJoinId)
+        {
+            var studentJoin = await _studentJoinRepo.GetByIdAsync(studentJoinId);
+
+            if(studentJoin == null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Không tồn tại học sinh này trong lớp."
+                };
+            }
+
+            var result = await _studentJoinRepo.DeleteAsync(studentJoin);
+
+            if(!result)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Hệ thống gặp lỗi khi xóa học sinh này khỏi lớp."
+                };
+            }
+
+            var student = await _userRepo.GetByIdAsync(studentJoin.UserId);
+            var titleStudent = $"Thư thông báo xóa học sinh khỏi lớp học {studentJoin.SubjectLevelId}!";
+            var contentStudent = @$"- Hệ thống ghi nhận bạn đã bị giảng viên xóa khỏi lớp.
+                             - Mọi thông tin chi tiết vui lòng liên hệ với giảng viên của bạn.
+                             - Email giảng viên: {studentJoin.SubjectLevel.Tutor.User.Email}
+                             - Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.";
+            var messageStudent = new EmailDTO
+            (
+                new string[] { student.Email! },
+                    titleStudent,
+                    contentStudent!
+            );
+            _emailService.SendEmail(messageStudent);
+
+            return new ResponseApiDTO
+            {
+                Success = true,
+                Message = "Xóa học sinh khỏi lớp thành công."
+            };
+        }
+
+        public async Task<ResponseApiDTO> DeleteForStudentAsync(int studentJoinId)
+        {
+            var studentJoin = await _studentJoinRepo.GetByIdAsync(studentJoinId);
+
+            if (studentJoin == null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Bạn chưa đăng kí khóa học này."
+                };
+            }
+
+            var result = await _studentJoinRepo.DeleteAsync(studentJoin);
+
+            if (!result)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Hệ thống gặp lỗi khi xóa bạn khỏi lớp."
+                };
+            }
+
+            var student = await _userRepo.GetByIdAsync(studentJoin.UserId);
+            var titleStudent = $"Thư thông báo học sinh đã rời khỏi lớp học {studentJoin.SubjectLevelId}!";
+            var contentStudent = @$"- Hệ thống ghi nhận bạn đã rời khỏi lớp.
+                             - Mọi thông tin chi tiết vui lòng liên hệ với giảng viên của bạn.
+                             - Email giảng viên: {studentJoin.SubjectLevel.Tutor.User.Email}
+                             - Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.";
+            var messageStudent = new EmailDTO
+            (
+                new string[] { student.Email! },
+                    titleStudent,
+                    contentStudent!
+            );
+            _emailService.SendEmail(messageStudent);
+
+            var tutor = studentJoin.SubjectLevel.Tutor;
+            var titleTutor = $"Thư thông báo học sinh đã rời khỏi lớp học {studentJoin.SubjectLevelId}!";
+            var contentTutor = @$"- Hệ thống ghi nhận học sinh với Id: {studentJoin.UserId} đã rời khỏi lớp.
+                             - Mọi thông tin chi tiết vui lòng liên hệ với học sinh của bạn.
+                             - Email học sinh: {studentJoin.User.Email}
+                             - Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.";
+            var messageTutor = new EmailDTO
+            (
+                new string[] { tutor.User.Email! },
+                    titleTutor,
+                    contentTutor!
+            );
+            _emailService.SendEmail(messageTutor);
+
+            return new ResponseApiDTO
+            {
+                Success = true,
+                Message = "Xóa học sinh khỏi lớp thành công."
             };
         }
     }

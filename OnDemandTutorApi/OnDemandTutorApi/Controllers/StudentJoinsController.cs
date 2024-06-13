@@ -38,7 +38,7 @@ namespace OnDemandTutorApi.Controllers
         [HttpGet("student-join-list-for-subject-level")]
         public async Task<IActionResult> GetBySubjectLevelIdAsync(string subjectLevelId, string? userId, int page = 1)
         {
-            var result = await _studentJoinService.GetBySubjectLevelIdAsync(subjectLevelId, userId, page);
+            var result = await _studentJoinService.GetAllBySubjectLevelIdAsync(subjectLevelId, userId, page);
             if(!result.Success)
             {
                 return BadRequest(result);
@@ -55,6 +55,34 @@ namespace OnDemandTutorApi.Controllers
             {
                 return BadRequest(result);
             }
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Tutor")]
+        [HttpDelete("delete-student-for-tutor")]
+        public async Task<IActionResult> DeleteForTutorAsync(int studentJoinId)
+        {
+            var result = await _studentJoinService.DeleteForTutorAsync(studentJoinId);
+
+            if(!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Student")]
+        [HttpDelete("move-out")]
+        public async Task<IActionResult> DeleteForStudentAsync(int studentJoinId)
+        {
+            var result = await _studentJoinService.DeleteForStudentAsync(studentJoinId);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
             return Ok(result);
         }
     }
