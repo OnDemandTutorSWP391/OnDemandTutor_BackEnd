@@ -19,6 +19,7 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         public int SubjectId { get; set; }
         [Required]
         public int TutorId { get; set; }
+        public string Name { get; set; }
         [Required]
         public string Description { get; set; } = null!;
         [Required] 
