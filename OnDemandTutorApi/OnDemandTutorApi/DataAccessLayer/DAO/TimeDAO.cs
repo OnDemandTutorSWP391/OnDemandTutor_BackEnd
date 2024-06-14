@@ -128,5 +128,24 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             return times;
         }
 
+        //UPDATE TIME
+        public async Task<bool> UpdateAsync(Time time)
+        {
+            try
+            {
+                 _context.Entry<Time>(time).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                 await _context.SaveChangesAsync();
+                
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
+                return false;
+            }
+        }
+
     }
 }

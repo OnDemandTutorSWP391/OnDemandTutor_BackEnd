@@ -35,13 +35,58 @@ namespace OnDemandTutorApi.Controllers
 
         [Authorize(Roles = "Student")]
         [HttpGet("times-for-student")]
-        public async Task<IActionResult> GetAllForStudentAsync(string? timeId, string? sortBy, DateTime? from, DateTime? to, int page = 1)
+        public async Task<IActionResult> GetAllForStudentAsync(string? timeId, string? subjectLevelId, string? sortBy, DateTime? from, DateTime? to, int page = 1)
         {
             var userId = HttpContext.User.FindFirstValue("Id");
 
-            var result = await _timeService.GetAllForStudentAsync(userId, timeId, sortBy, from, to, page);
+            var result = await _timeService.GetAllForStudentAsync(userId, timeId, subjectLevelId, sortBy, from, to, page);
 
             if(!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Tutor")]
+        [HttpGet("times-for-Tutor")]
+        public async Task<IActionResult> GetAllFortutorAsync(string? timeId, string? subjectLevelId, string? sortBy, DateTime? from, DateTime? to, int page = 1)
+        {
+            var userId = HttpContext.User.FindFirstValue("Id");
+
+            var result = await _timeService.GetAllForStudentAsync(userId, timeId, subjectLevelId, sortBy, from, to, page);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Tutor")]
+        [HttpPut("update-time-for-Tutor")]
+        public async Task<IActionResult> UpdateAsync(int timeId, TimeRequestDTO timeRequest)
+        {
+            var result = await _timeService.UpdateAsync(timeId, timeRequest);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Moderator")]
+        [HttpGet("times-for-mod")]
+        public async Task<IActionResult> GetAllAsync(string? timeId, string? subjectLevelId, string? sortBy, DateTime? from, DateTime? to, int page = 1)
+        {
+
+            var result = await _timeService.GetAllAsync(timeId, subjectLevelId, sortBy, from, to, page);
+
+            if (!result.Success)
             {
                 return BadRequest(result);
             }

@@ -9,5 +9,7 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.Contracts
         public Task<Time> GetByDateAsync(DateTime startSlot, DateTime endSlot, DateTime date);
         public Task<IEnumerable<Time>> GetAllByStudentIdAsync(string studentId);
         public Task<IEnumerable<Time>> GetAllByTutorIdAsync(int tutorId);
+        public Task<IEnumerable<Time>> GetAllAsync();
+        public Task<bool> UpdateAsync(Time time);
     }
 }

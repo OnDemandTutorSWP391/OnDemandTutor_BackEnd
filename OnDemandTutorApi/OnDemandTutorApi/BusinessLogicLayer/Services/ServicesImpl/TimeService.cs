@@ -18,16 +18,18 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly ISubjectLevelRepo _subjectLevelRepo;
         private readonly IUserRepo _userRepo;
         private readonly IEmailService _emailService;
+        private readonly ITutorRepo _tutorRepo;
 
         public static int PAGE_SIZE { get; set; } = 5;
 
-        public TimeService(IMapper mapper, ITimeRepo timeRepo, ISubjectLevelRepo subjectLevelRepo, IUserRepo userRepo, IEmailService emailService)
+        public TimeService(IMapper mapper, ITimeRepo timeRepo, ISubjectLevelRepo subjectLevelRepo, IUserRepo userRepo, IEmailService emailService, ITutorRepo tutorRepo)
         {
             _mapper = mapper;
             _timeRepo = timeRepo;
             _subjectLevelRepo = subjectLevelRepo;
             _userRepo = userRepo;
             _emailService = emailService;
+            _tutorRepo = tutorRepo;
         }
 
         public async Task<ResponseApiDTO<TimeResponseDTO>> CreateAsync(TimeRequestDTO timeRequestDTO)
@@ -99,32 +101,37 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             };
         }
 
-        public async Task<ResponseApiDTO<IEnumerable<TimeResponseDTO>>> GetAllForStudentAsync(string userId, string? timeId, string? sortBy, DateTime? from, DateTime? to, int page = 1)
+        public async Task<ResponseApiDTO<IEnumerable<TimeResponseDTO>>> GetAllForStudentAsync(string userId, string? timeId, string? subjectLevelId, string? sortBy, DateTime? from, DateTime? to, int page = 1)
         {
             var times =  await _timeRepo.GetAllByStudentIdAsync(userId);
 
             if(!string.IsNullOrEmpty(timeId))
             {
-                times = times.Where(t => t.Id == Convert.ToInt64(timeId));
+                times = times.Where(t => t.Id == Convert.ToInt32(timeId));
             }
 
-            if(from.HasValue)
+            if (!string.IsNullOrEmpty(subjectLevelId))
             {
-                times = times.Where(t => t.Date >= from.Value);
+                times = times.Where(t => t.Id == Convert.ToInt32(subjectLevelId));
+            }
+
+            if (from.HasValue)
+            {
+                times = times.Where(t => t.Date.Date >= from.Value);
             }
 
             if (to.HasValue)
             {
-                times = times.Where(t => t.Date <= to.Value);
+                times = times.Where(t => t.Date.Date <= to.Value);
             }
 
-            times = times.OrderBy(t => t.Date);
+            times = times.OrderBy(t => t.Date.Date);
 
             if (!string.IsNullOrEmpty(sortBy))
             {
                 switch (sortBy)
                 {
-                    case "des": times = times.OrderByDescending(x => x.Date); break;
+                    case "des": times = times.OrderByDescending(x => x.Date.Date); break;
                 }
             }
 
@@ -223,6 +230,187 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             return new ResponseApiDTO
             {
                 Success = true,
+            };
+        }
+
+        public async Task<ResponseApiDTO<IEnumerable<TimeResponseDTO>>> GetAllForTutorAsync(string userId, string? timeId, string? subjectLevelId, string? sortBy, DateTime? from, DateTime? to, int page = 1)
+        {
+            var tutor = await _tutorRepo.GetTutorByUserIdAsync(userId);
+            var times = await _timeRepo.GetAllByTutorIdAsync(tutor.Id);
+            if (!string.IsNullOrEmpty(timeId))
+            {
+                times = times.Where(t => t.Id == Convert.ToInt32(timeId));
+            }
+
+            if (!string.IsNullOrEmpty(subjectLevelId))
+            {
+                times = times.Where(t => t.Id == Convert.ToInt32(subjectLevelId));
+            }
+
+            if (from.HasValue)
+            {
+                times = times.Where(t => t.Date.Date >= from.Value);
+            }
+
+            if (to.HasValue)
+            {
+                times = times.Where(t => t.Date.Date <= to.Value);
+            }
+
+            times = times.OrderBy(t => t.Date.Date);
+
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                switch (sortBy)
+                {
+                    case "des": times = times.OrderByDescending(x => x.Date.Date); break;
+                }
+            }
+
+            var result = PaginatedList<Time>.Create(times, page, PAGE_SIZE);
+
+            if (result.IsNullOrEmpty())
+            {
+                return new ResponseApiDTO<IEnumerable<TimeResponseDTO>>
+                {
+                    Success = true,
+                    Message = "Hiện tại bạn chưa thêm lịch cho môn học này."
+                };
+            }
+
+            return new ResponseApiDTO<IEnumerable<TimeResponseDTO>>
+            {
+                Success = true,
+                Message = "Đây là danh sách các lịch học của bạn",
+                Data = result.Select(x => new TimeResponseDTO
+                {
+                    Id = x.Id,
+                    SubjectLevelId = x.SubjectLevelId,
+                    SlotName = x.SlotName,
+                    StartSlot = x.StartSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
+                    EndSlot = x.EndSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
+                    Date = x.Date.Date.ToString("dd/MM/yyyy"),
+                })
+            };
+        }
+
+        public async Task<ResponseApiDTO> UpdateAsync(int timeId, TimeRequestDTO timeRequest)
+        {
+            var time = await _timeRepo.GetByIdAsync(timeId);
+
+            if (time == null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = $"Không tồn tại lịch học với Id: {timeId}"
+                };
+            }
+
+            var result = await _timeRepo.UpdateAsync(time);
+
+            if(!result)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Hệ thống gặp lỗi khi cập nhật lịch học."
+                };
+            }
+
+            var subjectLevel = await _subjectLevelRepo.GetByIdAsync(timeRequest.SubjectLevelId);
+
+            if (subjectLevel == null)
+            {
+                return new ResponseApiDTO<TimeResponseDTO>
+                {
+                    Success = false,
+                    Message = $"Không tồn tại khóa học với Id: {timeRequest.SubjectLevelId}."
+                };
+            }
+
+            var studentJoins = subjectLevel.StudentJoins;
+            foreach (var item in studentJoins)
+            {
+                var student = await _userRepo.GetByIdAsync(item.UserId);
+                var title = $"Thư thông báo về khóa học {time.SubjectLevelId}!";
+                var content = @$"- Giảng viên chủ nhiệm khóa học đã cập nhật lịch học của khóa.
+                             - Sử dụng Id: {time.Id} vào mục Time để tra cứu thông tin chi tiết.
+                             - Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.";
+                var message = new EmailDTO
+                (
+                    new string[] { student.Email! },
+                        title,
+                        content!
+                );
+                _emailService.SendEmail(message);
+            }
+
+            return new ResponseApiDTO<TimeResponseDTO>
+            {
+                Success = true,
+                Message = $"Cập nhật lịch học thành công."
+            };
+        }
+
+        public async Task<ResponseApiDTO<IEnumerable<TimeResponseDTO>>> GetAllAsync(string? timeId, string? subjectLevelId, string? sortBy, DateTime? from, DateTime? to, int page = 1)
+        {
+            var times = await _timeRepo.GetAllAsync();
+
+            if (!string.IsNullOrEmpty(timeId))
+            {
+                times = times.Where(t => t.Id == Convert.ToInt32(timeId));
+            }
+
+            if (!string.IsNullOrEmpty(subjectLevelId))
+            {
+                times = times.Where(t => t.Id == Convert.ToInt32(subjectLevelId));
+            }
+
+            if (from.HasValue)
+            {
+                times = times.Where(t => t.Date.Date >= from.Value);
+            }
+
+            if (to.HasValue)
+            {
+                times = times.Where(t => t.Date.Date <= to.Value);
+            }
+
+            times = times.OrderBy(t => t.Date.Date);
+
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                switch (sortBy)
+                {
+                    case "des": times = times.OrderByDescending(x => x.Date.Date); break;
+                }
+            }
+
+            var result = PaginatedList<Time>.Create(times, page, PAGE_SIZE);
+
+            if (result.IsNullOrEmpty())
+            {
+                return new ResponseApiDTO<IEnumerable<TimeResponseDTO>>
+                {
+                    Success = true,
+                    Message = "Hiện tại bạn chưa có lịch cho môn học này."
+                };
+            }
+
+            return new ResponseApiDTO<IEnumerable<TimeResponseDTO>>
+            {
+                Success = true,
+                Message = "Đây là danh sách các lịch học.",
+                Data = result.Select(x => new TimeResponseDTO
+                {
+                    Id = x.Id,
+                    SubjectLevelId = x.SubjectLevelId,
+                    SlotName = x.SlotName,
+                    StartSlot = x.StartSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
+                    EndSlot = x.EndSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
+                    Date = x.Date.Date.ToString("dd/MM/yyyy"),
+                })
             };
         }
     }
