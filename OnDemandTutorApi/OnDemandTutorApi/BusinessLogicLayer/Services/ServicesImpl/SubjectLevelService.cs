@@ -189,5 +189,35 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             };
         }
 
+        public async Task<ResponseApiDTO<SubjectLevelResponseDTO>> GetByIdAsync(int subjectLevelId)
+        {
+            var subjectLevel = await _subjectLevelRepo.GetByIdAsync(subjectLevelId);
+
+            if(subjectLevel == null)
+            {
+                return new ResponseApiDTO<SubjectLevelResponseDTO>
+                {
+                    Success = false,
+                    Message = $"Không tồn tại khóa học với Id: {subjectLevelId}"
+                };
+            }
+
+            return new ResponseApiDTO<SubjectLevelResponseDTO>
+            {
+                Success = true,
+                Message = $"Đây là khóa học khớp với Id: {subjectLevelId}",
+                Data = new SubjectLevelResponseDTO
+                {
+                    Id = subjectLevelId,
+                    LevelName = subjectLevel.Level.Name,
+                    SubjectName = subjectLevel.Level.Name,
+                    TutorName = subjectLevel.Tutor.User.FullName,
+                    Description = subjectLevel.Description,
+                    Url = subjectLevel.Url,
+                    Coin = subjectLevel.Coin,
+                    LimitMember = $"{subjectLevel.StudentJoins.Count}/{subjectLevel.LimitMember}",
+                }
+            };
+        }
     }
 }

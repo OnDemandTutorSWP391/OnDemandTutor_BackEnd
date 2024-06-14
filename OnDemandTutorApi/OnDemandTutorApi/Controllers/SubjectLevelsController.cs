@@ -62,5 +62,19 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Tutor, Student, Moderator")]
+        [HttpGet("get-subject-level-by-id")]
+        public async Task<IActionResult> GetByIdAsync(int subjectLevelId)
+        {
+            var result = await _subjectLevelService.GetByIdAsync(subjectLevelId);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
     }
 }
