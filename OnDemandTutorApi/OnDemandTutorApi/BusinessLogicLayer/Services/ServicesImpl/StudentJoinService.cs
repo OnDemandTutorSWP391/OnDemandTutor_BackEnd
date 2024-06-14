@@ -70,7 +70,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
 
             var totalCoinStudent = await _coinManagementService.GetTotalCoinForUserAsync(studentJoinDTO.UserId);
-            if (totalCoinStudent.Data < 0)
+            if (totalCoinStudent.Data < existSubjectLevel.Coin)
             {
                 return new ResponseApiDTO<StudentJoinResponseDTO>
                 {
@@ -337,6 +337,40 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             {
                 Success = true,
                 Message = "Xóa học sinh khỏi lớp thành công."
+            };
+        }
+
+        public async Task<ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>> GetAllByStudentIdAsync(string studentId, string? subjectLevelId, int page = 1)
+        {
+            var studentJoins = await _studentJoinRepo.GetAllByUserIdAsync(studentId);
+
+            if (!string.IsNullOrEmpty(subjectLevelId))
+            {
+                studentJoins = studentJoins.Where(x => x.SubjectLevelId == Convert.ToInt32(subjectLevelId));
+            }
+
+            var result = PaginatedList<StudentJoin>.Create(studentJoins, page, PAGE_SIZE);
+            if (result.IsNullOrEmpty())
+            {
+                return new ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>
+                {
+                    Success = true,
+                    Message = "Hiện tại chưa có học sinh nào đăng kí các khóa học."
+                };
+            }
+
+            return new ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>
+            {
+                Success = true,
+                Message = "Đây là danh sách các học sinh đã đăng kí các khóa học",
+                Data = result.Select(x => new StudentJoinResponseDTO
+                {
+                    Id = x.Id,
+                    UserId = x.UserId,
+                    SubjectLevelId = x.SubjectLevelId,
+                    FullName = x.User.FullName,
+                    Email = x.User.Email,
+                })
             };
         }
     }

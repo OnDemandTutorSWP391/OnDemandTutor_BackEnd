@@ -79,17 +79,18 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             return studentJoins;
         }
 
-        //GET BY USER ID
-        public async Task<StudentJoin> GetByUserIdAsync(string userId)
+        //GET ALL BY USER ID
+        public async Task<IEnumerable<StudentJoin>> GetAllByUserIdAsync(string userId)
         {
-            var studentJoin = new StudentJoin();
+            var studentJoins = new List<StudentJoin>();
             try
             {
                 using (var context = new MyDbContext())
                 {
-                    studentJoin = await context.StudentJoins.Include(x => x.SubjectLevel.Tutor.User)
+                    studentJoins = await context.StudentJoins.Include(x => x.SubjectLevel.Tutor.User)
                                                             .Include(x => x.User)
-                                                            .SingleOrDefaultAsync(x => x.UserId == userId);
+                                                            .Where(x => x.UserId == userId)
+                                                            .ToListAsync();
                 }
             }
             catch (Exception ex)
@@ -98,7 +99,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
                 Console.WriteLine(ex.ToString());
                 Console.ResetColor();
             }
-            return studentJoin;
+            return studentJoins;
         }
 
         //GET ALL

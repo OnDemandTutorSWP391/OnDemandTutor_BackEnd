@@ -80,6 +80,7 @@ builder.Services.AddScoped<SubjectDAO>();
 builder.Services.AddScoped<SubjectLevelDAO>();
 builder.Services.AddScoped<StudentJoinDAO>();
 builder.Services.AddScoped<TimeDAO>();
+builder.Services.AddScoped<RatingDAO>();
 
 //Repositories
 builder.Services.AddScoped<IUserRepo, UserRepo>();
@@ -93,6 +94,7 @@ builder.Services.AddScoped<ISubjectRepo, SubjectRepo>();
 builder.Services.AddScoped<ISubjectLevelRepo, SubjectLevelRepo>();
 builder.Services.AddScoped<IStudentJoinRepo, StudentJoinRepo>();
 builder.Services.AddScoped<ITimeRepo, TimeRepo>();
+builder.Services.AddScoped<IRatingRepo, RatingRepo>();
 
 
 //Services
@@ -111,6 +113,7 @@ builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<ISubjectLevelService, SubjectLevelService>();
 builder.Services.AddScoped<IStudentJoinService, StudentJoinService>();
 builder.Services.AddScoped<ITimeService, TimeService>();
+builder.Services.AddScoped<IRatingService, RatingService>();
 
 
 //Add config for Required Email

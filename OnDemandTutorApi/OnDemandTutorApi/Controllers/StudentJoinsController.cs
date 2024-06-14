@@ -58,6 +58,19 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Student")]
+        [HttpGet("all-student-join-for-student")]
+        public async Task<IActionResult> GetAllForStudentSync(string? subjectLevelId, int page = 1)
+        {
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var result = await _studentJoinService.GetAllByStudentIdAsync(userId, subjectLevelId, page);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
         [Authorize(Roles = "Tutor")]
         [HttpDelete("delete-student-for-tutor")]
         public async Task<IActionResult> DeleteForTutorAsync(int studentJoinId)

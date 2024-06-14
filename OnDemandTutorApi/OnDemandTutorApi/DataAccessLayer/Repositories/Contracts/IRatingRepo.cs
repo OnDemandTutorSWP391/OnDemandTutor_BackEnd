@@ -1,7 +1,9 @@
-﻿namespace OnDemandTutorApi.DataAccessLayer.Repositories.Contracts
+﻿using OnDemandTutorApi.DataAccessLayer.Entity;
+
+namespace OnDemandTutorApi.DataAccessLayer.Repositories.Contracts
 {
     public interface IRatingRepo
     {
-        //public Task<bool> Create
+        public Task<bool> CreateAysnc(Rating rating);
     }
 }
