@@ -33,5 +33,62 @@ namespace OnDemandTutorApi.Controllers
 
             return Ok(result);
         }
+
+        [Authorize(Roles = "Student")]
+        [HttpGet("get-ratings-by-tutor-id")]
+        public async Task<IActionResult> GetAllByTutorIdAsynnc(string tutorId, string? sortBy, int page = 1)
+        {
+            var result = await _ratingService.GetAllByTutorIdAsync(tutorId, sortBy, page);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Tutor")]
+        [HttpGet("get-ratings-by-tutor-self")]
+        public async Task<IActionResult> GetAllByTutorSelfAsync(string? sortBy, int page = 1)
+        {
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var result = await _ratingService.GetAllByTutorSelfAsync(userId, sortBy, page);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Moderator")]
+        [HttpGet("get-all-ratings")]
+        public async Task<IActionResult> GetAllAsync(string? userId, string? tutorId, string? sortBy, int page = 1)
+        {
+            var result = await _ratingService.GetAllAsync(userId, tutorId, sortBy, page);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Student")]
+        [HttpPut("update-rating")]
+        public async Task<IActionResult> UpdateAsync(int ratingId, RatingUpdateDTO ratingUpdateDTO)
+        {
+            var result = await _ratingService.UpdateAsync(ratingId, ratingUpdateDTO);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
     }
 }

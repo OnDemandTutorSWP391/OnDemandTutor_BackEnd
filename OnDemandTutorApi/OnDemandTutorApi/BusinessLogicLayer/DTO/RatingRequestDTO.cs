@@ -9,6 +9,12 @@
         public string Description { get; set; } = null!;
     }
 
+    public class RatingUpdateDTO
+    {
+        public float Star { get; set; }
+        public string Description { get; set; } = null!;
+    }
+
     #endregion
 
     #region Response

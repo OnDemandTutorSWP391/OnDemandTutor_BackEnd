@@ -17,5 +17,25 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl
         {
             return await _ratingDAO.CreateAsync(rating);
         }
+
+        public async Task<IEnumerable<Rating>> GetAllAsync()
+        {
+            return await _ratingDAO.GetAllAsync();
+        }
+
+        public async Task<IEnumerable<Rating>> GetAllByTutorIdAsync(int tutorId)
+        {
+            return await _ratingDAO.GetAllByTutorIdAsync(tutorId);
+        }
+
+        public async Task<Rating> GetByIdAsync(int ratingId)
+        {
+            return await _ratingDAO.GetByIdAsync(ratingId);
+        }
+
+        public async Task<bool> UpdateAsync(Rating rating)
+        {
+            return await _ratingDAO.UpdateAsync(rating);
+        }
     }
 }

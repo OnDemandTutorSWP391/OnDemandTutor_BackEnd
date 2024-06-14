@@ -10,6 +10,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Mapper
         {
             CreateMap<Rating, RatingRequestDTO>().ReverseMap();
             CreateMap<Rating, RatingResponseDTO>().ReverseMap();
+            CreateMap<Rating, RatingUpdateDTO>().ReverseMap();
         }
     }
 }
