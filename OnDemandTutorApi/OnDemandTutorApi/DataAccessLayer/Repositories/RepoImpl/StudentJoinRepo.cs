@@ -42,5 +42,10 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl
         {
             return await _studentJoinDAO.GetAllByUserIdAsync(userId);
         }
+
+        public async Task<IEnumerable<StudentJoin>> GetAllByTutorIdAsync(int id)
+        {
+            return await _studentJoinDAO.GetByTutorIdAsync(id);
+        }
     }
 }

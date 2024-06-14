@@ -355,6 +355,46 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 return new ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>
                 {
                     Success = true,
+                    Message = "Hiện tại bạn chưa đăng kí khóa học nào."
+                };
+            }
+
+            return new ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>
+            {
+                Success = true,
+                Message = "Đây là danh sách các khóa học bạn đã đăng kí",
+                Data = result.Select(x => new StudentJoinResponseDTO
+                {
+                    Id = x.Id,
+                    UserId = x.UserId,
+                    SubjectLevelId = x.SubjectLevelId,
+                    FullName = x.User.FullName,
+                    Email = x.User.Email,
+                })
+            };
+        }
+
+        public async Task<ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>> GetAllByTutorIdAsync(string userId, string? subjectLevelId, string? studentlId, int page = 1)
+        {
+            var tutor = await _tutorRepo.GetTutorByUserIdAsync(userId);
+            var studentJoins = await _studentJoinRepo.GetAllByTutorIdAsync(tutor.Id);
+
+            if (!string.IsNullOrEmpty(subjectLevelId))
+            {
+                studentJoins = studentJoins.Where(x => x.SubjectLevelId == Convert.ToInt32(subjectLevelId));
+            }
+
+            if (!string.IsNullOrEmpty(studentlId))
+            {
+                studentJoins = studentJoins.Where(x => x.UserId == studentlId);
+            }
+
+            var result = PaginatedList<StudentJoin>.Create(studentJoins, page, PAGE_SIZE);
+            if (result.IsNullOrEmpty())
+            {
+                return new ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>
+                {
+                    Success = true,
                     Message = "Hiện tại chưa có học sinh nào đăng kí các khóa học."
                 };
             }

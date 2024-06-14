@@ -79,6 +79,31 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             return studentJoins;
         }
 
+        //GET ALL BY TUTOR ID
+        public async Task<IEnumerable<StudentJoin>> GetByTutorIdAsync(int tutorId)
+        {
+            var studentJoins = new List<StudentJoin>();
+            try
+            {
+                using (var context = new MyDbContext())
+                {
+                    studentJoins = await context.StudentJoins
+                                                .Include(x => x.SubjectLevel.Tutor.User) // Include Tutor and User related to SubjectLevel
+                                                .Include(x => x.User) // Include User related to StudentJoin
+                                                .Where(x => x.SubjectLevel.TutorId == tutorId)
+                                                .ToListAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
+            }
+            return studentJoins;
+        }
+
+
         //GET ALL BY USER ID
         public async Task<IEnumerable<StudentJoin>> GetAllByUserIdAsync(string userId)
         {

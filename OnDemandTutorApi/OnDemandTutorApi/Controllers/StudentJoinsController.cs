@@ -34,11 +34,25 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Tutor, Student")]
-        [HttpGet("student-join-list-for-subject-level")]
-        public async Task<IActionResult> GetBySubjectLevelIdAsync(string subjectLevelId, string? userId, int page = 1)
+        [Authorize(Roles = "Student")]
+        [HttpGet("all-student-join-for-student")]
+        public async Task<IActionResult> GetAllForStudentSync(string? subjectLevelId, int page = 1)
         {
-            var result = await _studentJoinService.GetAllBySubjectLevelIdAsync(subjectLevelId, userId, page);
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var result = await _studentJoinService.GetAllByStudentIdAsync(userId, subjectLevelId, page);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Tutor")]
+        [HttpGet("student-join-list-for-tutor")]
+        public async Task<IActionResult> GetByTutorIdAsync(string? subjectLevelId, string? studentlId, int page = 1)
+        {
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var result = await _studentJoinService.GetAllByTutorIdAsync(userId, subjectLevelId, studentlId, page);
             if(!result.Success)
             {
                 return BadRequest(result);
@@ -51,19 +65,6 @@ namespace OnDemandTutorApi.Controllers
         public async Task<IActionResult> GetAllSync(string? subjectLevelId, string? userId, int page = 1)
         {
             var result = await _studentJoinService.GetAllAsync(subjectLevelId, userId, page);
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
-        }
-
-        [Authorize(Roles = "Student")]
-        [HttpGet("all-student-join-for-student")]
-        public async Task<IActionResult> GetAllForStudentSync(string? subjectLevelId, int page = 1)
-        {
-            var userId = HttpContext.User.FindFirstValue("Id");
-            var result = await _studentJoinService.GetAllByStudentIdAsync(userId, subjectLevelId, page);
             if (!result.Success)
             {
                 return BadRequest(result);
