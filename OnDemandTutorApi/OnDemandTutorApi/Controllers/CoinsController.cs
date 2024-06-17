@@ -65,17 +65,17 @@ namespace OnDemandTutorApi.Controllers
         }
 
         [HttpPost("ConfirmDeposit")]
-        public async Task<IActionResult> ConfirmDepositAsync([FromBody] VnPayResponseDTO vnPayResponse)
+        public async Task<IActionResult> ConfirmDepositAsync([FromBody] ResponseApiDTO<VnPayResponseDTO> vnPayResponse)
         {
             var userId = HttpContext.User.FindFirstValue("Id");
 
-            if(!vnPayResponse.Success || !vnPayResponse.VnPayResponseCode.Equals("00"))
+            if(!vnPayResponse.Success || !vnPayResponse.Data.VnPayResponseCode.Equals("00"))
             {
                 return BadRequest($"{vnPayResponse.Message}");
             }
 
             // Add record to db
-            var result = await _coinManagementService.DepositAsync(new CoinDTO { UserId = userId, Coin = (vnPayResponse.Amount / 100000)});
+            var result = await _coinManagementService.DepositAsync(new CoinDTO { UserId = userId, Coin = (vnPayResponse.Data.Amount / 100000)});
 
             if(!result.Success)
             {

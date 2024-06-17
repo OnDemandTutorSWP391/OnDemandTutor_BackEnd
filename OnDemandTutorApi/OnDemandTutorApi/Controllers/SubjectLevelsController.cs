@@ -35,7 +35,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Tutor, Student")]
+        //[Authorize(Roles = "Tutor, Student")]
         [HttpGet("get-all-subject-level")]
         public async Task<IActionResult> GetAllAsync(string? level, string? subject, string? tutor, int page = 1)
         {

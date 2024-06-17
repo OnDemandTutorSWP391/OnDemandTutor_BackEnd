@@ -104,7 +104,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IVnPayService, VnPayService>();
-builder.Services.AddScoped<OnDemandTutorApi.BusinessLogicLayer.Services.IServices.ICoinManagementService, CoinManagementService>();
+builder.Services.AddScoped<ICoinManagementService, CoinManagementService>();
 builder.Services.AddScoped<IRequestCategoryService, RequestCategoryService>();
 builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<IResponseService, ResponseService>();

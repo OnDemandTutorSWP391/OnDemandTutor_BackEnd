@@ -46,7 +46,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             return paymentUrl;
         }
 
-        public VnPayResponseDTO PaymentExcute(IQueryCollection collection)
+        public ResponseApiDTO<VnPayResponseDTO> PaymentExcute(IQueryCollection collection)
         {
             var vnpay = new VnPayLibrary();
 
@@ -70,26 +70,29 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if(!checkSignature)
             {
-                return new VnPayResponseDTO
+                return new ResponseApiDTO<VnPayResponseDTO>
                 {
                     Success = false,
                     Message = "Lỗi xác thực kháo bảo mật VnPay"
                 };
             }
 
-            var result = new VnPayResponseDTO
+            var result = new ResponseApiDTO<VnPayResponseDTO>
             {
                 Success = true,
-                PaymentMethod = "VnPay",
-                OrderDescription = vnp_OrderInfo,
-                OrderId = vnp_orderId.ToString(),
-                TransactionId = vnp_TransactionId.ToString(),
-                Token = vnp_SecureHash,
-                VnPayResponseCode = vnp_ResponseCode,
-                Amount = float.Parse(vnp_Amount),
+                Data = new VnPayResponseDTO
+                {
+                    PaymentMethod = "VnPay",
+                    OrderDescription = vnp_OrderInfo,
+                    OrderId = vnp_orderId.ToString(),
+                    TransactionId = vnp_TransactionId.ToString(),
+                    Token = vnp_SecureHash,
+                    VnPayResponseCode = vnp_ResponseCode,
+                    Amount = float.Parse(vnp_Amount),
+                }
             };
 
-            switch(result.VnPayResponseCode)
+            switch(result.Data.VnPayResponseCode)
             {
                 case "00":
                     result.Message = "Giao dịch thành công";

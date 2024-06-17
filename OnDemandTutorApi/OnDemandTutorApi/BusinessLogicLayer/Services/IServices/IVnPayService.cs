@@ -5,6 +5,6 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.IServices
     public interface IVnPayService
     {
         string CreatePaymentUrl(HttpContext context, VnPayRequestDTO vnPayRequest);
-        VnPayResponseDTO PaymentExcute(IQueryCollection collection);
+        ResponseApiDTO<VnPayResponseDTO> PaymentExcute(IQueryCollection collection);
     }
 }
