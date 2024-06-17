@@ -90,7 +90,7 @@ namespace OnDemandTutorApi.Controllers
         {
             var userId = HttpContext.User.FindFirstValue("Id");
             var result = await _coinManagementService.TransferAsync(userId, receiverId, coin);
-            if(!result.Success)
+            if(!result.Success) 
             {
                 return BadRequest(result);
             }
@@ -115,7 +115,7 @@ namespace OnDemandTutorApi.Controllers
         [HttpGet("get-transaction-for-user")]
         public async Task<IActionResult> GetTransactionForUserAsync(DateTime? from, DateTime? to, string? sortBy, int page = 1)
         {
-            var userId = HttpContext.User.FindFirstValue("Id");
+            var userId = HttpContext.User.FindFirstValue("Id"); 
 
             var result = await _coinManagementService.GetTransactionForUserAsync(userId, from, to, sortBy, page);
 
