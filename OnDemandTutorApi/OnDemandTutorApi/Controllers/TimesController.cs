@@ -55,7 +55,7 @@ namespace OnDemandTutorApi.Controllers
         {
             var userId = HttpContext.User.FindFirstValue("Id");
 
-            var result = await _timeService.GetAllForStudentAsync(userId, timeId, subjectLevelId, sortBy, from, to, page);
+            var result = await _timeService.GetAllForTutorAsync(userId, timeId, subjectLevelId, sortBy, from, to, page);
 
             if (!result.Success)
             {
