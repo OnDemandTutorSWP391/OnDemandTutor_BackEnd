@@ -206,7 +206,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
         public async Task<ResponseApiDTO<TokenDTO>> SignInAsync(UserAuthenDTO userAuthen)
         {
-            var adminEmail = _configuration["Admin:Email"];
+            var adminEmail = _configuration["Admin:email"];
             
             if(userAuthen.Email.Equals(adminEmail))
             {
