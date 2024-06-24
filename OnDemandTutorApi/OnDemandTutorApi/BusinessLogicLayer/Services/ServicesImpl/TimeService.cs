@@ -307,6 +307,16 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
+            var validTime = await CheckValidTime(timeRequest, time.SubjectLevel.TutorId);
+            if(!validTime.Success)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = validTime.Message,
+                };
+            }
+
             var result = await _timeRepo.UpdateAsync(time);
 
             if(!result)
