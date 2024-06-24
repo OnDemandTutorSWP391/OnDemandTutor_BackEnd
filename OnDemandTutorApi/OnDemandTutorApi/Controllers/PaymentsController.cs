@@ -31,7 +31,7 @@ namespace OnDemandTutorApi.Controllers
         {
             var vnPayResponse = _vnPayService.PaymentExcute(Request.Query);
 
-            if(!vnPayResponse.Success)
+            if (!vnPayResponse.Success)
             {
                 string urlFailed = $"http://localhost:5173/payment-result?" +
                                    $"success={WebUtility.UrlEncode(vnPayResponse.Success.ToString())}" +
@@ -53,20 +53,20 @@ namespace OnDemandTutorApi.Controllers
             return Redirect(urlSuccess);
         }
 
-        
-            //[HttpGet("response-payment")]
-            //public IActionResult ResponsePayment()
-            //{
-            //    var vnPayResponse = _vnPayService.PaymentExcute(Request.Query);
 
-            //    if(!vnPayResponse.Success)
-            //    {
-            //    return BadRequest(vnPayResponse);
-            //    }
+        //[HttpGet("response-payment")]
+        //public IActionResult ResponsePayment()
+        //{
+        //    var vnPayResponse = _vnPayService.PaymentExcute(Request.Query);
 
-            //    return Ok(vnPayResponse);
-            //} 
+        //    if (!vnPayResponse.Success)
+        //    {
+        //        return BadRequest(vnPayResponse);
+        //    }
 
-         
+        //    return Ok(vnPayResponse);
+        //}
+
+
     }
 }

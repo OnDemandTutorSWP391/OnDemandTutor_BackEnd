@@ -75,7 +75,12 @@ namespace OnDemandTutorApi.Controllers
             }
 
             // Add record to db
-            var result = await _coinManagementService.DepositAsync(new CoinDTO { UserId = userId, Coin = (vnPayResponse.Data.Amount / 100000)});
+            var result = await _coinManagementService.DepositAsync(new CoinDTO 
+            { 
+                UserId = userId, 
+                Coin = (vnPayResponse.Data.Amount / 100000), 
+                TransactionId = Convert.ToInt64(vnPayResponse.Data.TransactionId)
+            });
 
             if(!result.Success)
             {

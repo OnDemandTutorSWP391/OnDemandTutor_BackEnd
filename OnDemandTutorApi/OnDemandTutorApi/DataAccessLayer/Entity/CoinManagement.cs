@@ -12,6 +12,7 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         public string UserId { get; set; }
         public float Coin {  get; set; }
         public DateTime Date { get; set; } = DateTime.Now;
+        public long TransactionId { get; set; }
         //
         public virtual User User { get; set; } = null!;
     }

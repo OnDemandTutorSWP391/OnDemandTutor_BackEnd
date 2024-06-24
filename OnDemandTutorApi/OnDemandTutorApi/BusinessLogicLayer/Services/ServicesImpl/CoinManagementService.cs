@@ -34,6 +34,16 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             var user = await _userRepo.GetByIdAsync(coinRecord.UserId);
 
+            var existCoinRecords = await _coinManagementRepo.GetAllAsync();
+            if(existCoinRecords.FirstOrDefault(x => x.TransactionId == coinRequest.TransactionId) != null)
+            {
+                return new ResponseApiDTO<CoinResponseDTO>
+                {
+                    Success = false,
+                    Message = "Hệ thống gặp lỗi khi lưu lại giao dịch của người dùng"
+                };
+            }
+
             var result = await _coinManagementRepo.CreateCoinRecord(coinRecord);
 
             if(!result)

@@ -13,6 +13,9 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
 
         [Required]
         public DateTime Date { get; set; } = DateTime.Now;
+
+        [Required]
+        public long TransactionId { get; set; }
     }
     #endregion
 
@@ -27,6 +30,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         public string FullName { get; set; }
         public float Coin { get; set; }
         public DateTime Date { get; set; }
+        public long TransactionId { get; set; }
     }
 
     public class CoinTransferResponseDTO
