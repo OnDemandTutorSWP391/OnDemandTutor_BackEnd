@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using OnDemandTutorApi.DataAccessLayer.Entity;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OnDemandTutorApi.BusinessLogicLayer.DTO
@@ -36,5 +37,20 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         public string? OnlineStatus { get; set; }
         [Required]
         public string? Status { get; set; }
+    }
+
+    public class TutorResponseDTO
+    {
+        public string TutorName { get; set; }
+        public string? AcademicLevel { get; set; }
+        public string? WorkPlace { get; set; }
+        public string? Degree { get; set; }
+        public string? TutorServiceName { get; set; }
+        public string? TutorServiceDescription { get; set; }
+        public string? TutorServiceVideo { get; set; }
+        public string? LearningMaterialDemo { get; set; }
+        public string? OnlineStatus { get; set; }
+        public string? Status { get; set; }
+        public double AverageStar { get; set; }
     }
 }

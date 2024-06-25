@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using OnDemandTutorApi.BusinessLogicLayer.DTO;
+using OnDemandTutorApi.BusinessLogicLayer.Helper;
 using OnDemandTutorApi.BusinessLogicLayer.Services.IServices;
 using OnDemandTutorApi.DataAccessLayer.Entity;
 using OnDemandTutorApi.DataAccessLayer.Repositories.Contracts;
@@ -14,6 +15,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly IUserRepo _userRepo;
         private readonly IRequestCategoryRepo _categoryRepo;
         private readonly IRequestRepo _requestRepo;
+
+        public static int PAGE_SIZE { get; set; } = 5;
 
         public TutorService(ITutorRepo tutorRepo, IMapper mapper, IUserRepo userRepo, IRequestCategoryRepo categoryRepo, IRequestRepo requestRepo)
         {
@@ -210,6 +213,93 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             {
                 Success = true,
                 Message = $"Hệ thống cập nhật trạng thái hồ sơ giảng viên {id} thành công."
+            };
+        }
+
+        public async Task<ResponseApiDTO<IEnumerable<TutorResponseDTO>>> GetAllTutorsForStudentAsync(string? seacrch, string? sortBy, int page = 1)
+        {
+            var tutors = await _tutorRepo.GetTutorsAsync();
+
+            tutors = tutors.Where(x => x.Status == "Chấp thuận");
+
+            if (!string.IsNullOrEmpty(seacrch))
+            {
+                tutors = tutors.Where(x => x.User.FullName.IndexOf(seacrch, StringComparison.OrdinalIgnoreCase) >= 0);
+            }
+
+            tutors = tutors.OrderBy(x => x.User.FullName);
+
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                switch(sortBy)
+                {
+                    case "des": tutors = tutors.OrderByDescending(x => x.User.FullName); break;
+                }
+            }
+
+            var result = PaginatedList<Tutor>.Create(tutors, page, PAGE_SIZE);
+
+            return new ResponseApiDTO<IEnumerable<TutorResponseDTO>>
+            {
+                Success = true,
+                Message = "Danh sách các gia sư",
+                Data = result.Select(x => new TutorResponseDTO
+                {
+                    TutorName = x.User.FullName,
+                    AcademicLevel = x.AcademicLevel,
+                    WorkPlace = x.WorkPlace,
+                    Degree = x.Degree,
+                    TutorServiceName = x.TutorServiceName,
+                    TutorServiceDescription = x.TutorServiceDescription,
+                    TutorServiceVideo = x.TutorServiceVideo,
+                    LearningMaterialDemo = x.LearningMaterialDemo,
+                    Status = x.Status,
+                    OnlineStatus = x.OnlineStatus,
+                    AverageStar = x.Ratings.Any() ? x.Ratings.Average(r => r.Star) : 0
+                })
+            };
+        }
+
+        public async Task<ResponseApiDTO<IEnumerable<TutorResponseDTO>>> GetAllTutorsAsync(string? seacrch, string? sortBy, int page = 1)
+        {
+            var tutors = await _tutorRepo.GetTutorsAsync();
+
+            if (!string.IsNullOrEmpty(seacrch))
+            {
+                tutors = tutors.Where(x => (x.User.FullName.IndexOf(seacrch, StringComparison.OrdinalIgnoreCase) >= 0) 
+                                            || x.Id == Convert.ToInt32(seacrch));
+            }
+
+            tutors = tutors.OrderBy(x => x.User.FullName);
+
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                switch (sortBy)
+                {
+                    case "des": tutors = tutors.OrderByDescending(x => x.User.FullName); break;
+                }
+            }
+
+            var result = PaginatedList<Tutor>.Create(tutors, page, PAGE_SIZE);
+
+            return new ResponseApiDTO<IEnumerable<TutorResponseDTO>>
+            {
+                Success = true,
+                Message = "Danh sách các gia sư",
+                Data = result.Select(x => new TutorResponseDTO
+                {
+                    TutorName = x.User.FullName,
+                    AcademicLevel = x.AcademicLevel,
+                    WorkPlace = x.WorkPlace,
+                    Degree = x.Degree,
+                    TutorServiceName = x.TutorServiceName,
+                    TutorServiceDescription = x.TutorServiceDescription,
+                    TutorServiceVideo = x.TutorServiceVideo,
+                    LearningMaterialDemo = x.LearningMaterialDemo,
+                    Status = x.Status,
+                    OnlineStatus = x.OnlineStatus,
+                    AverageStar = x.Ratings.Any() ? x.Ratings.Average(r => r.Star) : 0
+                })
             };
         }
     }

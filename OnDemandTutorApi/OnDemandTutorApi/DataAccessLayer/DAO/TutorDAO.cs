@@ -19,7 +19,10 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
         //GET ALL TUTOR
         public async Task<IEnumerable<Tutor>> GetTutorsAsync()
         {
-            return await _context.Tutors.ToListAsync();
+            return await _context.Tutors.Include(x => x.User)
+                                        .Include(x => x.SubjectLevels)
+                                        .Include(x => x.Ratings)
+                                        .ToListAsync();
 
         }
 

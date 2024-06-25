@@ -63,6 +63,33 @@ namespace OnDemandTutorApi.Controllers
 
             return Ok(result);
         }
+        [Authorize(Roles = "Student")]
+        [HttpGet("get-all-tutors-for-student")]
+        public async Task<IActionResult> GetAllTutorsForStudentAsync(string? search, string? sortBy, int page = 1)
+        {
+            var result = await _tutorService.GetAllTutorsForStudentAsync(search, sortBy, page);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Moderator")]
+        [HttpGet("get-all-tutors")]
+        public async Task<IActionResult> GetAllTutorsAsync(string? search, string? sortBy, int page = 1)
+        {
+            var result = await _tutorService.GetAllTutorsAsync(search, sortBy, page);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
 
         [Authorize(Roles = "Moderator")]
         [HttpPut("update-status-profile")]
@@ -77,5 +104,7 @@ namespace OnDemandTutorApi.Controllers
 
             return Ok(result);
         }
+
+
     }
 }

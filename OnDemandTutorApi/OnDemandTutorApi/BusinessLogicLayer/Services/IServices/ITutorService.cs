@@ -13,5 +13,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.IServices
         public Task<ResponseApiDTO<ProfileRequestDTO>> GetProfileByIdAsync(int id);
         public Task<ResponseApiDTO<ProfileResponseDTO>> GetProfileAsync(string userId);
         public Task<ResponseApiDTO> UpdateStatusAsync(int id, string status);
+        public Task<ResponseApiDTO<IEnumerable<TutorResponseDTO>>> GetAllTutorsForStudentAsync(string? seacrch, string? sortBy, int page = 1);
+        public Task<ResponseApiDTO<IEnumerable<TutorResponseDTO>>> GetAllTutorsAsync(string? seacrch, string? sortBy, int page = 1);
     }
 }
