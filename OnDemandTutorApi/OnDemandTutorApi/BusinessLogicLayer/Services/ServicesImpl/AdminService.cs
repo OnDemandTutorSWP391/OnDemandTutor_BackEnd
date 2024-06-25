@@ -54,7 +54,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
 
             // Map UserDTORequest to User entity
-            var user = _mapper.Map<User>(userRequest);
+            var user = _mapper.Map<DataAccessLayer.Entity.User>(userRequest);
             user.UserName = userRequest.Email;
 
             //Check role exist ?

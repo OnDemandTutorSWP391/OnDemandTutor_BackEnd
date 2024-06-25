@@ -76,5 +76,33 @@ namespace OnDemandTutorApi.Controllers
 
             return Ok(result);
         }
+
+        [Authorize(Roles = "Student")]
+        [HttpPut("update-by-id")]
+        public async Task<IActionResult> UpdateAsync(int id, RequestDTO request)
+        {
+            var result = await _requestService.UpdateAsync(id, request);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Moderator")]
+        [HttpDelete("delete-request-by-id")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            var result = await _requestService.DeleteAsync(id);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
     }
 }

@@ -81,5 +81,20 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
                 return false;
             }
         }
+
+        //DELETE
+        public async Task<bool> DeleteAsync(Request requestDelete)
+        {
+            try
+            {
+                _context.Entry<Request>(requestDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }

@@ -17,6 +17,11 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl
             return await _requestDAO.CreateAsync(request); 
         }
 
+        public async Task<bool> DeleteAsync(Request requestDelete)
+        {
+            return await _requestDAO.DeleteAsync(requestDelete);
+        }
+
         public async Task<IEnumerable<Request>> GetAllAsync()
         {
             return await _requestDAO.GetAllAsync();

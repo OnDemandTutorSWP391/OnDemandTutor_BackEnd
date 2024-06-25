@@ -7,7 +7,7 @@ using OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl;
 
 namespace OnDemandTutorApi.Controllers
 {
-    //[Authorize(Roles = "Moderator")]
+    [Authorize(Roles = "Moderator")]
     [Route("api/[controller]")]
     [ApiController]
     public class RequestCategoryController : ControllerBase

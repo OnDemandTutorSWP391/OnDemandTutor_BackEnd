@@ -14,13 +14,17 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
     {
         private readonly IMapper _mapper;
         private IRequestCategoryRepo _requestCategoryRepo;
+        private readonly IRequestRepo _requestRepo;
+        private readonly IResponseRepo _responseRepo;
 
         public static int PAGE_SIZE { get; set; } = 5;
 
-        public RequestCategoryService(IMapper mapper, IRequestCategoryRepo requestCategoryRepo)
+        public RequestCategoryService(IMapper mapper, IRequestCategoryRepo requestCategoryRepo, IRequestRepo requestRepo, IResponseRepo responseRepo)
         {
             _mapper = mapper;
             _requestCategoryRepo = requestCategoryRepo;
+            _requestRepo = requestRepo;
+            _responseRepo = responseRepo;
         }
         public async Task<ResponseApiDTO> CreateAsync(RequestCategoryDTO requestCategoryDTO)
         {
@@ -169,6 +173,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         public async Task<ResponseApiDTO> DeleteAsync(int id)
         {
             var category = await _requestCategoryRepo.GetByIdAsync(id);
+
             if (category == null)
             {
                 return new ResponseApiDTO
@@ -178,22 +183,55 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
-            var result = await _requestCategoryRepo.DeleteAsync(category);
+            var requests = await _requestRepo.GetAllAsync();
+            var responses = await _responseRepo.GetAllAsync();
+            var requestsWithCategory = requests.Where(x => x.RequestCategoryId == id).ToList();
+            var responsesToDelete = new List<Response>();
 
-            if (!result)
+            foreach (var request in requestsWithCategory)
+            {
+                var responsesForRequest = responses.Where(x => x.RequestId == request.Id).ToList();
+                responsesToDelete.AddRange(responsesForRequest); // Thêm tất cả các phản hồi vào danh sách responsesToDelete
+            }
+
+            // Xóa các phản hồi trước
+            foreach (var response in responsesToDelete)
+            {
+                await _responseRepo.DeleteAsync(response);
+            }
+
+            if(!responsesToDelete.Any())
             {
                 return new ResponseApiDTO
                 {
                     Success = false,
-                    Message = "Hệ thống gặp lỗi khi xóa loại yêu cầu theo ý bạn."
+                    Message = "Lỗi xảy ra khi xóa các phản hồi liên quan đến loại yêu cầu."
                 };
             }
+
+            // Xóa các yêu cầu sau khi xóa hết các phản hồi
+            foreach (var request in requestsWithCategory)
+            {
+                await _requestRepo.DeleteAsync(request);
+            }
+
+            if (!requestsWithCategory.Any())
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Lỗi xảy ra khi xóa các yêu cầu liên quan đến loại yêu cầu."
+                };
+            }
+
+            var result = await _requestCategoryRepo.DeleteAsync(category);
 
             return new ResponseApiDTO
             {
                 Success = true,
-                Message = "Xóa loại yêu cầu thành công."
+                Message = "Đã xóa loại yêu cầu thành công."
             };
+
         }
     }
 }

@@ -52,5 +52,6 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         public string? OnlineStatus { get; set; }
         public string? Status { get; set; }
         public double AverageStar { get; set; }
+        public bool IsLocked { get; set; }
     }
 }

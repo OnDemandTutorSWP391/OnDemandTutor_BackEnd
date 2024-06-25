@@ -219,6 +219,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         public async Task<ResponseApiDTO<IEnumerable<TutorResponseDTO>>> GetAllTutorsForStudentAsync(string? seacrch, string? sortBy, int page = 1)
         {
             var tutors = await _tutorRepo.GetTutorsAsync();
+            tutors = tutors.Where(x => x.User.IsLocked == false);
 
             tutors = tutors.Where(x => x.Status == "Chấp thuận");
 
@@ -255,7 +256,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     LearningMaterialDemo = x.LearningMaterialDemo,
                     Status = x.Status,
                     OnlineStatus = x.OnlineStatus,
-                    AverageStar = x.Ratings.Any() ? x.Ratings.Average(r => r.Star) : 0
+                    AverageStar = x.Ratings.Any() ? x.Ratings.Average(r => r.Star) : 0,
+                    IsLocked = x.User.IsLocked,
                 })
             };
         }
@@ -298,7 +300,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     LearningMaterialDemo = x.LearningMaterialDemo,
                     Status = x.Status,
                     OnlineStatus = x.OnlineStatus,
-                    AverageStar = x.Ratings.Any() ? x.Ratings.Average(r => r.Star) : 0
+                    AverageStar = x.Ratings.Any() ? x.Ratings.Average(r => r.Star) : 0,
+                    IsLocked = x.User.IsLocked,
                 })
             };
         }

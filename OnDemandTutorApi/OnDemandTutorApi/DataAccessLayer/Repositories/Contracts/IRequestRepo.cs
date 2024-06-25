@@ -8,6 +8,7 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.Contracts
         public Task<IEnumerable<Request>> GetAllByUserIdAsync(string userId);
         public Task<IEnumerable<Request>> GetAllAsync();
         public Task<bool> UpdateAsync(Request requestUpdate);
+        public Task<bool> DeleteAsync(Request requestDelete);
         public Task<Request> GetByIdAsync(int id);
     }
 }

@@ -18,15 +18,17 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly IUserRepo _userRepo;
         private readonly IRequestCategoryRepo _requestCategoryRepo;
         private readonly IMapper _mapper;
+        private readonly IResponseRepo _responseRepo;
 
         public static int PAGE_SIZE { get; set; } = 5;
 
-        public RequestService(IRequestRepo requestRepo, IUserRepo userRepo, IRequestCategoryRepo requestCategoryRepo, IMapper mapper)
+        public RequestService(IRequestRepo requestRepo, IUserRepo userRepo, IRequestCategoryRepo requestCategoryRepo, IMapper mapper, IResponseRepo responseRepo)
         {
             _requestRepo = requestRepo;
             _userRepo = userRepo;
             _requestCategoryRepo = requestCategoryRepo;
             _mapper = mapper;
+            _responseRepo = responseRepo;
         }
         public async Task<ResponseApiDTO> CreateAsync(string userId, RequestDTO requestDTO)
         {
@@ -221,6 +223,73 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             {
                 Success = true,
                 Message = "Cập nhật trạng thái của yêu cầu thành công."
+            };
+        }
+
+        public async Task<ResponseApiDTO> DeleteAsync(int id)
+        {
+            var request = await _requestRepo.GetByIdAsync(id);
+            if(request == null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Không tìm thấy yêu cầu trong hệ thống."
+                };
+            }
+
+            var responses = await _responseRepo.GetAllAsync();
+            responses = responses.Where(x => x.RequestId == id);
+
+            foreach (var item in responses)
+            {
+                await _responseRepo.DeleteAsync(item);
+            }
+
+            if(!responses.Any())
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Lỗi xảy ra khi xóa các phản hồi liên quan đến yêu cầu."
+                };
+            }
+
+            return new ResponseApiDTO
+            {
+                Success = true,
+                Message = "Xóa yêu cầu thành công"
+            };
+        }
+
+        public async Task<ResponseApiDTO> UpdateAsync(int id, RequestDTO requestUpdate)
+        {
+            var request = await _requestRepo.GetByIdAsync(id);
+            if(request == null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Không thìm thấy yêu cầu trong hệ thống."
+                };
+            }
+
+            var update = _mapper.Map<Request>(requestUpdate);
+            var result = await _requestRepo.UpdateAsync(update);
+
+            if(!result)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Lỗi xảy ra khi cập nhật yêu cầu trong hệ thống."
+                };
+            }
+
+            return new ResponseApiDTO
+            {
+                Success = true,
+                Message = "Cập nhật yêu cầu thành công."
             };
         }
     }

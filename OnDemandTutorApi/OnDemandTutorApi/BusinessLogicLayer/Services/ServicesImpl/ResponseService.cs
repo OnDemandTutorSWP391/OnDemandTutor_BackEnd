@@ -159,5 +159,35 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Message = "Phản hồi đã được gửi và lưu thành công."
             };
         }
+
+        public async Task<ResponseApiDTO> DeleteAsync(int id)
+        {
+            var responses = await _responseRepo.GetAllAsync();
+            var response = responses.FirstOrDefault(x => x.Id == id);
+            if(response == null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Không tìm thấy phản hồi trong hệ thống."
+                };
+            }
+
+            var delete = await _responseRepo.DeleteAsync(response);
+            if(!delete)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Lỗi xảy ra khi xóa phản hồi."
+                };
+            }
+
+            return new ResponseApiDTO
+            {
+                Success = true,
+                Message = "Xóa phản hồi thành công."
+            };
+        }
     }
 }

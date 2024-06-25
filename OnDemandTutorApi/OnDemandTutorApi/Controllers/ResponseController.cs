@@ -44,5 +44,18 @@ namespace OnDemandTutorApi.Controllers
 
             return Ok(result);
         }
+
+        [HttpDelete("delete-response")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            var result = await _responseService.DeleteAsync(id);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
     }
 }

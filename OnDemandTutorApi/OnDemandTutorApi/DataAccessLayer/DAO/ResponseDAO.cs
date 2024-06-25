@@ -40,5 +40,20 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
                 throw new Exception(ex.Message);
             }
         }
+
+        //DELETE
+        public async Task<bool> DeleteAsync(Response responseDelete)
+        {
+            try
+            {
+                _context.Entry<Response>(responseDelete).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }
