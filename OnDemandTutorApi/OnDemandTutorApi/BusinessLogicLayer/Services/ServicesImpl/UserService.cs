@@ -325,9 +325,54 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
         }
 
-        public Task<ResponseApiDTO> UpdateUserStatus(string userId, bool status)
+        public async Task<ResponseApiDTO> UpdateUserStatusAsync(string userId, bool status)
         {
-            throw new NotImplementedException();
+            var user = await _userRepo.GetByIdAsync(userId);
+            user.Status = status;
+            var updateUser = await _userRepo.UpdateUserAsync(user);
+            var tutor = await _tutorRepo.GetTutorByUserIdAsync(userId);
+            if (tutor == null)
+            {
+                if(!updateUser.Succeeded)
+                {
+                    return new ResponseApiDTO
+                    {
+                        Success = false,
+                        Message = "Lỗi xảy ra khi cập nhật trạng thái hoạt động."
+                    };
+                }
+
+                return new ResponseApiDTO
+                {
+                    Success = true,
+                    Message = "Cập nhật trạng thái hoạt động thành công."
+                };
+            }
+
+            if (user.Status)
+            {
+                    tutor.OnlineStatus = "Đang online";
+            }
+            else
+            {
+                    tutor.OnlineStatus = "Đang offline";
+            }
+            var updateTutor = await _tutorRepo.UpdateTutorAsync(tutor);
+
+            if(!updateUser.Succeeded || !updateTutor)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Lỗi xảy ra khi cập nhật trạng thái hoạt động."
+                };
+            }
+
+            return new ResponseApiDTO
+            {
+                Success = true,
+                Message = "Cập nhật trạng thái hoạt động thành công."
+            };
         }
 
         public async Task<ResponseApiDTO<UserGetProfileDTO>> UpdatUserProfileAsync(string id, UserProfileUpdateDTO userUpdate)

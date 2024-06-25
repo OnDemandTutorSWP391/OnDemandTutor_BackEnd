@@ -12,6 +12,6 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.IServices
         public Task<ResponseApiDTO> ResetPassAsync(UserResetPassDTO userReset);
         public Task<ResponseApiDTO<UserGetProfileDTO>> GetUserProfileAysnc(string id);
         public Task<ResponseApiDTO<UserGetProfileDTO>> UpdatUserProfileAsync(string id, UserProfileUpdateDTO userUpdate);
-        public Task<ResponseApiDTO> UpdateUserStatus(string userId, bool status);
+        public Task<ResponseApiDTO> UpdateUserStatusAsync(string userId, bool status);
     }
 }

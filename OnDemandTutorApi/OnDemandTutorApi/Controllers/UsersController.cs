@@ -154,5 +154,20 @@ namespace OnDemandTutorApi.Controllers
 
             return StatusCode(StatusCodes.Status200OK, result);
         }
+
+        [AllowAnonymous]
+        [HttpPut("update-status-user")]
+        public async Task<IActionResult> UpdateUserStatusAsync(bool status)
+        {
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var result = await _userService.UpdateUserStatusAsync(userId, status);
+
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, result);
+            }
+
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
     }
 }
