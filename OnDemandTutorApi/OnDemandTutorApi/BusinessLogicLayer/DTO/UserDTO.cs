@@ -169,6 +169,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
 
         public string? Avatar { get; set; } = null!;
 
+        public bool IsLocked { get; set; }
+
         [Required]
         public IList<string> Roles { get; set; } = null!;
     }

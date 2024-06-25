@@ -20,6 +20,7 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         public bool Status { get; set; }
         public string Gender { get; set; } = null!;
         public string Avatar { get; set; } = null!;
+        public bool IsLocked {  get; set; }
         //
         public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
         public virtual Tutor Tutor { get; set; }

@@ -38,6 +38,36 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             _emailService = emailService;
         }
 
+        public async Task<ResponseApiDTO> DeleteUserAsync(string userId)
+        {
+            var user = await _userRepo.GetByIdAsync(userId);
+            if (user == null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Không tìm thấy người dùng."
+                };
+            }
+
+            user.IsLocked = true;
+            var update = await _userRepo.UpdateUserAsync(user);
+            if(!update.Succeeded)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Lỗi xảy ra khi xóa tài khoản."
+                };
+            }
+
+            return new ResponseApiDTO
+            {
+                Success = true,
+                Message = "Xóa tài khoản thành công."
+            };
+        }
+
         public async Task<ResponseApiDTO<UserGetProfileDTO>> GetUserProfileAysnc(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -241,6 +271,15 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 {
                     Success = false,
                     Message = "Invalid email or password."
+                };
+            }
+
+            if(user.IsLocked)
+            {
+                return new ResponseApiDTO<TokenDTO>
+                {
+                    Success = false,
+                    Message = "Tài khoản của bạn đã bị khóa."
                 };
             }
 

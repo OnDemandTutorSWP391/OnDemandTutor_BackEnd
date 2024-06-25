@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Humanizer;
+using Mailjet.Client.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using OnDemandTutorApi.BusinessLogicLayer.DTO;
@@ -18,7 +19,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly IUserRepo _userRepo;
         private readonly IMapper _mapper;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<DataAccessLayer.Entity.User> _userManager;
         private readonly IConfiguration _configuration;
         private readonly ITutorService _tutorService;
         private readonly MyDbContext _context;
@@ -26,7 +27,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
         public static int PAGE_SIZE { get; set; } = 5;
 
-        public AdminService(IUserRepo userRepo, IMapper mapper, RoleManager<IdentityRole> roleManager, UserManager<User> userManager, IConfiguration configuration, 
+        public AdminService(IUserRepo userRepo, IMapper mapper, RoleManager<IdentityRole> roleManager, UserManager<DataAccessLayer.Entity.User> userManager, IConfiguration configuration, 
             ITutorService tutorService, MyDbContext context, DataAccessLayer.Repositories.Contracts.ICoinManagementRepo coinManagementRepo)
         {
             _userRepo = userRepo;
@@ -157,7 +158,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 }
             }
 
-            var result = PaginatedList<User>.Create(allUsers, pageIndex, PAGE_SIZE);
+            var result = PaginatedList<DataAccessLayer.Entity.User>.Create(allUsers, pageIndex, PAGE_SIZE);
 
             if(result.IsNullOrEmpty())
             {
@@ -426,6 +427,36 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Coin = x.Coin,
                     Date = x.Date,
                 })
+            };
+        }
+
+        public async Task<ResponseApiDTO> LockUserAsync(string id)
+        {
+            var user = await _userRepo.GetByIdAsync(id);
+            if (user == null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Không tìm thấy người dùng."
+                };
+            }
+
+            user.IsLocked = true;
+            var update = await _userRepo.UpdateUserAsync(user);
+            if (!update.Succeeded)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Lỗi xảy ra khi khóa tài khoản."
+                };
+            }
+
+            return new ResponseApiDTO
+            {
+                Success = true,
+                Message = "Khóa tài khoản thành công."
             };
         }
     }

@@ -10,6 +10,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.IServices
         public Task<ResponseApiDTO> UpdateUserAsync(string id, UserUpdateDTO userUpdateDTO);
         public Task<ResponseApiDTO> UpdateUserRoleAsync(string id, string oldRole, string newRole, string choice);
         public Task<ResponseApiDTO> DeleteUserAsync(string id);
+        public Task<ResponseApiDTO> LockUserAsync(string id);
         public Task<ResponseApiDTO<IEnumerable<CoinDTOWithId>>> GetTransactionsAsync(string? search, DateTime? from, DateTime? to, string? sortBy, int page = 1);
     }
 }

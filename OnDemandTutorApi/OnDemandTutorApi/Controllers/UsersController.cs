@@ -169,5 +169,20 @@ namespace OnDemandTutorApi.Controllers
 
             return StatusCode(StatusCodes.Status200OK, result);
         }
+
+        [Authorize]
+        [HttpPut("lock-account")]
+        public async Task<IActionResult> DeleteUserAsync()
+        {
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var result = await _userService.DeleteUserAsync(userId);
+
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, result);
+            }
+
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
     }
 }
