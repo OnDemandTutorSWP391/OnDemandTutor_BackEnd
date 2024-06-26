@@ -66,7 +66,7 @@ namespace OnDemandTutorApi.Controllers
         }
 
         [Authorize(Roles = "Tutor")]
-        [HttpPut("update-time-for-Tutor")]
+        [HttpPut("update-time-for-tutor")]
         public async Task<IActionResult> UpdateAsync(int timeId, TimeRequestDTO timeRequest)
         {
             var result = await _timeService.UpdateAsync(timeId, timeRequest);
@@ -85,6 +85,20 @@ namespace OnDemandTutorApi.Controllers
         {
 
             var result = await _timeService.GetAllAsync(timeId, subjectLevelId, sortBy, from, to, page);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Tutor")]
+        [HttpDelete("delete-time-for-tutor")]
+        public async Task<IActionResult> DeleteAsync(int timeId)
+        {
+            var result = await _timeService.DeleteAsync(timeId);
 
             if (!result.Success)
             {

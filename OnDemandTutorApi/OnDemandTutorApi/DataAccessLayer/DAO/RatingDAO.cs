@@ -104,5 +104,23 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
                 return false;
             }
         }
+
+        public async Task<bool> DeleteAsync(Rating rating)
+        {
+            try
+            {
+                _context.Entry<Rating>(rating).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
+                return false;
+            }
+        }
     }
 }

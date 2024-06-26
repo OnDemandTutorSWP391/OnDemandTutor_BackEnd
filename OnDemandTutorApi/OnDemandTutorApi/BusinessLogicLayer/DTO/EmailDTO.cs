@@ -16,4 +16,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
 
     }
 
+    public class SendEmailRequestDTO
+    {
+        public List<string> ToEmails { get; set; } = new List<string>();
+        public string Subject { get; set; }
+        public string Body { get; set; }
+    }
+
+
 }

@@ -147,5 +147,24 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             }
         }
 
+        //DELETE TIME
+        public async Task<bool> DeleteAsync(Time time)
+        {
+            try
+            {
+                _context.Entry<Time>(time).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
+                return false;
+            }
+        }
+
     }
 }

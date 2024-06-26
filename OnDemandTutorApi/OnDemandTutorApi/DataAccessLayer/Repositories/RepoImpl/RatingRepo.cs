@@ -18,6 +18,11 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl
             return await _ratingDAO.CreateAsync(rating);
         }
 
+        public async Task<bool> DeleteAsync(Rating rating)
+        {
+            return await _ratingDAO.DeleteAsync(rating);
+        }
+
         public async Task<IEnumerable<Rating>> GetAllAsync()
         {
             return await _ratingDAO.GetAllAsync();

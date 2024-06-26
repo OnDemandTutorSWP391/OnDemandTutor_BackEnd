@@ -11,5 +11,6 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.Contracts
         public Task<IEnumerable<Time>> GetAllByTutorIdAsync(int tutorId);
         public Task<IEnumerable<Time>> GetAllAsync();
         public Task<bool> UpdateAsync(Time time);
+        public Task<bool> DeleteAsync(Time time);
     }
 }

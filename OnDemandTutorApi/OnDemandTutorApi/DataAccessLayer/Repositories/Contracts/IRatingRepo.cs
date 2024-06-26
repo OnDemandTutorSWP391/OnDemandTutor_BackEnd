@@ -9,5 +9,6 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.Contracts
         public Task<IEnumerable<Rating>> GetAllAsync();
         public Task<Rating> GetByIdAsync(int ratingId);
         public Task<bool> UpdateAsync(Rating rating);
+        public Task<bool> DeleteAsync(Rating rating);
     }
 }

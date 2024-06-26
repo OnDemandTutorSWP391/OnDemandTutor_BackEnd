@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Mailjet.Client.Resources;
 using Microsoft.IdentityModel.Tokens;
 using OnDemandTutorApi.BusinessLogicLayer.DTO;
 using OnDemandTutorApi.BusinessLogicLayer.Helper;
@@ -148,7 +149,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             };
         }
 
-        public async Task<ResponseApiDTO> UpdateAsync(int ratingId, RatingUpdateDTO ratingUpdateDTO)
+        public async Task<ResponseApiDTO> UpdateAsync(int ratingId, string userId, RatingUpdateDTO ratingUpdateDTO)
         {
             var rating = await _ratingRepo.GetByIdAsync(ratingId);
 
@@ -161,8 +162,17 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
+            if (rating.UserId != userId)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Bạn không thể xóa đánh giá của người dùng khác."
+                };
+            }
+
             var update = _mapper.Map<Rating>(ratingUpdateDTO);
-            var result = await _ratingRepo.UpdateAsync(rating);
+            var result = await _ratingRepo.UpdateAsync(update);
 
             if(!result)
             {
@@ -226,6 +236,75 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Star = x.Star,
                     Description = x.Description,
                 })
+            };
+        }
+
+        public async Task<ResponseApiDTO> DeleteForStudentAsync(int ratingId, string userId)
+        {
+            var rating = await _ratingRepo.GetByIdAsync(ratingId);
+            if (rating == null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Không tồn tại đánh giá trong hệ thống."
+                };
+            }
+
+            if(rating.UserId != userId)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Bạn không thể xóa đánh giá của người dùng khác."
+                };
+            }
+
+            var result = await _ratingRepo.DeleteAsync(rating);
+
+            if(!result)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Lỗi xảy ra khi cố xóa đánh giá."
+                };
+            }
+
+            return new ResponseApiDTO
+            {
+                Success = true,
+                Message = "Xóa đánh giá thành công."
+            };
+        }
+
+        public async Task<ResponseApiDTO> DeleteAsync(int ratingId)
+        {
+            var rating = await _ratingRepo.GetByIdAsync(ratingId);
+            if (rating == null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Không tồn tại đánh giá trong hệ thống."
+                };
+            }
+
+            var result = await _ratingRepo.DeleteAsync(rating);
+
+            if (!result)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Lỗi xảy ra khi cố xóa đánh giá."
+                };
+            }
+
+            return new ResponseApiDTO
+            {
+                Success = true,
+                Message = "Xóa đánh giá thành công."
             };
         }
     }

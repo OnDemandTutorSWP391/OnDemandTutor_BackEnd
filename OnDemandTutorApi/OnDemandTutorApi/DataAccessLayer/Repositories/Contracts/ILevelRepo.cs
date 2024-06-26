@@ -8,6 +8,7 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.Contracts
         public Task<IEnumerable<Level>> GetAllAsync();
         public Task<Level> GetByIdAsync(int id);
         public Task<bool> UpdateAsync(Level level);
+        public Task<bool> DeleteAsync(Level level);
         public Task<Level> GetByNameAsync(string name);
     }
 }

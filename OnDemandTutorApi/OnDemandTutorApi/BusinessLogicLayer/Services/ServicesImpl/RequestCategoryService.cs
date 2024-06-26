@@ -200,7 +200,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 await _responseRepo.DeleteAsync(response);
             }
 
-            if(!responsesToDelete.Any())
+            if(responsesToDelete.Any())
             {
                 return new ResponseApiDTO
                 {
@@ -215,7 +215,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 await _requestRepo.DeleteAsync(request);
             }
 
-            if (!requestsWithCategory.Any())
+            if (requestsWithCategory.Any())
             {
                 return new ResponseApiDTO
                 {
@@ -225,6 +225,15 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
 
             var result = await _requestCategoryRepo.DeleteAsync(category);
+
+            if(!result)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Lỗi xảy ra khi xóa loại yêu cầu."
+                };
+            }
 
             return new ResponseApiDTO
             {

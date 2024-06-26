@@ -76,5 +76,17 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Tutor")]
+        [HttpDelete("delete-subject-level")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            var result = await _subjectLevelService.DeleteAsync(id);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
     }
 }

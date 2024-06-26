@@ -34,7 +34,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Student")]
+        [Authorize(Roles = "Student, Tutor, Moderator")]
         [HttpGet("get-ratings-by-tutor-id")]
         public async Task<IActionResult> GetAllByTutorIdAsynnc(string tutorId, string? sortBy, int page = 1)
         {
@@ -81,7 +81,37 @@ namespace OnDemandTutorApi.Controllers
         [HttpPut("update-rating")]
         public async Task<IActionResult> UpdateAsync(int ratingId, RatingUpdateDTO ratingUpdateDTO)
         {
-            var result = await _ratingService.UpdateAsync(ratingId, ratingUpdateDTO);
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var result = await _ratingService.UpdateAsync(ratingId, userId, ratingUpdateDTO);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Student")]
+        [HttpDelete("delete-rating-for-student")]
+        public async Task<IActionResult> DeleteForStudentAsync(int ratingId)
+        {
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var result = await _ratingService.DeleteForStudentAsync(ratingId, userId);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Moderator")]
+        [HttpDelete("delete-rating")]
+        public async Task<IActionResult> DeleteAsync(int ratingId)
+        {
+            var result = await _ratingService.DeleteAsync(ratingId);
 
             if (!result.Success)
             {

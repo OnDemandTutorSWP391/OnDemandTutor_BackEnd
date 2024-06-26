@@ -123,9 +123,11 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             var student = await _userRepo.GetByIdAsync(studentJoinDTO.UserId);
             var titleStudent = $"Thư xác nhận đăng kí khóa học {studentJoinDTO.SubjectLevelId} thành công!";
-            var contentStudent = @$"- Hệ thống đã xác nhận đăng kí mua khóa học thành công.
-                             - Url tham gia lớp học của bạn {existSubjectLevel.Url}.
-                             - Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.";
+            var contentStudent = $@"
+<p>- Hệ thống đã xác nhận đăng kí mua khóa học thành công.</p>
+<p>- Url tham gia lớp học của bạn: <a href='{existSubjectLevel.Url}'>{existSubjectLevel.Url}</a></p>
+<p>- Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.</p>";
+
             var messageStudent = new EmailDTO
             (
                 new string[] { student.Email! },
@@ -136,10 +138,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             var tutor = await _tutorRepo.GetByIdAsync(existSubjectLevel.TutorId);
             var titleTutor = $"Thư thông báo học sinh đăng kí khóa học {studentJoinDTO.SubjectLevelId} thành công!";
-            var contentTutor = @$"- Hệ thống đã xác nhận học sinh đăng kí mua khóa học thành công.
-                             - Id của học sinh: {student.Id}.
-                             - Email của học sinh: {student.Email}
-                             - Vui lòng trao đổi và gửi thông tin cũng như lịch dạy qua Email của học sinh.";
+            var contentTutor = $@"
+<p>- Hệ thống đã xác nhận học sinh đăng kí mua khóa học thành công.</p>
+<p>- Id của học sinh: <strong>{student.Id}</strong>.</p>
+<p>- Email của học sinh: <a href='mailto:{student.Email}'>{student.Email}</a></p>
+<p>- Vui lòng trao đổi và gửi thông tin cũng như lịch dạy qua Email của học sinh.</p>";
+
             var messageTutor = new EmailDTO
             (
                 new string[] { tutor.User.Email! },
@@ -262,10 +266,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             var student = await _userRepo.GetByIdAsync(studentJoin.UserId);
             var titleStudent = $"Thư thông báo xóa học sinh khỏi lớp học {studentJoin.SubjectLevelId}!";
-            var contentStudent = @$"- Hệ thống ghi nhận bạn đã bị giảng viên xóa khỏi lớp.
-                             - Mọi thông tin chi tiết vui lòng liên hệ với giảng viên của bạn.
-                             - Email giảng viên: {studentJoin.SubjectLevel.Tutor.User.Email}
-                             - Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.";
+            var contentStudent = $@"
+<p>- Hệ thống ghi nhận bạn đã bị giảng viên xóa khỏi lớp.</p>
+<p>- Mọi thông tin chi tiết vui lòng liên hệ với giảng viên của bạn.</p>
+<p>- Email giảng viên: <a href='mailto:{studentJoin.SubjectLevel.Tutor.User.Email}'>{studentJoin.SubjectLevel.Tutor.User.Email}</a></p>
+<p>- Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.</p>";
+
             var messageStudent = new EmailDTO
             (
                 new string[] { student.Email! },
@@ -307,10 +313,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             var student = await _userRepo.GetByIdAsync(studentJoin.UserId);
             var titleStudent = $"Thư thông báo học sinh đã rời khỏi lớp học {studentJoin.SubjectLevelId}!";
-            var contentStudent = @$"- Hệ thống ghi nhận bạn đã rời khỏi lớp.
-                             - Mọi thông tin chi tiết vui lòng liên hệ với giảng viên của bạn.
-                             - Email giảng viên: {studentJoin.SubjectLevel.Tutor.User.Email}
-                             - Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.";
+            var contentStudent = $@"
+<p>- Hệ thống ghi nhận bạn đã rời khỏi lớp.</p>
+<p>- Mọi thông tin chi tiết vui lòng liên hệ với giảng viên của bạn.</p>
+<p>- Email giảng viên: <a href='mailto:{studentJoin.SubjectLevel.Tutor.User.Email}'>{studentJoin.SubjectLevel.Tutor.User.Email}</a></p>
+<p>- Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.</p>";
+
             var messageStudent = new EmailDTO
             (
                 new string[] { student.Email! },
@@ -321,10 +329,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             var tutor = studentJoin.SubjectLevel.Tutor;
             var titleTutor = $"Thư thông báo học sinh đã rời khỏi lớp học {studentJoin.SubjectLevelId}!";
-            var contentTutor = @$"- Hệ thống ghi nhận học sinh với Id: {studentJoin.UserId} đã rời khỏi lớp.
-                             - Mọi thông tin chi tiết vui lòng liên hệ với học sinh của bạn.
-                             - Email học sinh: {studentJoin.User.Email}
-                             - Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.";
+            var contentTutor = $@"
+<p>- Hệ thống ghi nhận học sinh với Id: <strong>{studentJoin.UserId}</strong> đã rời khỏi lớp.</p>
+<p>- Mọi thông tin chi tiết vui lòng liên hệ với học sinh của bạn.</p>
+<p>- Email học sinh: <a href='mailto:{studentJoin.User.Email}'>{studentJoin.User.Email}</a></p>
+<p>- Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.</p>";
+
             var messageTutor = new EmailDTO
             (
                 new string[] { tutor.User.Email! },

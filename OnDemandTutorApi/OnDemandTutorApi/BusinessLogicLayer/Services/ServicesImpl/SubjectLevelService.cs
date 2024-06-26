@@ -18,17 +18,26 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly ILevelRepo _levelRepo;
         private readonly ISubjectRepo _subjectRepo;
         private readonly IMapper _mapper;
+        private readonly IStudentJoinRepo _studentJoinRepo;
+        private readonly ITimeRepo _timeRepo;
+        private readonly IUserRepo _userRepo;
+        private readonly IEmailService _emailService;
 
         public static int PAGE_SIZE { get; set; } = 5;
 
         public SubjectLevelService(ISubjectLevelRepo subjectLevelRepo, ITutorRepo tutorRepo, ILevelRepo levelRepo, 
-            ISubjectRepo subjectRepo, IMapper mapper)
+            ISubjectRepo subjectRepo, IMapper mapper, IStudentJoinRepo studentJoinRepo, ITimeRepo timeRepo,
+            IUserRepo userRepo, IEmailService emailService)
         {
             _subjectLevelRepo = subjectLevelRepo;
             _tutorRepo = tutorRepo;
             _levelRepo = levelRepo;
             _subjectRepo = subjectRepo;
             _mapper = mapper;
+            _studentJoinRepo = studentJoinRepo;
+            _timeRepo = timeRepo;
+            _userRepo = userRepo;
+            _emailService = emailService;
         }
         public async Task<ResponseApiDTO<SubjectLevelResponseDTO>> CreateAsync(string userId, SubjectLevelRequestDTO subjectLevelDTO)
         {
@@ -219,6 +228,79 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Coin = subjectLevel.Coin,
                     LimitMember = $"{subjectLevel.StudentJoins.Count}/{subjectLevel.LimitMember}",
                 }
+            };
+        }
+
+        public async Task<ResponseApiDTO> DeleteAsync(int id)
+        {
+            var subjectLevel = await _subjectLevelRepo.GetByIdAsync(id);
+
+            if (subjectLevel == null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = $"Khóa học không tồn tại trong hệ thống."
+                };
+            }
+
+            var studentJoinsPreDelete = subjectLevel.StudentJoins;
+            var studentJoinsToDelete = subjectLevel.StudentJoins;
+            var timesToDelete = subjectLevel.Times;
+
+            foreach (var time in timesToDelete)
+            {
+                await _timeRepo.DeleteAsync(time);
+            }
+
+            foreach (var studentJoin in studentJoinsToDelete)
+            {
+                await _studentJoinRepo.DeleteAsync(studentJoin);
+            }
+
+            if(studentJoinsToDelete.Any() || timesToDelete.Any())
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Lỗi xảy ra khi xóa các lịch học và học sinh liên quan đến khóa học."
+                };
+            }
+
+            var result = await _subjectLevelRepo.DeleteAsync(subjectLevel);
+
+            if (!result)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Lỗi xảy ra khi xóa khóa học."
+                };
+            }
+
+            foreach (var studentJoin in studentJoinsPreDelete)
+            {
+                var student = await _userRepo.GetByIdAsync(studentJoin.UserId);
+                var titleStudent = $"Thư thông báo xóa học sinh khỏi lớp học {studentJoin.SubjectLevelId}!";
+                var contentStudent = $@"
+<p>- Hệ thống ghi nhận bạn đã bị xóa khỏi lớp.</p>
+<p>- Do lớp học <strong>{id}</strong> của gia sư <strong>{subjectLevel.Tutor.User.FullName}</strong> đã bị xóa.</p>
+<p>- Mọi thông tin chi tiết vui lòng liên hệ với giảng viên của bạn.</p>
+<p>- Email giảng viên: <a href='mailto:{studentJoin.SubjectLevel.Tutor.User.Email}'>{studentJoin.SubjectLevel.Tutor.User.Email}</a></p>
+<p>- Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.</p>";
+                var messageStudent = new EmailDTO
+                (
+                    new string[] { student.Email! },
+                        titleStudent,
+                        contentStudent!
+                );
+                _emailService.SendEmail(messageStudent);
+            }
+
+            return new ResponseApiDTO
+            {
+                Success = true,
+                Message = "Xóa khóa học thành công."
             };
         }
     }

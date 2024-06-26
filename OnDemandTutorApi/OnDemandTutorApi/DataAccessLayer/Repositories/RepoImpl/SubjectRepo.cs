@@ -18,6 +18,11 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl
             return await _subjectDAO.CreateAsync(subject);
         }
 
+        public async Task<bool> DeleteAsync(Subject subject)
+        {
+            return await _subjectDAO.DeleteAsync(subject);
+        }
+
         public async Task<IEnumerable<Subject>> GetAllAsync()
         {
             return await _subjectDAO.GetAllAsync();

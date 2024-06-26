@@ -17,6 +17,11 @@ namespace OnDemandTutorApi.DataAccessLayer.Repositories.RepoImpl
             return await _timeDAO.CreateAsync(time);
         }
 
+        public async Task<bool> DeleteAsync(Time time)
+        {
+            return await _timeDAO.DeleteAsync(time);
+        }
+
         public async Task<IEnumerable<Time>> GetAllAsycn()
         {
             return await _timeDAO.GetAllAsync();

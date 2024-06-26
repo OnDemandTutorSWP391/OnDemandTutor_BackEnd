@@ -63,7 +63,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             {
                 using (var context = new MyDbContext())
                 {
-                    subject = await context.Subjects.SingleOrDefaultAsync(s => s.Id == id);
+                    subject = await context.Subjects.Include(x => x.SubjectLevels).SingleOrDefaultAsync(s => s.Id == id);
                 }
             }
             catch (Exception ex)
@@ -83,7 +83,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             {
                 using (var context = new MyDbContext())
                 {
-                    subject = await context.Subjects.SingleOrDefaultAsync(s => s.Name == name);
+                    subject = await context.Subjects.Include(x => x.SubjectLevels).SingleOrDefaultAsync(s => s.Name == name);
                 }
                 
             }
@@ -104,6 +104,27 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
                 using(var context = new MyDbContext())
                 {
                     context.Entry<Subject>(subject).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    await context.SaveChangesAsync();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.ToString());
+                Console.ResetColor();
+                return false;
+            }
+        }
+
+        //DELETE
+        public async Task<bool> DeleteAsync(Subject subject)
+        {
+            try
+            {
+                using (var context = new MyDbContext())
+                {
+                    context.Entry<Subject>(subject).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
                     await context.SaveChangesAsync();
                 }
                 return true;

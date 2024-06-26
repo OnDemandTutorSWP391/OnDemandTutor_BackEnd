@@ -33,7 +33,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             emailMessage.From.Add(new MailboxAddress("TamNguyenDev", _emailConfig.From));
             emailMessage.To.AddRange(emailDTO.To);
             emailMessage.Subject = emailDTO.Subject;
-            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = emailDTO.Body };
+            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = emailDTO.Body };
 
             return emailMessage;
         }

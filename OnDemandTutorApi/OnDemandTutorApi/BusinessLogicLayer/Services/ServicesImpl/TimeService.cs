@@ -73,9 +73,11 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             {
                 var student = await _userRepo.GetByIdAsync(item.UserId);
                 var title = $"Thư thông báo về khóa học {time.SubjectLevelId}!";
-                var content = @$"- Giảng viên chủ nhiệm khóa học đã cập nhật lịch học của khóa.
-                             - Sử dụng Id: {time.Id} vào mục Time để tra cứu thông tin chi tiết.
-                             - Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.";
+                var content = $@"
+<p>- Giảng viên chủ nhiệm khóa học đã cập nhật lịch học của khóa.</p>
+<p>- Sử dụng Id: <strong>{time.Id}</strong> vào mục Time để tra cứu thông tin chi tiết.</p>
+<p>- Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.</p>";
+
                 var message = new EmailDTO
                 (
                     new string[] { student.Email! },
@@ -344,9 +346,10 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             {
                 var student = await _userRepo.GetByIdAsync(item.UserId);
                 var title = $"Thư thông báo về khóa học {time.SubjectLevelId}!";
-                var content = @$"- Giảng viên chủ nhiệm khóa học đã cập nhật lịch học của khóa.
-                             - Sử dụng Id: {time.Id} vào mục Time để tra cứu thông tin chi tiết.
-                             - Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.";
+                var content = $@"
+<p>- Giảng viên chủ nhiệm khóa học đã cập nhật lịch học của khóa.</p>
+<p>- Sử dụng Id: <strong>{time.Id}</strong> vào mục Time để tra cứu thông tin chi tiết.</p>
+<p>- Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.</p>";
                 var message = new EmailDTO
                 (
                     new string[] { student.Email! },
@@ -421,6 +424,54 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     EndSlot = x.EndSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
                     Date = x.Date.Date.ToString("dd/MM/yyyy"),
                 })
+            };
+        }
+
+        public async Task<ResponseApiDTO> DeleteAsync(int timeId)
+        {
+            var time = await _timeRepo.GetByIdAsync(timeId);
+            if(time == null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Không tìm thấy lịch học trong hệ thống."
+                };
+            }
+            var subjectLevel = await _subjectLevelRepo.GetByIdAsync(time.SubjectLevelId);
+            var studentJoins = subjectLevel.StudentJoins;
+            var delete = await _timeRepo.DeleteAsync(time);
+            if(!delete)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Lỗi xảy ra khi xóa lịch học trong hệ thống."
+                };
+            }
+
+            foreach (var studentJoin in studentJoins)
+            {
+                var student = await _userRepo.GetByIdAsync(studentJoin.UserId);
+                var titleStudent = $"Thư thông báo xóa lịch học {time.SlotName} của lớp {subjectLevel.Id}!";
+                var contentStudent = $@"
+<p>- Hệ thống ghi nhận gia sư đã xóa lịch học <strong>{time.SlotName}</strong>.</p>
+<p>- Mọi thông tin chi tiết vui lòng liên hệ với giảng viên của bạn.</p>
+<p>- Email giảng viên: <a href='mailto:{studentJoin.SubjectLevel.Tutor.User.Email}'>{studentJoin.SubjectLevel.Tutor.User.Email}</a></p>
+<p>- Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.</p>";
+                var messageStudent = new EmailDTO
+                (
+                    new string[] { student.Email! },
+                        titleStudent,
+                        contentStudent!
+                );
+                _emailService.SendEmail(messageStudent);
+            }
+
+            return new ResponseApiDTO
+            {
+                Success = true,
+                Message = "Xóa lịch học thành công."
             };
         }
     }
