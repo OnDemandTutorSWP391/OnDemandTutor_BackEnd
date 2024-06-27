@@ -23,12 +23,14 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly IConfiguration _configuration;
         private readonly ITutorService _tutorService;
         private readonly MyDbContext _context;
-        private readonly DataAccessLayer.Repositories.Contracts.ICoinManagementRepo _coinManagementRepo;
+        private readonly ICoinManagementRepo _coinManagementRepo;
+        private readonly IEmailService _emailService;
 
         public static int PAGE_SIZE { get; set; } = 5;
 
         public AdminService(IUserRepo userRepo, IMapper mapper, RoleManager<IdentityRole> roleManager, UserManager<DataAccessLayer.Entity.User> userManager, IConfiguration configuration, 
-            ITutorService tutorService, MyDbContext context, DataAccessLayer.Repositories.Contracts.ICoinManagementRepo coinManagementRepo)
+            ITutorService tutorService, MyDbContext context, ICoinManagementRepo coinManagementRepo,
+            IEmailService emailService)
         {
             _userRepo = userRepo;
             _mapper = mapper;
@@ -38,6 +40,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             _tutorService = tutorService;
             _context = context;
             _coinManagementRepo = coinManagementRepo;
+            _emailService = emailService;
         }
 
         public async Task<ResponseApiDTO> CreateUserAsync(UserRequestDTO userRequest)
@@ -106,7 +109,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 return new ResponseApiDTO
                 {
                     Success = false,
-                    Message = "User not found."
+                    Message = "Không tìm thấy người dùng."
                 };
             }
 
@@ -129,14 +132,14 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 return new ResponseApiDTO
                 {
                     Success = false,
-                    Message = "Delete user failed. \nPlease try again"
+                    Message = "Xóa người dùng thất bại. Hãy đảm bảo bạn đã xóa hết cái dịch vụ liên quan đến người dùng này."
                 };
             }
 
             return new ResponseApiDTO
             {
                 Success = true,
-                Message = "Delete user succesfully."
+                Message = "Xóa người dùng thành công."
             };
         }
         public async Task<ResponseApiDTO<IEnumerable<UserResponseDTO>>> GetUsersAsync(string? search, string? sortBy, int pageIndex = 1)
@@ -145,7 +148,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if(!string.IsNullOrEmpty(search))
             {
-                allUsers = allUsers.Where(u => u.FullName.Contains(search));
+                allUsers = allUsers.Where(u => u.FullName.Contains(search) || u.Id == search);
             }
 
             allUsers = allUsers.OrderBy(u => u.FullName);
@@ -426,6 +429,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     UserId = x.UserId,
                     Coin = x.Coin,
                     Date = x.Date,
+                    TransactionId = x.TransactionId,
                 })
             };
         }
@@ -452,6 +456,20 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Message = "Lỗi xảy ra khi khóa tài khoản."
                 };
             }
+
+            var title = $"Thư thông báo xóa tài khoản người dùng {user.FullName}!";
+            var content = $@"
+<p>- Hệ thống ghi nhận đã xóa tài khoản của bạn.</p>
+<p>- Bạn sẽ không thể đăng nhập với tài khoản này nữa.</p>
+<p>- Mọi thông tin chi tiết vui lòng liên hệ phản hồi lại mail này trong vòng 1 ngày.</p>
+<p>- Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thêm thông tin về website.</p>";
+            var message = new EmailDTO
+            (
+                new string[] { user.Email! },
+                    title,
+                    content!
+            );
+            _emailService.SendEmail(message);
 
             return new ResponseApiDTO
             {

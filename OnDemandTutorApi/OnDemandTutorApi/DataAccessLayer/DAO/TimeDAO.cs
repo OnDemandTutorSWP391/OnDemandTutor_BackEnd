@@ -36,7 +36,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             var time = new Time();
             try
             {
-                time = await _context.Times.Include(x => x.SubjectLevel).SingleOrDefaultAsync(x => x.Id == id);
+                time = await _context.Times.Include(x => x.SubjectLevel.Tutor.User).SingleOrDefaultAsync(x => x.Id == id);
             }
             catch (Exception ex)
             {
@@ -74,7 +74,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
             var times = new List<Time>();
             try
             {
-                times = await _context.Times.Include(x => x.SubjectLevel).ToListAsync();
+                times = await _context.Times.Include(x => x.SubjectLevel.Tutor.User).ToListAsync();
             }
             catch (Exception ex)
             {

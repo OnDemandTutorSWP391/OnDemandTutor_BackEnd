@@ -22,6 +22,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
     {
         [Required]
         public string UserId {  get; set; }
+        public bool IsLocked { get; set; }
     }
 
     public class RequestUpdateStatusDTO

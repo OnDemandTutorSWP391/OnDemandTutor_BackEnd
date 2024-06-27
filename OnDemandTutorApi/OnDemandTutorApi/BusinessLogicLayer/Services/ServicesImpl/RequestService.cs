@@ -189,6 +189,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     CreatedDate = x.CreatedDate,
                     Description = x.Description,
                     Status = x.Status,
+                    IsLocked = x.User.IsLocked
                 })
             };
         }
@@ -238,15 +239,11 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
-            var responses = await _responseRepo.GetAllAsync();
-            responses = responses.Where(x => x.RequestId == id);
+            var responseToDelete = request.Response;
 
-            foreach (var item in responses)
-            {
-                await _responseRepo.DeleteAsync(item);
-            }
+            await _responseRepo.DeleteAsync(responseToDelete);
 
-            if(!responses.Any())
+            if (responseToDelete != null)
             {
                 return new ResponseApiDTO
                 {

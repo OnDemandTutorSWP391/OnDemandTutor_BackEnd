@@ -28,6 +28,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         public string StartSlot { get; set; } = null!;
         public string EndSlot { get; set; } = null !;
         public string Date { get; set; } = null!;
+        public bool IsLocked { get; set; }
     }
     #endregion
 }

@@ -60,7 +60,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Moderator")]
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpGet("all-student-join-for-all-subject-level")]
         public async Task<IActionResult> GetAllSync(string? subjectLevelId, string? userId, int page = 1)
         {
@@ -91,6 +91,20 @@ namespace OnDemandTutorApi.Controllers
         public async Task<IActionResult> DeleteForStudentAsync(int studentJoinId)
         {
             var result = await _studentJoinService.DeleteForStudentAsync(studentJoinId);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Admin, Moderator")]
+        [HttpDelete("delete-student-join-for-staff")]
+        public async Task<IActionResult> DeleteForStaffAsync(int studentJoinId)
+        {
+            var result = await _studentJoinService.DeleteForStaffAsync(studentJoinId);
 
             if (!result.Success)
             {

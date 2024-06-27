@@ -37,6 +37,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         public string Url { get; set; } = null!;
         public float Coin { get; set; }
         public string LimitMember { get; set; } = null!;
+        public bool IsLocked { get; set; }
     }
     #endregion
 

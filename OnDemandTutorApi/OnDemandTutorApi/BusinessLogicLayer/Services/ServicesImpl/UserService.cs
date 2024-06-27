@@ -61,6 +61,21 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
+            var title = $"Thư thông báo xóa tài khoản người dùng {user.FullName}!";
+            var content = $@"
+<p>- Hệ thống ghi nhận bạn đã xóa tài khoản.</p>
+<p>- Bạn sẽ không thể đăng nhập với tài khoản này nữa.</p>
+<p>- Mọi thông tin chi tiết vui lòng liên hệ phản hồi lại mail này trong vòng 1 ngày.</p>
+<p>- Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thêm thông tin về website.</p>";
+            var message = new EmailDTO
+            (
+                new string[] { user.Email! },
+                    title,
+                    content!
+            );
+            _emailService.SendEmail(message);
+
+
             return new ResponseApiDTO
             {
                 Success = true,

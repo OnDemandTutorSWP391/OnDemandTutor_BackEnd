@@ -11,6 +11,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.IServices
         public Task<ResponseApiDTO<IEnumerable<TimeResponseDTO>>> GetAllForTutorAsync(string userId, string? timeId, string? subjectLevelId, string? sortBy, DateTime? from, DateTime? to, int page = 1);
         public Task<ResponseApiDTO<IEnumerable<TimeResponseDTO>>> GetAllAsync(string? timeId, string? subjectLevelId, string? sortBy, DateTime? from, DateTime? to, int page = 1);
         public Task<ResponseApiDTO> UpdateAsync(int timeId, TimeRequestDTO timeRequest);
-        public Task<ResponseApiDTO> DeleteAsync(int timeId);
+        public Task<ResponseApiDTO> DeleteForTutorAsync(int timeId);
+        public Task<ResponseApiDTO> DeleteForStaffAsync(int timeId);
     }
 }

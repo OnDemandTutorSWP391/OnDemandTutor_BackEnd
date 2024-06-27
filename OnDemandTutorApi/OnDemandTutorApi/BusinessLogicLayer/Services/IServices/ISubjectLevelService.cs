@@ -6,8 +6,10 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.IServices
     {
         public Task<ResponseApiDTO<SubjectLevelResponseDTO>> CreateAsync(string userId, SubjectLevelRequestDTO subjectLevelDTO);
         public Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllAsync(string? level, string? subject, string? tutor, int page = 1);
+        public Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllForStaffAsync(string? level, string? subject, string? tutor, int page = 1);
         public Task<ResponseApiDTO<SubjectLevelResponseDTO>> GetByIdAsync(int subjectLevelId);
-        public Task<ResponseApiDTO> UpdateAsync(int id, string userId, SubjectLevelRequestDTO subjectLevelDTO);
-        public Task<ResponseApiDTO> DeleteAsync(int id);
+        public Task<ResponseApiDTO> UpdateForTutorAsync(int id, string userId, SubjectLevelRequestDTO subjectLevelDTO);
+        public Task<ResponseApiDTO> DeleteForTutorAsync(int id);
+        public Task<ResponseApiDTO> DeleteForStaffAsync(int id);
     }
 }

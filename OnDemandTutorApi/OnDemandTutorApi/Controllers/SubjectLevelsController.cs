@@ -19,6 +19,8 @@ namespace OnDemandTutorApi.Controllers
             _subjectLevelService = subjectLevelService;
         }
 
+        //CREATE
+
         [Authorize(Roles = "Tutor")]
         [HttpPost("register-subject-level")]
         public async Task<IActionResult> CreateAsync(SubjectLevelRequestDTO subjectLevelDTO)
@@ -35,7 +37,10 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
-        //[Authorize(Roles = "Tutor, Student")]
+        //=================//
+
+        //READ
+
         [HttpGet("get-all-subject-level")]
         public async Task<IActionResult> GetAllAsync(string? level, string? subject, string? tutor, int page = 1)
         {
@@ -49,20 +54,20 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Tutor")]
-        [HttpPut("update-subject-level")]
-        public async Task<IActionResult> UpdateAsync(int id, SubjectLevelRequestDTO subjectLevelDTO)
+        [Authorize(Roles = "Admin, Moderator")]
+        [HttpGet("get-all-subject-level")]
+        public async Task<IActionResult> GetAllForStaffAsync(string? level, string? subject, string? tutor, int page = 1)
         {
-            var userId = HttpContext.User.FindFirstValue("Id");
-            var result = await _subjectLevelService.UpdateAsync(id, userId, subjectLevelDTO);
-            if(!result.Success)
+            var result = await _subjectLevelService.GetAllForStaffAsync(level, subject, tutor, page);
+
+            if (!result.Success)
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
 
-        [Authorize(Roles = "Tutor, Student, Moderator")]
         [HttpGet("get-subject-level-by-id")]
         public async Task<IActionResult> GetByIdAsync(int subjectLevelId)
         {
@@ -76,11 +81,33 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        //===========================//
+
+        //UPDATE
+
         [Authorize(Roles = "Tutor")]
-        [HttpDelete("delete-subject-level")]
-        public async Task<IActionResult> DeleteAsync(int id)
+        [HttpPut("update-subject-level-for-tutor")]
+        public async Task<IActionResult> UpdateAsync(int id, SubjectLevelRequestDTO subjectLevelDTO)
         {
-            var result = await _subjectLevelService.DeleteAsync(id);
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var result = await _subjectLevelService.UpdateForTutorAsync(id, userId, subjectLevelDTO);
+            if(!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+
+        //===========================//
+
+        //DELETE
+
+        [Authorize(Roles = "Tutor")]
+        [HttpDelete("delete-subject-level-for-tutor")]
+        public async Task<IActionResult> DeleteForTutorAsync(int id)
+        {
+            var result = await _subjectLevelService.DeleteForTutorAsync(id);
             if (!result.Success)
             {
                 return BadRequest(result);
@@ -88,5 +115,16 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin, Moderator")]
+        [HttpDelete("delete-subject-level-for-tutor")]
+        public async Task<IActionResult> DeleteForStaffAsync(int id)
+        {
+            var result = await _subjectLevelService.DeleteForStaffAsync(id);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
     }
 }

@@ -85,19 +85,6 @@ namespace OnDemandTutorApi.Controllers
             return StatusCode(StatusCodes.Status200OK, result);
         }
 
-        [HttpDelete("DeleteUser")]
-        public async Task<IActionResult> DeleteUserAsync(string id)
-        {
-            var result = await _adminService.DeleteUserAsync(id);
-
-            if(!result.Success)
-            {
-                return StatusCode(StatusCodes.Status400BadRequest, result);
-            }
-
-            return StatusCode(StatusCodes.Status200OK, result);
-        }
-
         [HttpGet("get-all-transaction")]
         public async Task<IActionResult> GetTransactionsAsync(string? search, DateTime? from, DateTime? to, string? sortBy, int page = 1)
         {

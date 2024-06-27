@@ -88,7 +88,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     CategoryName = x.Request.Category.CategoryName,
                     FullName = x.Request.User.FullName,
                     ResponseDate = x.ResponseDate,
-                    Description = x.Description
+                    Description = x.Description,
+                    IsLocked = x.Request.User.IsLocked,
                 })
             };
         }

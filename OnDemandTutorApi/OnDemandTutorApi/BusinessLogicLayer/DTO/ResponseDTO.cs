@@ -26,5 +26,6 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         [Required]
         public string FullName { get; set; }
         public DateTime ResponseDate { get; set; }
+        public bool IsLocked { get; set; }
     }
 }

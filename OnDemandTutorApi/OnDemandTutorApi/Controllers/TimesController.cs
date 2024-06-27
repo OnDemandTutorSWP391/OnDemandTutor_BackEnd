@@ -65,21 +65,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Tutor")]
-        [HttpPut("update-time-for-tutor")]
-        public async Task<IActionResult> UpdateAsync(int timeId, TimeRequestDTO timeRequest)
-        {
-            var result = await _timeService.UpdateAsync(timeId, timeRequest);
-
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
-
-            return Ok(result);
-        }
-
-        [Authorize(Roles = "Moderator")]
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpGet("times-for-mod")]
         public async Task<IActionResult> GetAllAsync(string? timeId, string? subjectLevelId, string? sortBy, DateTime? from, DateTime? to, int page = 1)
         {
@@ -94,11 +80,41 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+
+        [Authorize(Roles = "Tutor")]
+        [HttpPut("update-time-for-tutor")]
+        public async Task<IActionResult> UpdateAsync(int timeId, TimeRequestDTO timeRequest)
+        {
+            var result = await _timeService.UpdateAsync(timeId, timeRequest);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+
         [Authorize(Roles = "Tutor")]
         [HttpDelete("delete-time-for-tutor")]
-        public async Task<IActionResult> DeleteAsync(int timeId)
+        public async Task<IActionResult> DeleteForTutorAsync(int timeId)
         {
-            var result = await _timeService.DeleteAsync(timeId);
+            var result = await _timeService.DeleteForTutorAsync(timeId);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Admin, Moderator")]
+        [HttpDelete("delete-time-for-staff")]
+        public async Task<IActionResult> DeleteForStaffAsync(int timeId)
+        {
+            var result = await _timeService.DeleteForStaffAsync(timeId);
 
             if (!result.Success)
             {

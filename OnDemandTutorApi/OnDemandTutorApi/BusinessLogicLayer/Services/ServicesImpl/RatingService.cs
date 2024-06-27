@@ -167,7 +167,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 return new ResponseApiDTO
                 {
                     Success = false,
-                    Message = "Bạn không thể xóa đánh giá của người dùng khác."
+                    Message = "Bạn không thể chỉnh sửa đánh giá của người dùng khác."
                 };
             }
 

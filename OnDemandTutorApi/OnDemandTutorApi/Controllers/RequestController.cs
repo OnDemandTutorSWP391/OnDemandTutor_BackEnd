@@ -49,7 +49,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Moderator")]
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpGet("get-all")]
         public async Task<IActionResult> GetAllAsync(string? search, string? userId, DateTime? from, DateTime? to, string? sortBy, int page = 1)
         {
@@ -77,7 +77,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Student")]
+        [Authorize(Roles = "Student, Tutor")]
         [HttpPut("update-by-id")]
         public async Task<IActionResult> UpdateAsync(int id, RequestDTO request)
         {

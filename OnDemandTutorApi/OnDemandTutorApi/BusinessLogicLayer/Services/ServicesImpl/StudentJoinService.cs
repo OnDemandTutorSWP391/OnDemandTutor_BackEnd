@@ -167,13 +167,47 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             };
         }
 
-        public async Task<ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>> GetAllBySubjectLevelIdAsync(string subjectLevelId, string? userId, int page = 1)
-        {
-            var studentJoins = await _studentJoinRepo.GetAllBySubjectLevelIdAsync(Convert.ToInt32(subjectLevelId));
+        //public async Task<ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>> GetAllBySubjectLevelIdAsync(string subjectLevelId, string? userId, int page = 1)
+        //{
+        //    var studentJoins = await _studentJoinRepo.GetAllBySubjectLevelIdAsync(Convert.ToInt32(subjectLevelId));
 
-            if(!string.IsNullOrEmpty(userId))
+        //    if(!string.IsNullOrEmpty(userId))
+        //    {
+        //        studentJoins = studentJoins.Where(x => x.UserId == userId);
+        //    }
+
+        //    var result = PaginatedList<StudentJoin>.Create(studentJoins, page, PAGE_SIZE);
+        //    if (result.IsNullOrEmpty())
+        //    {
+        //        return new ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>
+        //        {
+        //            Success = true,
+        //            Message = "Hiện tại chưa có học sinh nào đăng kí khóa học."
+        //        };
+        //    }
+
+        //    return new ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>
+        //    {
+        //        Success = true,
+        //        Message = "Đây là danh sách các học sinh đã đăng kí khóa học",
+        //        Data = result.Select(x => new StudentJoinResponseDTO
+        //        {
+        //            Id = x.Id,
+        //            UserId = x.UserId,
+        //            SubjectLevelId = x.SubjectLevelId,
+        //            FullName = x.User.FullName,
+        //            Email = x.User.Email,
+        //        })
+        //    };
+        //}
+
+        public async Task<ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>> GetAllByStudentIdAsync(string studentId, string? subjectLevelId, int page = 1)
+        {
+            var studentJoins = await _studentJoinRepo.GetAllByUserIdAsync(studentId);
+
+            if (!string.IsNullOrEmpty(subjectLevelId))
             {
-                studentJoins = studentJoins.Where(x => x.UserId == userId);
+                studentJoins = studentJoins.Where(x => x.SubjectLevelId == Convert.ToInt32(subjectLevelId));
             }
 
             var result = PaginatedList<StudentJoin>.Create(studentJoins, page, PAGE_SIZE);
@@ -182,14 +216,14 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 return new ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>
                 {
                     Success = true,
-                    Message = "Hiện tại chưa có học sinh nào đăng kí khóa học."
+                    Message = "Hiện tại bạn chưa đăng kí khóa học nào."
                 };
             }
 
             return new ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>
             {
                 Success = true,
-                Message = "Đây là danh sách các học sinh đã đăng kí khóa học",
+                Message = "Đây là danh sách các khóa học bạn đã đăng kí",
                 Data = result.Select(x => new StudentJoinResponseDTO
                 {
                     Id = x.Id,
@@ -197,6 +231,48 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     SubjectLevelId = x.SubjectLevelId,
                     FullName = x.User.FullName,
                     Email = x.User.Email,
+                    IsLocked = x.User.IsLocked,
+                })
+            };
+        }
+
+        public async Task<ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>> GetAllByTutorIdAsync(string userId, string? subjectLevelId, string? studentlId, int page = 1)
+        {
+            var tutor = await _tutorRepo.GetTutorByUserIdAsync(userId);
+            var studentJoins = await _studentJoinRepo.GetAllByTutorIdAsync(tutor.Id);
+
+            if (!string.IsNullOrEmpty(subjectLevelId))
+            {
+                studentJoins = studentJoins.Where(x => x.SubjectLevelId == Convert.ToInt32(subjectLevelId));
+            }
+
+            if (!string.IsNullOrEmpty(studentlId))
+            {
+                studentJoins = studentJoins.Where(x => x.UserId == studentlId);
+            }
+
+            var result = PaginatedList<StudentJoin>.Create(studentJoins, page, PAGE_SIZE);
+            if (result.IsNullOrEmpty())
+            {
+                return new ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>
+                {
+                    Success = true,
+                    Message = "Hiện tại chưa có học sinh nào đăng kí các khóa học."
+                };
+            }
+
+            return new ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>
+            {
+                Success = true,
+                Message = "Đây là danh sách các học sinh đã đăng kí các khóa học",
+                Data = result.Select(x => new StudentJoinResponseDTO
+                {
+                    Id = x.Id,
+                    UserId = x.UserId,
+                    SubjectLevelId = x.SubjectLevelId,
+                    FullName = x.User.FullName,
+                    Email = x.User.Email,
+                    IsLocked = x.User.IsLocked
                 })
             };
         }
@@ -236,6 +312,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     SubjectLevelId = x.SubjectLevelId,
                     FullName = x.User.FullName,
                     Email = x.User.Email,
+                    IsLocked = x.User.IsLocked
                 })
             };
         }
@@ -350,77 +427,66 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             };
         }
 
-        public async Task<ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>> GetAllByStudentIdAsync(string studentId, string? subjectLevelId, int page = 1)
+        public async Task<ResponseApiDTO> DeleteForStaffAsync(int studentJoinId)
         {
-            var studentJoins = await _studentJoinRepo.GetAllByUserIdAsync(studentId);
+            var studentJoin = await _studentJoinRepo.GetByIdAsync(studentJoinId);
 
-            if (!string.IsNullOrEmpty(subjectLevelId))
+            if (studentJoin == null)
             {
-                studentJoins = studentJoins.Where(x => x.SubjectLevelId == Convert.ToInt32(subjectLevelId));
-            }
-
-            var result = PaginatedList<StudentJoin>.Create(studentJoins, page, PAGE_SIZE);
-            if (result.IsNullOrEmpty())
-            {
-                return new ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>
+                return new ResponseApiDTO
                 {
-                    Success = true,
-                    Message = "Hiện tại bạn chưa đăng kí khóa học nào."
+                    Success = false,
+                    Message = "Không tồn tại học sinh này trong lớp."
                 };
             }
 
-            return new ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>
+            var result = await _studentJoinRepo.DeleteAsync(studentJoin);
+
+            if (!result)
             {
-                Success = true,
-                Message = "Đây là danh sách các khóa học bạn đã đăng kí",
-                Data = result.Select(x => new StudentJoinResponseDTO
+                return new ResponseApiDTO
                 {
-                    Id = x.Id,
-                    UserId = x.UserId,
-                    SubjectLevelId = x.SubjectLevelId,
-                    FullName = x.User.FullName,
-                    Email = x.User.Email,
-                })
-            };
-        }
-
-        public async Task<ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>> GetAllByTutorIdAsync(string userId, string? subjectLevelId, string? studentlId, int page = 1)
-        {
-            var tutor = await _tutorRepo.GetTutorByUserIdAsync(userId);
-            var studentJoins = await _studentJoinRepo.GetAllByTutorIdAsync(tutor.Id);
-
-            if (!string.IsNullOrEmpty(subjectLevelId))
-            {
-                studentJoins = studentJoins.Where(x => x.SubjectLevelId == Convert.ToInt32(subjectLevelId));
-            }
-
-            if (!string.IsNullOrEmpty(studentlId))
-            {
-                studentJoins = studentJoins.Where(x => x.UserId == studentlId);
-            }
-
-            var result = PaginatedList<StudentJoin>.Create(studentJoins, page, PAGE_SIZE);
-            if (result.IsNullOrEmpty())
-            {
-                return new ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>
-                {
-                    Success = true,
-                    Message = "Hiện tại chưa có học sinh nào đăng kí các khóa học."
+                    Success = false,
+                    Message = "Hệ thống gặp lỗi khi xóa học sinh này khỏi lớp."
                 };
             }
 
-            return new ResponseApiDTO<IEnumerable<StudentJoinResponseDTO>>
+            var student = await _userRepo.GetByIdAsync(studentJoin.UserId);
+            var titleStudent = $"Thư thông báo xóa học sinh khỏi lớp học {studentJoin.SubjectLevelId}!";
+            var contentStudent = $@"
+<p>- Hệ thống ghi nhận bạn đã bị xóa khỏi lớp.</p>
+<p>- Mọi thông tin chi tiết vui lòng liên hệ với giảng viên của bạn hoặc phản hồi mail này để được giải quyết.</p>
+<p>- Email giảng viên: <a href='mailto:{studentJoin.SubjectLevel.Tutor.User.Email}'>{studentJoin.SubjectLevel.Tutor.User.Email}</a></p>
+<p>- Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.</p>";
+
+            var messageStudent = new EmailDTO
+            (
+                new string[] { student.Email! },
+                    titleStudent,
+                    contentStudent!
+            );
+            _emailService.SendEmail(messageStudent);
+
+            var subjectLevel = await _subjectLevelRepo.GetByIdAsync(studentJoin.SubjectLevelId);
+            var tutor = subjectLevel.Tutor;
+            var titleTutor = $"Thư thông báo xóa học sinh khỏi lớp học {studentJoin.SubjectLevelId}!";
+            var contentTutor = $@"
+<p>- Hệ thống ghi nhận đã xóa học sinh {studentJoin.User.FullName} khỏi lớp.</p>
+<p>- Mọi thông tin chi tiết vui lòng liên hệ phản hồi mail này để được giải quyết.</p>
+<p>- Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.</p>";
+
+            var messageTutor = new EmailDTO
+            (
+                new string[] { tutor.User.Email! },
+                    titleTutor,
+                    contentTutor!
+            );
+            _emailService.SendEmail(messageTutor);
+
+            return new ResponseApiDTO
             {
                 Success = true,
-                Message = "Đây là danh sách các học sinh đã đăng kí các khóa học",
-                Data = result.Select(x => new StudentJoinResponseDTO
-                {
-                    Id = x.Id,
-                    UserId = x.UserId,
-                    SubjectLevelId = x.SubjectLevelId,
-                    FullName = x.User.FullName,
-                    Email = x.User.Email,
-                })
+                Message = "Xóa học sinh khỏi lớp thành công."
             };
         }
     }

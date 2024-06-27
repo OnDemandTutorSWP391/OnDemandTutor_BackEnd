@@ -106,6 +106,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         public async Task<ResponseApiDTO<IEnumerable<TimeResponseDTO>>> GetAllForStudentAsync(string userId, string? timeId, string? subjectLevelId, string? sortBy, DateTime? from, DateTime? to, int page = 1)
         {
             var times =  await _timeRepo.GetAllByStudentIdAsync(userId);
+            times = times.Where(x => x.SubjectLevel.Tutor.User.IsLocked == false);
 
             if(!string.IsNullOrEmpty(timeId))
             {
@@ -160,6 +161,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     StartSlot = x.StartSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
                     EndSlot = x.EndSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
                     Date = x.Date.Date.ToString("dd/MM/yyyy"),
+                    IsLocked = x.SubjectLevel.Tutor.User.IsLocked,
                 })
             };
         }
@@ -423,11 +425,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     StartSlot = x.StartSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
                     EndSlot = x.EndSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
                     Date = x.Date.Date.ToString("dd/MM/yyyy"),
+                    IsLocked = x.SubjectLevel.Tutor.User.IsLocked,
                 })
             };
         }
 
-        public async Task<ResponseApiDTO> DeleteAsync(int timeId)
+        public async Task<ResponseApiDTO> DeleteForTutorAsync(int timeId)
         {
             var time = await _timeRepo.GetByIdAsync(timeId);
             if(time == null)
@@ -467,6 +470,70 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 );
                 _emailService.SendEmail(messageStudent);
             }
+
+            return new ResponseApiDTO
+            {
+                Success = true,
+                Message = "Xóa lịch học thành công."
+            };
+        }
+
+        public async Task<ResponseApiDTO> DeleteForStaffAsync(int timeId)
+        {
+            var time = await _timeRepo.GetByIdAsync(timeId);
+            if (time == null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Không tìm thấy lịch học trong hệ thống."
+                };
+            }
+            var subjectLevel = await _subjectLevelRepo.GetByIdAsync(time.SubjectLevelId);
+            var studentJoins = subjectLevel.StudentJoins;
+            var delete = await _timeRepo.DeleteAsync(time);
+            if (!delete)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Lỗi xảy ra khi xóa lịch học trong hệ thống."
+                };
+            }
+
+            var studentMails = new List<string>();
+            foreach (var studentJoin in studentJoins)
+            {
+                studentMails.Add(studentJoin.User.Email);
+            }
+
+            var titleStudent = $"Thư thông báo xóa lịch học {time.SlotName} của lớp {subjectLevel.Id}!";
+            var contentStudent = $@"
+<p>- Hệ thống ghi nhận gia sư đã xóa lịch học <strong>{time.SlotName}</strong>.</p>
+<p>- Mọi thông tin chi tiết vui lòng liên hệ với giảng viên của bạn hoặc phản hồi lại mail này để được giải đáp.</p>
+<p>- Email giảng viên: <a href='mailto:{subjectLevel.Tutor.User.Email}'>{subjectLevel.Tutor.User.Email}</a></p>
+<p>- Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.</p>";
+            var messageStudent = new EmailDTO
+            (
+                studentMails,
+                    titleStudent,
+                    contentStudent!
+            );
+            _emailService.SendEmail(messageStudent);
+
+            var tutorEmail = subjectLevel.Tutor.User.Email;
+            var titleTutor = $"Thư thông báo xóa lịch học {time.SlotName} của lớp {subjectLevel.Id}!";
+            var contentTutor = $@"
+<p>- Hệ thống lịch học <strong>{time.SlotName}</strong>.</p>
+<p>- Mọi thông tin chi tiết vui lòng phản hồi lại mail này để được giải đáp.</p>
+<p>- Vui lòng thường xuyên kiểm tra Email bằng tài khoản này để cập nhật thông tin lớp học.</p>";
+            var messageTutor = new EmailDTO
+            (
+                new string[] { tutorEmail! },
+                    titleTutor,
+                    contentTutor!
+            );
+            _emailService.SendEmail(messageTutor);
 
             return new ResponseApiDTO
             {
