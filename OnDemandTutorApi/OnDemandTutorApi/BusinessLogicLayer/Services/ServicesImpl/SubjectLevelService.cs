@@ -301,9 +301,9 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
-            var studentJoinsPreDelete = subjectLevel.StudentJoins;
-            var studentJoinsToDelete = subjectLevel.StudentJoins;
-            var timesToDelete = subjectLevel.Times;
+            var studentJoinsPreDelete = subjectLevel.StudentJoins.ToList();
+            var studentJoinsToDelete = subjectLevel.StudentJoins.ToList();
+            var timesToDelete = subjectLevel.Times.ToList();
 
             foreach (var time in timesToDelete)
             {
@@ -315,7 +315,14 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 await _studentJoinRepo.DeleteAsync(studentJoin);
             }
 
-            if(studentJoinsToDelete.Any() || timesToDelete.Any())
+            // Tải lại subjectLevel để kiểm tra lại các danh sách
+            subjectLevel = await _subjectLevelRepo.GetByIdAsync(id);
+
+            // Kiểm tra lại các danh sách sau khi đã xóa
+            var remainingTimes = subjectLevel.Times;
+            var remainingStudentJoins = subjectLevel.StudentJoins;
+
+            if (remainingStudentJoins.Any() || remainingTimes.Any())
             {
                 return new ResponseApiDTO
                 {

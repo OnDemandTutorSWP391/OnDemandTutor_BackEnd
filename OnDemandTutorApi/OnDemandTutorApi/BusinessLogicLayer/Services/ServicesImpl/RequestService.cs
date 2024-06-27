@@ -240,10 +240,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
 
             var responseToDelete = request.Response;
-
             await _responseRepo.DeleteAsync(responseToDelete);
 
-            if (responseToDelete != null)
+            request = await _requestRepo.GetByIdAsync(id);
+            var remainingResponse = request.Response;
+
+            if (remainingResponse != null)
             {
                 return new ResponseApiDTO
                 {

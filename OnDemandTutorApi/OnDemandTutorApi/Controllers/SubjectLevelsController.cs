@@ -55,7 +55,7 @@ namespace OnDemandTutorApi.Controllers
         }
 
         [Authorize(Roles = "Admin, Moderator")]
-        [HttpGet("get-all-subject-level")]
+        [HttpGet("get-all-subject-level-for-staff")]
         public async Task<IActionResult> GetAllForStaffAsync(string? level, string? subject, string? tutor, int page = 1)
         {
             var result = await _subjectLevelService.GetAllForStaffAsync(level, subject, tutor, page);
@@ -116,7 +116,7 @@ namespace OnDemandTutorApi.Controllers
         }
 
         [Authorize(Roles = "Admin, Moderator")]
-        [HttpDelete("delete-subject-level-for-tutor")]
+        [HttpDelete("delete-subject-level-for-staff")]
         public async Task<IActionResult> DeleteForStaffAsync(int id)
         {
             var result = await _subjectLevelService.DeleteForStaffAsync(id);

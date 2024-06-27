@@ -171,17 +171,10 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
-            var subjectLevelsPreDelete = level.SubjectLevels;
-            var subjectLevelsToDelete = level.SubjectLevels;
-            var studentJoinsPreDelete = new List<StudentJoin>();
-            var studentJoinsToDelete = new List<StudentJoin>();
-            var timesToDelete = new List<Time>();
 
-            foreach (var subjectLevel in subjectLevelsToDelete)
-            {
-                studentJoinsToDelete.AddRange(subjectLevel.StudentJoins);
-                timesToDelete.AddRange(subjectLevel.Times);
-            }
+            var subjectLevelsToDelete = level.SubjectLevels.ToList();
+            var studentJoinsToDelete = subjectLevelsToDelete.SelectMany(sl => sl.StudentJoins).ToList();
+            var timesToDelete = subjectLevelsToDelete.SelectMany(sl => sl.Times).ToList();
 
             foreach (var time in timesToDelete)
             {
@@ -193,7 +186,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 await _studentJoinRepo.DeleteAsync(studentJoin);
             }
 
-            if (timesToDelete.Any() || studentJoinsToDelete.Any())
+            // Tải lại level để kiểm tra lại các danh sách sau khi xóa
+            level = await _levelRepo.GetByIdAsync(id);
+            var remainingTimes = level.SubjectLevels.SelectMany(sl => sl.Times).ToList();
+            var remainingStudentJoins = level.SubjectLevels.SelectMany(sl => sl.StudentJoins).ToList();
+
+            if (remainingTimes.Any() || remainingStudentJoins.Any())
             {
                 return new ResponseApiDTO
                 {
@@ -207,7 +205,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 await _subjectLevelRepo.DeleteAsync(subjectLevel);
             }
 
-            if(subjectLevelsToDelete.Any())
+            // Tải lại level để kiểm tra lại các danh sách subjectLevels sau khi xóa
+            level = await _levelRepo.GetByIdAsync(id);
+            var remainingSubjectLevels = level.SubjectLevels.ToList();
+
+
+            if (remainingSubjectLevels.Any())
             {
                 return new ResponseApiDTO
                 {
@@ -226,9 +229,9 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
-            foreach (var subjectLevel in subjectLevelsPreDelete)
+            foreach (var subjectLevel in subjectLevelsToDelete)
             {
-                foreach (var studentJoin in studentJoinsPreDelete)
+                foreach (var studentJoin in studentJoinsToDelete)
                 {
                     var student = await _userRepo.GetByIdAsync(studentJoin.UserId);
                     var titleStudent = $"Thư thông báo xóa học sinh khỏi lớp học {studentJoin.SubjectLevelId}!";

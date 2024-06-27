@@ -183,24 +183,22 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
-            var requests = await _requestRepo.GetAllAsync();
-            var responses = await _responseRepo.GetAllAsync();
-            var requestsWithCategory = requests.Where(x => x.RequestCategoryId == id).ToList();
-            var responsesToDelete = new List<Response>();
-
-            foreach (var request in requestsWithCategory)
-            {
-                var responsesForRequest = responses.Where(x => x.RequestId == request.Id).ToList();
-                responsesToDelete.AddRange(responsesForRequest); // Thêm tất cả các phản hồi vào danh sách responsesToDelete
-            }
+            var requestsToDelete = category.Requests.ToList();
 
             // Xóa các phản hồi trước
-            foreach (var response in responsesToDelete)
+            foreach (var request in requestsToDelete)
             {
-                await _responseRepo.DeleteAsync(response);
+                if (request.Response != null)
+                {
+                    await _responseRepo.DeleteAsync(request.Response);
+                }
             }
 
-            if(responsesToDelete.Any())
+            // Tải lại category để kiểm tra lại các phản hồi sau khi xóa
+            category = await _requestCategoryRepo.GetByIdAsync(id);
+            var remainingResponses = category.Requests.Select(r => r.Response).Where(r => r != null).ToList();
+
+            if (remainingResponses.Any())
             {
                 return new ResponseApiDTO
                 {
@@ -210,12 +208,16 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
 
             // Xóa các yêu cầu sau khi xóa hết các phản hồi
-            foreach (var request in requestsWithCategory)
+            foreach (var request in requestsToDelete)
             {
                 await _requestRepo.DeleteAsync(request);
             }
 
-            if (requestsWithCategory.Any())
+            // Tải lại category để kiểm tra lại các yêu cầu sau khi xóa
+            category = await _requestCategoryRepo.GetByIdAsync(id);
+            var remainingRequests = category.Requests.ToList();
+
+            if (remainingRequests.Any())
             {
                 return new ResponseApiDTO
                 {

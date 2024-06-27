@@ -85,7 +85,7 @@ builder.Services.AddScoped<RatingDAO>();
 //Repositories
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<ITutorRepo, TutorRepo>();
-builder.Services.AddScoped<OnDemandTutorApi.DataAccessLayer.Repositories.Contracts.ICoinManagementRepo, CoinManagementRepo>();
+builder.Services.AddScoped<ICoinManagementRepo, CoinManagementRepo>();
 builder.Services.AddScoped<IRequestCategoryRepo, RequestCategoryRepo>();
 builder.Services.AddScoped<IRequestRepo, RequestRepo>();
 builder.Services.AddScoped<IResponseRepo, ResponseRepo>();
@@ -156,7 +156,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-app.UseSwaggerUI();
+    app.UseSwaggerUI();
 }
 
 //app.UseSwagger();

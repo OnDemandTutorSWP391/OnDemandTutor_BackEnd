@@ -92,7 +92,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
 
             try
             {
-                times = await (from time in _context.Times.Include(x => x.SubjectLevel)
+                times = await (from time in _context.Times.Include(x => x.SubjectLevel.Tutor.User)
                                join subjectLevel in _context.SubjectLevels on time.SubjectLevelId equals subjectLevel.Id
                                join studentJoin in _context.StudentJoins on subjectLevel.Id equals studentJoin.SubjectLevelId
                                where studentJoin.UserId == studentId
@@ -114,7 +114,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
 
             try
             {
-                times = await (from time in _context.Times.Include(x => x.SubjectLevel)
+                times = await (from time in _context.Times.Include(x => x.SubjectLevel.Tutor.User)
                                join subjectLevel in _context.SubjectLevels on time.SubjectLevelId equals subjectLevel.Id
                                where subjectLevel.TutorId == tutorId
                                select time).ToListAsync();
