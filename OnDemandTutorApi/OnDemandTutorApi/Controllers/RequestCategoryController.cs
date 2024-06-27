@@ -7,7 +7,6 @@ using OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl;
 
 namespace OnDemandTutorApi.Controllers
 {
-    [Authorize(Roles = "Moderator")]
     [Route("api/[controller]")]
     [ApiController]
     public class RequestCategoryController : ControllerBase
@@ -19,6 +18,7 @@ namespace OnDemandTutorApi.Controllers
             _requestCategoryService = requestCategoryService;
         }
 
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpPost("create-request-category")]
         public async Task<IActionResult> CreateAsync(RequestCategoryDTO requestCategoryDTO)
         {
@@ -58,6 +58,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpPut("update-category")]
         public async Task<IActionResult> UpdateAsync(RequestCategoryDTO requestCategoryDTO, int id)
         {
@@ -71,6 +72,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpDelete("delete-category")]
         public async Task<IActionResult> DeleteAsync(int id)
         {

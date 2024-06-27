@@ -34,6 +34,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+
         [HttpGet("get-ratings-by-tutor-id")]
         public async Task<IActionResult> GetAllByTutorIdAsynnc(string tutorId, string? sortBy, int page = 1)
         {
@@ -46,6 +47,7 @@ namespace OnDemandTutorApi.Controllers
 
             return Ok(result);
         }
+
 
         [Authorize(Roles = "Tutor")]
         [HttpGet("get-ratings-by-tutor-self")]
@@ -62,6 +64,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+
         [Authorize(Roles = "Moderator, Admin")]
         [HttpGet("get-all-ratings")]
         public async Task<IActionResult> GetAllAsync(string? userId, string? tutorId, string? sortBy, int page = 1)
@@ -75,6 +78,7 @@ namespace OnDemandTutorApi.Controllers
 
             return Ok(result);
         }
+
 
         [Authorize(Roles = "Student")]
         [HttpPut("update-rating")]
@@ -91,6 +95,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+
         [Authorize(Roles = "Student")]
         [HttpDelete("delete-rating-for-student")]
         public async Task<IActionResult> DeleteForStudentAsync(int ratingId)
@@ -106,6 +111,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+
         [Authorize(Roles = "Moderator, Admin")]
         [HttpDelete("delete-rating")]
         public async Task<IActionResult> DeleteAsync(int ratingId)
@@ -119,5 +125,6 @@ namespace OnDemandTutorApi.Controllers
 
             return Ok(result);
         }
+
     }
 }

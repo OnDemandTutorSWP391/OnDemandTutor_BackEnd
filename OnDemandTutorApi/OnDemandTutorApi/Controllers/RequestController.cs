@@ -8,7 +8,6 @@ using System.Security.Claims;
 
 namespace OnDemandTutorApi.Controllers
 {
-    [Authorize(Roles = "Tutor, Student, Moderator")]
     [Route("api/[controller]")]
     [ApiController]
     public class RequestController : ControllerBase
@@ -20,6 +19,7 @@ namespace OnDemandTutorApi.Controllers
             _requestService = requestService;
         }
 
+        [Authorize(Roles = "Tutor, Student")]
         [HttpPost("create-request")]
         public async Task<IActionResult> CreateAsync(RequestDTO requestDTO)
         {
@@ -34,6 +34,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Tutor, Student")]
         [HttpGet("get-all-for-user")]
         public async Task<IActionResult> GetAllForUserAsync(string? search, DateTime? from, DateTime? to, string? sortBy, int page = 1)
         {
@@ -63,7 +64,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Moderator")]
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpPut("update-status-by-id")]
         public async Task<IActionResult> UpdateStatusRequestAsync(int id, RequestUpdateStatusDTO request)
         {
@@ -91,7 +92,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Moderator")]
+        [Authorize(Roles = "Moderator, Admin, Tutor, Student")]
         [HttpDelete("delete-request-by-id")]
         public async Task<IActionResult> DeleteAsync(int id)
         {

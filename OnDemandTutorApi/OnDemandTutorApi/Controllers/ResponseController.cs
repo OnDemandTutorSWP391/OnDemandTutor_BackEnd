@@ -7,7 +7,7 @@ using OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl;
 
 namespace OnDemandTutorApi.Controllers
 {
-    [Authorize(Roles = "Moderator, Admin")]
+    
     [Route("api/[controller]")]
     [ApiController]
     public class ResponseController : ControllerBase
@@ -19,6 +19,7 @@ namespace OnDemandTutorApi.Controllers
             _responseService = responseService;
         }
 
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpPost("send-response")]
         public async Task<IActionResult> SendResponseAsync(int requestId, ResponseContentDTO responseContent)
         {
@@ -32,6 +33,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpGet("get-all")]
         public async Task<IActionResult> GetAllAsync(string? search, string? requestId, DateTime? from, DateTime? to, string? sortBy, int page = 1)
         {
@@ -45,6 +47,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpDelete("delete-response")]
         public async Task<IActionResult> DeleteAsync(int id)
         {

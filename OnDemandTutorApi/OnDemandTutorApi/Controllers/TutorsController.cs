@@ -35,7 +35,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Moderator")]
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpGet("get-tutor-profile-by-id")]
         public async Task<IActionResult> GetProfileByIdAsync(int id)
         {
@@ -63,6 +63,8 @@ namespace OnDemandTutorApi.Controllers
 
             return Ok(result);
         }
+
+
         [Authorize(Roles = "Student")]
         [HttpGet("get-all-tutors-for-student")]
         public async Task<IActionResult> GetAllTutorsForStudentAsync(string? search, string? sortBy, int page = 1)
@@ -77,7 +79,8 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Moderator")]
+
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpGet("get-all-tutors")]
         public async Task<IActionResult> GetAllTutorsAsync(string? search, string? sortBy, int page = 1)
         {
@@ -91,7 +94,8 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Moderator")]
+
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpPut("update-status-profile")]
         public async Task<IActionResult> UpdateStatusAsync(int tutorId, string status)
         {

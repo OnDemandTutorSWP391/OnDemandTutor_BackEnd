@@ -7,7 +7,7 @@ using OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl;
 
 namespace OnDemandTutorApi.Controllers
 {
-    [Authorize(Roles = "Moderator, Admin")]
+    
     [Route("api/[controller]")]
     [ApiController]
     public class SubjectsController : ControllerBase
@@ -19,6 +19,7 @@ namespace OnDemandTutorApi.Controllers
             _subjectService = subjectService;
         }
 
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpPost("create-subject")]
         public async Task<IActionResult> CreateAsync(SubjectDTO subjectDTO)
         {
@@ -44,6 +45,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpPut("update-subject")]
         public async Task<IActionResult> UpdateAsync(int id, SubjectDTO subjectDTO)
         {
@@ -57,6 +59,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Moderator, Admin")]
         [HttpDelete("delete-subject")]
         public async Task<IActionResult> DeleteAsync(int id)
         {

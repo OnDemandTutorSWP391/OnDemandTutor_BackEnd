@@ -32,6 +32,7 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        [AllowAnonymous]
         [HttpGet("get-all")]
         public async Task<IActionResult> GetAllAsync(string? search, string? levelId, string? sortBy, int page = 1)
         {

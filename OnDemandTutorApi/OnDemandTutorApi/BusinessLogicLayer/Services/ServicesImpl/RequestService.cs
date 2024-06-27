@@ -240,17 +240,30 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
 
             var responseToDelete = request.Response;
-            await _responseRepo.DeleteAsync(responseToDelete);
+            if(responseToDelete != null)
+            {
+                await _responseRepo.DeleteAsync(responseToDelete);
 
-            request = await _requestRepo.GetByIdAsync(id);
-            var remainingResponse = request.Response;
+                request = await _requestRepo.GetByIdAsync(id);
+                var remainingResponse = request.Response;
 
-            if (remainingResponse != null)
+                if (remainingResponse != null)
+                {
+                    return new ResponseApiDTO
+                    {
+                        Success = false,
+                        Message = "Lỗi xảy ra khi xóa các phản hồi liên quan đến yêu cầu."
+                    };
+                }
+            }
+
+            var result = await _requestRepo.DeleteAsync(request);
+            if(!result)
             {
                 return new ResponseApiDTO
                 {
                     Success = false,
-                    Message = "Lỗi xảy ra khi xóa các phản hồi liên quan đến yêu cầu."
+                    Message = "Lỗi xảy ra khi xóa yêu cầu"
                 };
             }
 
