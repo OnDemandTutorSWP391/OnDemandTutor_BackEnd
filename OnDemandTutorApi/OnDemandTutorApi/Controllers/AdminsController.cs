@@ -61,18 +61,6 @@ namespace OnDemandTutorApi.Controllers
             return StatusCode(StatusCodes.Status200OK, result);
         }
 
-        [HttpPut("UpdateUserRole")]
-        public async Task<IActionResult> UpdateUserRoleAsync(string id, string oldRole, string newRole, string choice)
-        {
-            var result = await _adminService.UpdateUserRoleAsync(id, oldRole, newRole, choice);
-            if(!result.Success)
-            {
-                return StatusCode(StatusCodes.Status400BadRequest, result);
-            }
-
-            return StatusCode(StatusCodes.Status200OK, result);
-        }
-
         [HttpPut("Lock-user-account")]
         public async Task<IActionResult> LockUserAsync(string id)
         {
