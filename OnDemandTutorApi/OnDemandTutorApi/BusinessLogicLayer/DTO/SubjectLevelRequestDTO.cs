@@ -20,6 +20,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         public float Coin { get; set; }
         [Range(0, 5, ErrorMessage = "Để đảm bảo chất lượng giảng dạy, số lượng thành viên tối đa không được lớn hơn 5")]
         public int LimitMember { get; set; }
+        public string? Image {  get; set; }
     }
 
     #endregion
@@ -37,6 +38,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         public string Url { get; set; } = null!;
         public float Coin { get; set; }
         public string LimitMember { get; set; } = null!;
+        public string? Image { get; set; }
         public bool IsLocked { get; set; }
     }
     #endregion

@@ -102,6 +102,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Description = subjectLevel.Description,
                     Url = subjectLevel.Url,
                     Coin = subjectLevel.Coin,
+                    Image = subjectLevel.Image,
                     LimitMember = $"{subjectLevel.LimitMember}",
                 }
             };
@@ -241,6 +242,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Description = subjectLevel.Description,
                     Url = subjectLevel.Url,
                     Coin = subjectLevel.Coin,
+                    Image = subjectLevel.Image,
                     LimitMember = $"{subjectLevel.StudentJoins.Count}/{subjectLevel.LimitMember}",
                 }
             };
