@@ -257,6 +257,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Status = x.Status,
                     OnlineStatus = x.OnlineStatus,
                     AverageStar = x.Ratings.Any() ? x.Ratings.Average(r => r.Star) : 0,
+                    Avatar = x.User.Avatar,
                     IsLocked = x.User.IsLocked,
                 })
             };
@@ -301,6 +302,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Status = x.Status,
                     OnlineStatus = x.OnlineStatus,
                     AverageStar = x.Ratings.Any() ? x.Ratings.Average(r => r.Star) : 0,
+                    Avatar = x.User.Avatar,
                     IsLocked = x.User.IsLocked,
                 })
             };
