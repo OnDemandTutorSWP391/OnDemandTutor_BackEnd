@@ -28,7 +28,7 @@ namespace OnDemandTutorApi.DataAccessLayer.Entity
         public float Coin { get; set; }
         public int LimitMember { get; set; }
         [AllowNull]
-        public string Image {  get; set; }
+        public string? Image {  get; set; }
         //
         public virtual Level Level { get; set; } = null!;
         public virtual Subject Subject { get; set; } = null!;
