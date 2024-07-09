@@ -64,6 +64,21 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Student")]
+        [HttpGet("get-ratings-by-tutor-self")]
+        public async Task<IActionResult> GetAllByStudentIdAsync(string? sortBy, int page = 1)
+        {
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var result = await _ratingService.GetAllByStudentIdAsync(userId, sortBy, page);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
 
         [Authorize(Roles = "Moderator, Admin")]
         [HttpGet("get-all-ratings")]

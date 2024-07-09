@@ -6,6 +6,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.IServices
     {
         public Task<ResponseApiDTO<RatingResponseDTO>> CreateAsync(string userId, RatingRequestDTO ratingRequestDTO);
         public Task<ResponseApiDTO<IEnumerable<RatingResponseDTO>>> GetAllByTutorIdAsync(int tutorId, string? sortBy, int page = 1);
+        public Task<ResponseApiDTO<IEnumerable<RatingResponseDTO>>> GetAllByStudentIdAsync(string studentId, string? sortBy, int page = 1);
         public Task<ResponseApiDTO<IEnumerable<RatingResponseDTO>>> GetAllByTutorSelfAsync(string userId, string? sortBy, int page = 1);
         public Task<ResponseApiDTO<IEnumerable<RatingResponseDTO>>> GetAllAsync(string? userId, int tutorId, string? sortBy, int page = 1);
         public Task<ResponseApiDTO> UpdateAsync(int ratingId, string userId, RatingUpdateDTO ratingUpdateDTO);

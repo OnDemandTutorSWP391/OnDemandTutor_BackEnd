@@ -308,5 +308,43 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Message = "Xóa đánh giá thành công."
             };
         }
+
+        public async Task<ResponseApiDTO<IEnumerable<RatingResponseDTO>>> GetAllByStudentIdAsync(string studentId, string? sortBy, int page = 1)
+        {
+            var ratings = await _ratingRepo.GetAllAsync();
+            ratings = ratings.Where(x => x.UserId == studentId);
+
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                switch (sortBy)
+                {
+                    case "incre": ratings = ratings.OrderBy(x => x.Star); break;
+                }
+            }
+
+            var result = PaginatedList<Rating>.Create(ratings, page, PAGE_SIZE);
+            if (result.IsNullOrEmpty())
+            {
+                return new ResponseApiDTO<IEnumerable<RatingResponseDTO>>
+                {
+                    Success = true,
+                    Message = "Hiện tại chưa có học sinh nào đánh giá bạn."
+                };
+            }
+
+            return new ResponseApiDTO<IEnumerable<RatingResponseDTO>>
+            {
+                Success = true,
+                Message = "Đây là danh sách các đánh giá của bạn",
+                Data = result.Select(x => new RatingResponseDTO
+                {
+                    Id = x.Id,
+                    TutorName = x.Tutor.User.FullName,
+                    StudentName = x.User.FullName,
+                    Star = x.Star,
+                    Description = x.Description,
+                })
+            };
+        }
     }
 }
