@@ -65,7 +65,7 @@ namespace OnDemandTutorApi.Controllers
         }
 
         [Authorize(Roles = "Student")]
-        [HttpGet("get-ratings-by-tutor-self")]
+        [HttpGet("get-ratings-by-student-id")]
         public async Task<IActionResult> GetAllByStudentIdAsync(string? sortBy, int page = 1)
         {
             var userId = HttpContext.User.FindFirstValue("Id");
