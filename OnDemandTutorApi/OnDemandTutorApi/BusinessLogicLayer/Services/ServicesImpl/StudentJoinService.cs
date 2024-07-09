@@ -223,7 +223,11 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!string.IsNullOrEmpty(subjectLevelId))
             {
-                studentJoins = studentJoins.Where(x => x.SubjectLevelId == Convert.ToInt32(subjectLevelId));
+                int id;
+                if(int.TryParse(subjectLevelId, out id))
+                {
+                    studentJoins = studentJoins.Where(x => x.SubjectLevelId == id);
+                }   
             }
 
             var result = PaginatedList<StudentJoin>.Create(studentJoins, page, PAGE_SIZE);
@@ -259,7 +263,11 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!string.IsNullOrEmpty(subjectLevelId))
             {
-                studentJoins = studentJoins.Where(x => x.SubjectLevelId == Convert.ToInt32(subjectLevelId));
+                int id;
+                if (int.TryParse(subjectLevelId, out id))
+                {
+                    studentJoins = studentJoins.Where(x => x.SubjectLevelId == id);
+                }
             }
 
             if (!string.IsNullOrEmpty(studentlId))
@@ -299,7 +307,11 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!string.IsNullOrEmpty(subjectLevelId))
             {
-                studentJoins = studentJoins.Where(x => x.SubjectLevelId == Convert.ToInt32(subjectLevelId));
+                int id;
+                if (int.TryParse(subjectLevelId, out id))
+                {
+                    studentJoins = studentJoins.Where(x => x.SubjectLevelId == id);
+                }
             }
 
             if (!string.IsNullOrEmpty(userId))

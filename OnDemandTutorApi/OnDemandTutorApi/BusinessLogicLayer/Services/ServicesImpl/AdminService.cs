@@ -26,7 +26,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly ICoinManagementRepo _coinManagementRepo;
         private readonly IEmailService _emailService;
 
-        public static int PAGE_SIZE { get; set; } = 5;
+        public static int PAGE_SIZE { get; set; } = 20;
 
         public AdminService(IUserRepo userRepo, IMapper mapper, RoleManager<IdentityRole> roleManager, UserManager<DataAccessLayer.Entity.User> userManager, IConfiguration configuration, 
             ITutorService tutorService, MyDbContext context, ICoinManagementRepo coinManagementRepo,

@@ -41,6 +41,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
 
     public class TutorResponseDTO
     {
+        public int Id { get; set; }
         public string TutorName { get; set; }
         public string? AcademicLevel { get; set; }
         public string? WorkPlace { get; set; }

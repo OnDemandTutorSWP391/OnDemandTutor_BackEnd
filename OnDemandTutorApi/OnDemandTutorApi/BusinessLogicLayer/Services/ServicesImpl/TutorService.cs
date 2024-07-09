@@ -246,6 +246,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Message = "Danh sách các gia sư",
                 Data = result.Select(x => new TutorResponseDTO
                 {
+                    Id = x.Id,
                     TutorName = x.User.FullName,
                     AcademicLevel = x.AcademicLevel,
                     WorkPlace = x.WorkPlace,
@@ -299,6 +300,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Message = "Danh sách các gia sư",
                 Data = result.Select(x => new TutorResponseDTO
                 {
+                    Id = x.Id,
                     TutorName = x.User.FullName,
                     AcademicLevel = x.AcademicLevel,
                     WorkPlace = x.WorkPlace,

@@ -110,12 +110,21 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if(!string.IsNullOrEmpty(timeId))
             {
-                times = times.Where(t => t.Id == Convert.ToInt32(timeId));
+                int id;
+                if(int.TryParse(timeId, out id))
+                {
+                    times = times.Where(t => t.Id == id);
+                }
+                
             }
 
             if (!string.IsNullOrEmpty(subjectLevelId))
             {
-                times = times.Where(t => t.Id == Convert.ToInt32(subjectLevelId));
+                int id;
+                if (int.TryParse(subjectLevelId, out id))
+                {
+                    times = times.Where(t => t.SubjectLevelId == id);
+                }
             }
 
             if (from.HasValue)
@@ -243,12 +252,20 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             var times = await _timeRepo.GetAllByTutorIdAsync(tutor.Id);
             if (!string.IsNullOrEmpty(timeId))
             {
-                times = times.Where(t => t.Id == Convert.ToInt32(timeId));
+                int id;
+                if (int.TryParse(timeId, out id))
+                {
+                    times = times.Where(t => t.Id == id);
+                }
             }
 
             if (!string.IsNullOrEmpty(subjectLevelId))
             {
-                times = times.Where(t => t.Id == Convert.ToInt32(subjectLevelId));
+                int id;
+                if (int.TryParse(subjectLevelId, out id))
+                {
+                    times = times.Where(t => t.SubjectLevelId == id);
+                }
             }
 
             if (from.HasValue)
@@ -374,12 +391,20 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!string.IsNullOrEmpty(timeId))
             {
-                times = times.Where(t => t.Id == Convert.ToInt32(timeId));
+                int id;
+                if (int.TryParse(timeId, out id))
+                {
+                    times = times.Where(t => t.Id == id);
+                }
             }
 
             if (!string.IsNullOrEmpty(subjectLevelId))
             {
-                times = times.Where(t => t.Id == Convert.ToInt32(subjectLevelId));
+                int id;
+                if (int.TryParse(subjectLevelId, out id))
+                {
+                    times = times.Where(t => t.SubjectLevelId == id);
+                }
             }
 
             if (from.HasValue)

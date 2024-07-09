@@ -79,7 +79,11 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!string.IsNullOrEmpty(subjectId))
             {
-                subjects = subjects.Where(x => x.Id == Convert.ToInt32(subjectId));
+                int id;
+                if(int.TryParse(subjectId, out id))
+                {
+                    subjects = subjects.Where(x => x.Id == id);
+                }
             }
 
             subjects = subjects.OrderBy(x => x.Name);
