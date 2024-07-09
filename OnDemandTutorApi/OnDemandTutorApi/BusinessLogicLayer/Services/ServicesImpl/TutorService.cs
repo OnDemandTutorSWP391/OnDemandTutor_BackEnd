@@ -269,8 +269,16 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!string.IsNullOrEmpty(seacrch))
             {
-                tutors = tutors.Where(x => (x.User.FullName.IndexOf(seacrch, StringComparison.OrdinalIgnoreCase) >= 0) 
-                                            || x.Id == Convert.ToInt32(seacrch));
+                int id;
+                if(int.TryParse(seacrch, out id))
+                {
+                    tutors = tutors.Where(x => x.Id == id);
+                }
+                else
+                {
+                    tutors = tutors.Where(x => (x.User.FullName.IndexOf(seacrch, StringComparison.OrdinalIgnoreCase) >= 0)
+                                                || (x.UserId.IndexOf(seacrch, StringComparison.OrdinalIgnoreCase) >=0));
+                }
             }
 
             tutors = tutors.OrderBy(x => x.User.FullName);

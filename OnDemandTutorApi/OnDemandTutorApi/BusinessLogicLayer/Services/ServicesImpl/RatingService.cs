@@ -69,9 +69,10 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             };
         }
 
-        public async Task<ResponseApiDTO<IEnumerable<RatingResponseDTO>>> GetAllByTutorIdAsync(string tutorId, string? sortBy, int page = 1)
+        public async Task<ResponseApiDTO<IEnumerable<RatingResponseDTO>>> GetAllByTutorIdAsync(int tutorId, string? sortBy, int page = 1)
         {
-            var ratings = await _ratingRepo.GetAllByTutorIdAsync(Convert.ToInt32(tutorId));
+
+            var ratings = await _ratingRepo.GetAllByTutorIdAsync(tutorId);
 
             ratings = ratings.OrderByDescending(x => x.Star);
 
@@ -190,7 +191,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             };
         }
 
-        public async Task<ResponseApiDTO<IEnumerable<RatingResponseDTO>>> GetAllAsync(string? userId, string? tutorId, string? sortBy, int page = 1)
+        public async Task<ResponseApiDTO<IEnumerable<RatingResponseDTO>>> GetAllAsync(string? userId, int tutorId, string? sortBy, int page = 1)
         {
             var ratings = await _ratingRepo.GetAllAsync();
 
@@ -199,9 +200,9 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 ratings = ratings.Where(x => x.UserId == userId);
             }
 
-            if (!string.IsNullOrEmpty(tutorId))
+            if (tutorId != 0)
             {
-                ratings = ratings.Where(x => x.TutorId == Convert.ToInt32(tutorId));
+                ratings = ratings.Where(x => x.TutorId == tutorId);
             }
 
             ratings = ratings.OrderByDescending(x => x.Star);

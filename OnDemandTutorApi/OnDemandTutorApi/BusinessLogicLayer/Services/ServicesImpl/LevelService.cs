@@ -74,12 +74,26 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!string.IsNullOrEmpty(search))
             {
-                levels = levels.Where(x => x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                int id;
+                if(int.TryParse(search, out id))
+                {
+                    levels = levels.Where(x => x.Id == id);
+                }
+                else
+                {
+                    levels = levels.Where(x => x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                }
+                
             }
 
             if (!string.IsNullOrEmpty(levelId))
             {
-                levels = levels.Where(x => x.Id == Convert.ToInt32(levelId));
+                int id;
+                if (int.TryParse(levelId, out id))
+                {
+                    levels = levels.Where(x => x.Id == id);
+                }
+                
             }
 
             levels = levels.OrderBy(x => x.Name);

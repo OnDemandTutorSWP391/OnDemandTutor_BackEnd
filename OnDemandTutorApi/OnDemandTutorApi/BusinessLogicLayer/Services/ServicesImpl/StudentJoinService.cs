@@ -21,11 +21,13 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly IEmailService _emailService;
         private readonly IUserRepo _userRepo;
         private readonly ITutorRepo _tutorRepo;
+        private readonly ICoinManagementRepo _coinManagementRepo;
 
         public static int PAGE_SIZE { get; set; } = 5;
 
         public StudentJoinService(IStudentJoinRepo studentJoinRepo, IMapper mapper, ISubjectLevelRepo subjectLevelRepo,
-            ICoinManagementService coinManagementService, IEmailService emailService, IUserRepo userRepo, ITutorRepo tutorRepo)
+            ICoinManagementService coinManagementService, IEmailService emailService, IUserRepo userRepo, ITutorRepo tutorRepo,
+            ICoinManagementRepo coinManagementRepo)
         {
             _studentJoinRepo = studentJoinRepo;
             _mapper = mapper;
@@ -34,6 +36,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             _emailService = emailService;
             _userRepo = userRepo;
             _tutorRepo = tutorRepo;
+            _coinManagementRepo = coinManagementRepo;
         }
         public async Task<ResponseApiDTO<StudentJoinResponseDTO>> CreateAsync(StudentJoinRequestDTO studentJoinDTO)
         {
@@ -79,10 +82,22 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
+            long transactionId;
+            var existCoinStudent = _coinManagementRepo.GetByUserIdAsync(studentJoinDTO.UserId).Result.ToList();
+            var existCoinTutor = _coinManagementRepo.GetByUserIdAsync(existSubjectLevel.Tutor.User.Id).Result.ToList();
+
+            do
+            {
+                transactionId = GenerateTransactionId();
+                
+            }
+            while (!IsTransactionIdUnique(transactionId, existCoinStudent) || !IsTransactionIdUnique(transactionId, existCoinTutor));
+
             var transactionStudent = await _coinManagementService.DepositAsync(new CoinDTO
             {
                 UserId = studentJoinDTO.UserId,
                 Coin = -existSubjectLevel.Coin,
+                TransactionId = transactionId,
             });
 
             if (!transactionStudent.Success)
@@ -98,6 +113,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             {
                 UserId = existSubjectLevel.Tutor.User.Id,
                 Coin = existSubjectLevel.Coin,
+                TransactionId = transactionId,
             });
 
             if (!transactionTutor.Success)
@@ -488,6 +504,29 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Success = true,
                 Message = "Xóa học sinh khỏi lớp thành công."
             };
+        }
+
+        private long GenerateTransactionId()
+        {
+            Random random = new Random();
+            byte[] buffer = new byte[8];
+            random.NextBytes(buffer);
+            long randomLong = BitConverter.ToInt64(buffer, 0);
+
+            // Đảm bảo giá trị nằm trong khoảng minValue và maxValue
+            return Math.Abs(randomLong % (99999999 - 10000000)) + 10000000;
+        }
+
+        private bool IsTransactionIdUnique(long transactionId, List<CoinManagement> coins)
+        {
+            foreach (var coin in coins)
+            {
+                if (coin.TransactionId == transactionId)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

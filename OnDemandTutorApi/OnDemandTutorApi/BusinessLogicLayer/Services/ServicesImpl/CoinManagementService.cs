@@ -35,6 +35,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             var user = await _userRepo.GetByIdAsync(coinRecord.UserId);
 
             var existCoinRecords = await _coinManagementRepo.GetAllAsync();
+            existCoinRecords = existCoinRecords.Where(x => x.UserId == user.Id);
             if(existCoinRecords.FirstOrDefault(x => x.TransactionId == coinRequest.TransactionId) != null)
             {
                 return new ResponseApiDTO<CoinResponseDTO>

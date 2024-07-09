@@ -38,7 +38,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             if (!string.IsNullOrEmpty(search))
             {
-                responses = responses.Where(x => x.Id == Convert.ToInt32(search));
+                int id;
+                if(int.TryParse(search, out id))
+                {
+                    responses = responses.Where(x => x.Id == id);
+                }
+                
             }
 
             if (!string.IsNullOrEmpty(requestId))

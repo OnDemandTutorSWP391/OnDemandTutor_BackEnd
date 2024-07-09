@@ -36,7 +36,7 @@ namespace OnDemandTutorApi.Controllers
 
 
         [HttpGet("get-ratings-by-tutor-id")]
-        public async Task<IActionResult> GetAllByTutorIdAsynnc(string tutorId, string? sortBy, int page = 1)
+        public async Task<IActionResult> GetAllByTutorIdAsynnc(int tutorId, string? sortBy, int page = 1)
         {
             var result = await _ratingService.GetAllByTutorIdAsync(tutorId, sortBy, page);
 
@@ -67,7 +67,7 @@ namespace OnDemandTutorApi.Controllers
 
         [Authorize(Roles = "Moderator, Admin")]
         [HttpGet("get-all-ratings")]
-        public async Task<IActionResult> GetAllAsync(string? userId, string? tutorId, string? sortBy, int page = 1)
+        public async Task<IActionResult> GetAllAsync(string? userId, int tutorId, string? sortBy, int page = 1)
         {
             var result = await _ratingService.GetAllAsync(userId, tutorId, sortBy, page);
 
