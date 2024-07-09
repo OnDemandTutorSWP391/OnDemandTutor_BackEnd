@@ -172,7 +172,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
-            var update = _mapper.Map<Rating>(ratingUpdateDTO);
+            var update = _mapper.Map(ratingUpdateDTO, rating);
             var result = await _ratingRepo.UpdateAsync(update);
 
             if(!result)
