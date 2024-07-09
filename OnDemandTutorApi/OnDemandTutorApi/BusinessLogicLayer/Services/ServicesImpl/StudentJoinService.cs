@@ -83,8 +83,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
 
             long transactionId;
-            var existCoinStudent = _coinManagementRepo.GetByUserIdAsync(studentJoinDTO.UserId).Result.ToList();
-            var existCoinTutor = _coinManagementRepo.GetByUserIdAsync(existSubjectLevel.Tutor.User.Id).Result.ToList();
+            var existCoinStudent = await _coinManagementRepo.GetByUserIdAsync(studentJoinDTO.UserId);
+            var existCoinTutor = await _coinManagementRepo.GetByUserIdAsync(existSubjectLevel.Tutor.User.Id);
 
             do
             {
@@ -517,7 +517,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             return Math.Abs(randomLong % (99999999 - 10000000)) + 10000000;
         }
 
-        private bool IsTransactionIdUnique(long transactionId, List<CoinManagement> coins)
+        private bool IsTransactionIdUnique(long transactionId, IEnumerable<CoinManagement> coins)
         {
             foreach (var coin in coins)
             {
