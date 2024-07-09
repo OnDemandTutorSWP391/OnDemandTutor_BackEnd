@@ -247,6 +247,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Data = result.Select(x => new StudentJoinResponseDTO
                 {
                     Id = x.Id,
+                    TutorId = x.SubjectLevel.TutorId,
                     UserId = x.UserId,
                     SubjectLevelId = x.SubjectLevelId,
                     FullName = x.User.FullName,
@@ -292,6 +293,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Data = result.Select(x => new StudentJoinResponseDTO
                 {
                     Id = x.Id,
+                    TutorId = x.SubjectLevel.TutorId,
                     UserId = x.UserId,
                     SubjectLevelId = x.SubjectLevelId,
                     FullName = x.User.FullName,
@@ -336,6 +338,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Data = result.Select(x => new StudentJoinResponseDTO
                 {
                     Id = x.Id,
+                    TutorId = x.SubjectLevel.TutorId,
                     UserId = x.UserId,
                     SubjectLevelId = x.SubjectLevelId,
                     FullName = x.User.FullName,

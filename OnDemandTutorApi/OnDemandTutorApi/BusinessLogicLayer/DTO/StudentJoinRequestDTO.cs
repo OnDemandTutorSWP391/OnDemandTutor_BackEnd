@@ -15,6 +15,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
     {
         [Required]
         public int Id { get; set; }
+        public int TutorId { get; set; }
         public string FullName { get; set; } = null!;
         public string Email { get; set; } = null!;
         public bool IsLocked { get; set; }
