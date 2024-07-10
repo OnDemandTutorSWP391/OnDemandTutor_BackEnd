@@ -81,6 +81,20 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        [HttpGet("get-all-subject-level-by-tutorId")]
+        public async Task<IActionResult> GetAllByTutorIdAsync(string? level, string? subject, int page = 1)
+        {
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var result = await _subjectLevelService.GetAllByTutorIdAsync(userId, level, subject, page);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
         //===========================//
 
         //UPDATE

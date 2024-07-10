@@ -459,5 +459,62 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Message = "Xóa khóa học thành công."
             };
         }
+
+        public async Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllByTutorIdAsync(string userId, string? level, string subject, int page = 1)
+        {
+            var subjectLevels = await _subjectLevelRepo.GetAllAsync();
+            var tutor = await _tutorRepo.GetTutorByUserIdAsync(userId);
+            if(tutor == null)
+            {
+                return new ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>
+                {
+                    Success = false,
+                    Message = "Không tìm thấy giảng viên."
+                };
+            }
+            subjectLevels = subjectLevels.Where(x => x.TutorId == tutor.Id);
+            if (!string.IsNullOrEmpty(level))
+            {
+                subjectLevels = subjectLevels.Where(x => x.Level.Name.IndexOf(level, StringComparison.OrdinalIgnoreCase) >= 0);
+            }
+
+            if (!string.IsNullOrEmpty(subject))
+            {
+                subjectLevels = subjectLevels.Where(x => x.Subject.Name.IndexOf(subject, StringComparison.OrdinalIgnoreCase) >= 0);
+            }
+
+            var result = PaginatedList<SubjectLevel>.Create(subjectLevels, page, PAGE_SIZE);
+
+            if (result.IsNullOrEmpty())
+            {
+                return new ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>
+                {
+                    Success = true,
+                    Message = "Hiện tại chưa có dịch vụ môn học nào được thêm."
+                };
+            }
+
+            var subjectLevelResponses = new List<SubjectLevelResponseDTO>();
+            foreach (var subjectLevel in result)
+            {
+                var studentJoins = subjectLevel.StudentJoins;
+                var count = studentJoins.Count();
+                var subjectLevelResponse = _mapper.Map<SubjectLevelResponseDTO>(subjectLevel);
+                subjectLevelResponse.LevelName = subjectLevel.Level.Name;
+                subjectLevelResponse.SubjectName = subjectLevel.Subject.Name;
+                subjectLevelResponse.TutorName = subjectLevel.Tutor.User.FullName;
+                subjectLevelResponse.ServiceName = subjectLevel.Name;
+                subjectLevelResponse.LimitMember = $"{count}/{subjectLevel.LimitMember}";
+                subjectLevelResponse.IsLocked = subjectLevel.Tutor.User.IsLocked;
+                subjectLevelResponses.Add(subjectLevelResponse);
+            }
+
+            return new ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>
+            {
+                Success = true,
+                Message = "Đây là danh sách các môn học của hệ thống",
+                Data = subjectLevelResponses
+            };
+        }
     }
 }
