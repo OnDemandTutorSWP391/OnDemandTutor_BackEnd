@@ -237,6 +237,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Id = subjectLevelId,
                     LevelName = subjectLevel.Level.Name,
                     SubjectName = subjectLevel.Subject.Name,
+                    TutorId = subjectLevel.TutorId,
                     TutorName = subjectLevel.Tutor.User.FullName,
                     ServiceName = subjectLevel.Name,
                     Description = subjectLevel.Description,
