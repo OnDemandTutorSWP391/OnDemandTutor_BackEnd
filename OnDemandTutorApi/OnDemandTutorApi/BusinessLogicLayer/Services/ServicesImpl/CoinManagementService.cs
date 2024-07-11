@@ -159,7 +159,18 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
-            var senderCoin = _mapper.Map<CoinManagement>(new CoinDTO { UserId = userId, Coin = -coin });
+            long transactionId;
+            var existCoinSender = await _coinManagementRepo.GetByUserIdAsync(sender.Id);
+            var existCoinReceiver = await _coinManagementRepo.GetByUserIdAsync(receiver.Id);
+
+            do
+            {
+                transactionId = GenerateTransactionId();
+
+            }
+            while (!IsTransactionIdUnique(transactionId, existCoinSender) || !IsTransactionIdUnique(transactionId, existCoinReceiver));
+
+            var senderCoin = _mapper.Map<CoinManagement>(new CoinDTO { UserId = userId, Coin = -coin, TransactionId = transactionId});
             var send = await _coinManagementRepo.CreateCoinRecord(senderCoin);
             if(!send)
             {
@@ -183,7 +194,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             );
             _emailService.SendEmail(messageSender);
 
-            var receiverCoin = _mapper.Map<CoinManagement>(new CoinDTO { UserId = receiverId, Coin = coin });
+            var receiverCoin = _mapper.Map<CoinManagement>(new CoinDTO { UserId = receiverId, Coin = coin, TransactionId = transactionId });
             var receive = await _coinManagementRepo.CreateCoinRecord(receiverCoin);
             if(!receive)
             {
@@ -222,6 +233,29 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Date = receiverCoin.Date,
                 }
             };
+        }
+
+        private long GenerateTransactionId()
+        {
+            Random random = new Random();
+            byte[] buffer = new byte[8];
+            random.NextBytes(buffer);
+            long randomLong = BitConverter.ToInt64(buffer, 0);
+
+            // Đảm bảo giá trị nằm trong khoảng minValue và maxValue
+            return Math.Abs(randomLong % (99999999 - 10000000)) + 10000000;
+        }
+
+        private bool IsTransactionIdUnique(long transactionId, IEnumerable<CoinManagement> coins)
+        {
+            foreach (var coin in coins)
+            {
+                if (coin.TransactionId == transactionId)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
