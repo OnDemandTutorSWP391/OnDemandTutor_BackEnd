@@ -13,7 +13,7 @@ using System.Security.Claims;
 
 namespace OnDemandTutorApi.Controllers
 {
-    [Authorize(Roles = "Student, Tutor")]
+    [Authorize(Roles = "Student, Tutor, Moderator, Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class CoinsController : ControllerBase
