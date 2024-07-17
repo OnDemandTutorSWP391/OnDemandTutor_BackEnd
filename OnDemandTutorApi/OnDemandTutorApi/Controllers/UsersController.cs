@@ -85,7 +85,6 @@ namespace OnDemandTutorApi.Controllers
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var forgotPasswordLink = $"https://localhost:5173/api/Users/reset-password-view?token={token}&email={user.Email}";
-            Console.WriteLine("Link: " + forgotPasswordLink);
             var message = new EmailDTO
                 (
                     new string[] { user.Email! },
