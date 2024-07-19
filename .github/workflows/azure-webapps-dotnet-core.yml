@@ -21,7 +21,7 @@ name: Build and deploy ASP.Net Core app to an Azure Web App
 
 env:
   AZURE_WEBAPP_NAME: swpondemandtutor    # set this to the name of your Azure Web App
-  DOTNET_ROOT: ./OnDemandTutorApi/OnDemandTutorApi
+  DOTNET_ROOT: .\OnDemandTutorApi\OnDemandTutorApi
   DOTNET_VERSION: '6'                 # set this to the .NET Core version to use
 
 on:
@@ -53,10 +53,10 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Build with dotnet
-        run: dotnet build ${{env.DOTNET_ROOT}}/OnDemandTutorApi/OnDemandTutorApi.csproj --configuration Release
+        run: dotnet build ${{env.DOTNET_ROOT}}\OnDemandTutorApi\OnDemandTutorApi.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/OnDemandTutorApi/OnDemandTutorApi.csproj
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}\OnDemandTutorApi\OnDemandTutorApi.csproj
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
