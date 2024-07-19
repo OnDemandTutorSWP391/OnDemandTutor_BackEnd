@@ -52,7 +52,7 @@ namespace OnDemandTutorApi.Controllers
 
             var httpClient = _httpClientFactory.CreateClient();
 
-            var response = await httpClient.PostAsJsonAsync("https://localhost:7259/api/Payments/request-payment", paymentRequest);
+            var response = await httpClient.PostAsJsonAsync("https://ondemandtutorapi.azurewebsites.net/api/Payments/request-payment", paymentRequest);
 
             if(!response.IsSuccessStatusCode)
             {
