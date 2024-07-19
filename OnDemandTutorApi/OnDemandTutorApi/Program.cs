@@ -150,6 +150,17 @@ builder.Services.AddSingleton(emailConfig);
 var vnPayConfig = builder.Configuration.GetSection("VnPayConfiguration").Get<VnPayConfiguration>();
 builder.Services.AddSingleton(vnPayConfig);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder =>
+        {
+            builder.WithOrigins("https://purple-wave-0f7075200.5.azurestaticapps.net")
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+});
+
 var app = builder.Build();
 
 //Configure the HTTP request pipeline.
@@ -162,7 +173,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseCors("corspolicy");
+app.UseCors("AllowSpecificOrigin");
 
 app.UseHttpsRedirection();
 if (app.Environment.IsDevelopment())
