@@ -165,7 +165,21 @@ app.UseSwaggerUI();
 app.UseCors("corspolicy");
 
 app.UseHttpsRedirection();
-
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+else
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "OnDemandTutor");
+        c.RoutePrefix = "";
+        c.EnableTryItOutByDefault();
+    });
+}
 app.UseAuthentication();
 
 app.UseAuthorization();
