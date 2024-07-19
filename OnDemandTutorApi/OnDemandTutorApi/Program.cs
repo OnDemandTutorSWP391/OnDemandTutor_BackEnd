@@ -151,7 +151,21 @@ var vnPayConfig = builder.Configuration.GetSection("VnPayConfiguration").Get<VnP
 builder.Services.AddSingleton(vnPayConfig);
 
 var app = builder.Build();
-
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+else
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "FuStudy_API");
+        c.RoutePrefix = "";
+        c.EnableTryItOutByDefault();
+    });
+}
 //Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
