@@ -45,6 +45,7 @@ namespace OnDemandTutorApi.DataAccessLayer.DAO
                     subjectLevels = await context.SubjectLevels.Include(x => x.Level)
                                                                .Include(x => x.Subject)
                                                                .Include(x => x.Tutor.User)
+                                                               .Include(x => x.Tutor.Ratings)
                                                                .Include(x => x.StudentJoins)
                                                                .Include(x => x.Times)
                                                                .ToListAsync();

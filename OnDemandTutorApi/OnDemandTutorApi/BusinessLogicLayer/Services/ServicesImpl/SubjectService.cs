@@ -21,7 +21,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly IUserRepo _userRepo;
         private readonly IEmailService _emailService;
 
-        public static int PAGE_SIZE { get; set; } = 5;
+        public static int PAGE_SIZE { get; set; } = 10;
 
         public SubjectService(ISubjectRepo subjectRepo, IMapper mapper, ISubjectLevelRepo subjectLevelRepo
                             , IStudentJoinRepo studentJoinRepo, ITimeRepo timeRepo, IUserRepo userRepo,
@@ -115,7 +115,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 {
                     Id = x.Id,
                     Name = x.Name,
-                })
+                }),
+                Total = result.Count
             };
         }
 

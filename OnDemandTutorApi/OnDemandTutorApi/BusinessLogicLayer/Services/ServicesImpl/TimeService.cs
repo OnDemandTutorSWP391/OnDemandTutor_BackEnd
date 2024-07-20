@@ -20,7 +20,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly IEmailService _emailService;
         private readonly ITutorRepo _tutorRepo;
 
-        public static int PAGE_SIZE { get; set; } = 5;
+        public static int PAGE_SIZE { get; set; } = 10;
 
         public TimeService(IMapper mapper, ITimeRepo timeRepo, ISubjectLevelRepo subjectLevelRepo, IUserRepo userRepo, IEmailService emailService, ITutorRepo tutorRepo)
         {
@@ -171,7 +171,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     EndSlot = x.EndSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
                     Date = x.Date.Date.ToString("dd/MM/yyyy"),
                     IsLocked = x.SubjectLevel.Tutor.User.IsLocked,
-                })
+                }),
+                Total = result.Count
             };
         }
 
@@ -311,7 +312,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     StartSlot = x.StartSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
                     EndSlot = x.EndSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
                     Date = x.Date.Date.ToString("dd/MM/yyyy"),
-                })
+                }),
+                Total = result.Count
             };
         }
 
@@ -451,7 +453,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     EndSlot = x.EndSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
                     Date = x.Date.Date.ToString("dd/MM/yyyy"),
                     IsLocked = x.SubjectLevel.Tutor.User.IsLocked,
-                })
+                }),
+                Total = result.Count
             };
         }
 

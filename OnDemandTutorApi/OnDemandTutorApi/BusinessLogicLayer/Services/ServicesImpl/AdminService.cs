@@ -26,7 +26,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly ICoinManagementRepo _coinManagementRepo;
         private readonly IEmailService _emailService;
 
-        public static int PAGE_SIZE { get; set; } = 20;
+        public static int PAGE_SIZE { get; set; } = 10;
 
         public AdminService(IUserRepo userRepo, IMapper mapper, RoleManager<IdentityRole> roleManager, UserManager<DataAccessLayer.Entity.User> userManager, IConfiguration configuration, 
             ITutorService tutorService, MyDbContext context, ICoinManagementRepo coinManagementRepo,
@@ -168,7 +168,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 return new ResponseApiDTO<IEnumerable<UserResponseDTO>>
                 {
                     Success = true,
-                    Message = "Does not have any result match your request."
+                    Message = "Không có kết quả nào khớp yêu cầu của bạn."
                 };
             }
 
@@ -186,7 +186,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             {
                 Success = true,
                 Message = "Here is current users match your request.",
-                Data = userResponseDTOs
+                Data = userResponseDTOs,
+                Total = result.Count
             };
         }
         public async Task<ResponseApiDTO> UpdateUserAsync(string id, UserUpdateDTO userUpdateDTO)
@@ -430,7 +431,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Coin = x.Coin,
                     Date = x.Date,
                     TransactionId = x.TransactionId,
-                })
+                }),
+                Total = result.Count
             };
         }
 

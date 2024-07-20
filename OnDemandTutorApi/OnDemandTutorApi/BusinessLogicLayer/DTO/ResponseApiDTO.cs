@@ -9,5 +9,7 @@
     public class ResponseApiDTO<T> : ResponseApiDTO
     {
         public T Data { get; set; }
+
+        public int? Total { get; set; }
     }
 }

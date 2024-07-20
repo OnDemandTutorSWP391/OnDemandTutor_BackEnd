@@ -26,7 +26,10 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly MyDbContext _context;
         private readonly IEmailService _emailService;
 
-        public UserService(IUserRepo userRepo, IMapper mapper, RoleManager<IdentityRole> roleManager, UserManager<User> userManager, IConfiguration configuration, ITutorRepo tutorRepo, MyDbContext context, IEmailService emailService)
+        public UserService(IUserRepo userRepo, IMapper mapper, 
+                           RoleManager<IdentityRole> roleManager, UserManager<User> userManager, 
+                           IConfiguration configuration, ITutorRepo tutorRepo,  
+                           MyDbContext context, IEmailService emailService)
         {
             _userRepo = userRepo;
             _mapper = mapper;

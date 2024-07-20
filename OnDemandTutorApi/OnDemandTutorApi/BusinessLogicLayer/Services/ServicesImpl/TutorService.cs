@@ -16,7 +16,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly IRequestCategoryRepo _categoryRepo;
         private readonly IRequestRepo _requestRepo;
 
-        public static int PAGE_SIZE { get; set; } = 5;
+        public static int PAGE_SIZE { get; set; } = 10;
 
         public TutorService(ITutorRepo tutorRepo, IMapper mapper, IUserRepo userRepo, IRequestCategoryRepo categoryRepo, IRequestRepo requestRepo)
         {
@@ -260,7 +260,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     AverageStar = x.Ratings.Any() ? x.Ratings.Average(r => r.Star) : 0,
                     Avatar = x.User.Avatar,
                     IsLocked = x.User.IsLocked,
-                })
+                }),
+                Total = result.Count,
             };
         }
 
@@ -314,7 +315,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     AverageStar = x.Ratings.Any() ? x.Ratings.Average(r => r.Star) : 0,
                     Avatar = x.User.Avatar,
                     IsLocked = x.User.IsLocked,
-                })
+                }),
+                Total = result.Count
             };
         }
     }

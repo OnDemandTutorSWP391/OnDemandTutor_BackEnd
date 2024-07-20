@@ -96,6 +96,34 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
+        [HttpGet("get-all-subject-level-follow-rating")]
+        public async Task<IActionResult> GetAllFollowRatingAsync(string? level, string? subject, string? tutor, int page = 1)
+        {
+            var result = await _subjectLevelService.GetAllFollowRatingAsync(level, subject, tutor, page);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Student")]
+        [HttpGet("get-three-subject-level-of-any-tutor")]
+        public async Task<IActionResult> GetThreeCourseOfAnyTutorAsync(int tutorId, string? level, string? subject, int page = 1)
+        {
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var result = await _subjectLevelService.GetThreeCourseOfAnyTutorAsync(tutorId, level, subject, page);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
         //===========================//
 
         //UPDATE

@@ -18,7 +18,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly IUserRepo _userRepo;
         private readonly ITutorRepo _tutorRepo;
 
-        public static int PAGE_SIZE { get; set; } = 5;
+        public static int PAGE_SIZE { get; set; } = 10;
 
         public RatingService(IMapper mapper, IRatingRepo ratingRepo, IUserRepo userRepo, ITutorRepo tutorRepo)
         {
@@ -105,7 +105,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     StudentName = x.User.FullName,
                     Star = x.Star,
                     Description = x.Description,
-                })
+                }),
+                Total = result.Count
             };
         }
 
@@ -146,7 +147,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     StudentName = x.User.FullName,
                     Star = x.Star,
                     Description = x.Description,
-                })
+                }),
+                Total = result.Count
             };
         }
 
@@ -236,7 +238,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     StudentName = x.User.FullName,
                     Star = x.Star,
                     Description = x.Description,
-                })
+                }),
+                Total = result.Count
             };
         }
 
@@ -343,7 +346,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     StudentName = x.User.FullName,
                     Star = x.Star,
                     Description = x.Description,
-                })
+                }),
+                Total = result.Count
             };
         }
     }

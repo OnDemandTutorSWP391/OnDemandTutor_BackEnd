@@ -23,7 +23,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly ITutorRepo _tutorRepo;
         private readonly ICoinManagementRepo _coinManagementRepo;
 
-        public static int PAGE_SIZE { get; set; } = 5;
+        public static int PAGE_SIZE { get; set; } = 10;
 
         public StudentJoinService(IStudentJoinRepo studentJoinRepo, IMapper mapper, ISubjectLevelRepo subjectLevelRepo,
             ICoinManagementService coinManagementService, IEmailService emailService, IUserRepo userRepo, ITutorRepo tutorRepo,
@@ -253,7 +253,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     FullName = x.User.FullName,
                     Email = x.User.Email,
                     IsLocked = x.User.IsLocked,
-                })
+                }),
+                Total = result.Count
             };
         }
 
@@ -299,7 +300,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     FullName = x.User.FullName,
                     Email = x.User.Email,
                     IsLocked = x.User.IsLocked
-                })
+                }),
+                Total = result.Count
             };
         }
 
@@ -344,7 +346,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     FullName = x.User.FullName,
                     Email = x.User.Email,
                     IsLocked = x.User.IsLocked
-                })
+                }),
+                Total = result.Count
             };
         }
 

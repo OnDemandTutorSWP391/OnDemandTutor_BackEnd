@@ -17,7 +17,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly IRequestRepo _requestRepo;
         private readonly IResponseRepo _responseRepo;
 
-        public static int PAGE_SIZE { get; set; } = 5;
+        public static int PAGE_SIZE { get; set; } = 10;
 
         public RequestCategoryService(IMapper mapper, IRequestCategoryRepo requestCategoryRepo, IRequestRepo requestRepo, IResponseRepo responseRepo)
         {
@@ -105,7 +105,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 {
                     Id = x.Id,
                     CategoryName = x.CategoryName,
-                })
+                }),
+                Total = result.Count
             };
         }
 

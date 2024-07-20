@@ -20,7 +20,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly IMapper _mapper;
         private readonly IResponseRepo _responseRepo;
 
-        public static int PAGE_SIZE { get; set; } = 5;
+        public static int PAGE_SIZE { get; set; } = 10;
 
         public RequestService(IRequestRepo requestRepo, IUserRepo userRepo, IRequestCategoryRepo requestCategoryRepo, IMapper mapper, IResponseRepo responseRepo)
         {
@@ -127,7 +127,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     CreatedDate = x.CreatedDate,
                     Description = x.Description,
                     Status = x.Status,
-                })
+                }),
+                Total = result.Count
             };
         }
 
@@ -190,7 +191,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Description = x.Description,
                     Status = x.Status,
                     IsLocked = x.User.IsLocked
-                })
+                }),
+                Total = result.Count
             };
         }
 

@@ -21,7 +21,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly IEmailService _emailService;
         private readonly IRequestService _requestService;
 
-        public static int PAGE_SIZE { get; set; } = 5;
+        public static int PAGE_SIZE { get; set; } = 10;
 
         public ResponseService(IResponseRepo responseRepo, IRequestRepo requestRepo, IMapper mapper, IEmailService emailService, IRequestService requestService)
         {
@@ -99,7 +99,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     ResponseDate = x.ResponseDate,
                     Description = x.Description,
                     IsLocked = x.Request.User.IsLocked,
-                })
+                }),
+                Total = result.Count
             };
         }
 
