@@ -1,7 +1,7 @@
 
 #Github action deploy api to azure web app
 
-name: Deploy FuStudy API
+name: Deploy OnDemandTutor API
 on:
   push:
     branches:
