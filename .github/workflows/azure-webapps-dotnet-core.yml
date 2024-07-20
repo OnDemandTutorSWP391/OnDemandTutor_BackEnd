@@ -5,7 +5,7 @@ name: Deploy OnDemandTutor API
 on:
   push:
     branches:
-      - TamNguyenDev
+      - Hoaq-CICD
   workflow_dispatch: 
     
 env: 
