@@ -219,9 +219,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         public async Task<ResponseApiDTO<IEnumerable<TutorResponseDTO>>> GetAllTutorsForStudentAsync(string? seacrch, string? sortBy, int page = 1)
         {
             var tutors = await _tutorRepo.GetTutorsAsync();
-            tutors = tutors.Where(x => x.User.IsLocked == false);
-
-            tutors = tutors.Where(x => x.Status == "Chấp thuận");
+            tutors = tutors.Where(x => x.User.IsLocked == false && x.Status == "Chấp thuận").ToList();
 
             if (!string.IsNullOrEmpty(seacrch))
             {
@@ -261,7 +259,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Avatar = x.User.Avatar,
                     IsLocked = x.User.IsLocked,
                 }),
-                Total = result.Count,
+                Total = tutors.Count(),
             };
         }
 
@@ -316,7 +314,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Avatar = x.User.Avatar,
                     IsLocked = x.User.IsLocked,
                 }),
-                Total = result.Count
+                Total = tutors.Count()
             };
         }
     }

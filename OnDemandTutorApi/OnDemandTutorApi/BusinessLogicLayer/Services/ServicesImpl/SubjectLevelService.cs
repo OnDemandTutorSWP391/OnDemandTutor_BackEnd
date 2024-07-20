@@ -159,7 +159,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Success = true,
                 Message = "Đây là danh sách các môn học của hệ thống",
                 Data = subjectLevelResponses,
-                Total = result.Count
+                Total = subjectLevels.Count()
             };
         }
 
@@ -213,7 +213,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Success = true,
                 Message = "Đây là danh sách các môn học của hệ thống",
                 Data = subjectLevelResponses,
-                Total = result.Count
+                Total = subjectLevels.Count()
             };
         }
 
@@ -462,7 +462,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             };
         }
 
-        public async Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllByTutorIdAsync(string userId, string? level, string subject, int page = 1)
+        public async Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllByTutorIdAsync(string userId, string? level, string? subject, int page = 1)
         {
             var subjectLevels = await _subjectLevelRepo.GetAllAsync();
             var tutor = await _tutorRepo.GetTutorByUserIdAsync(userId);
@@ -516,7 +516,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Success = true,
                 Message = "Đây là danh sách các môn học của hệ thống",
                 Data = subjectLevelResponses,
-                Total = result.Count
+                Total = subjectLevels.Count()
             };
         }
 
@@ -527,7 +527,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 x.Tutor.User.IsLocked == false &&
                 x.Tutor.Ratings.Any() &&
                 x.Tutor.Ratings.Average(r => r.Star) >= 4
-            ).ToList();
+            );
 
 
 
@@ -577,15 +577,15 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Success = true,
                 Message = "Đây là danh sách các môn học của hệ thống",
                 Data = subjectLevelResponses,
-                Total = result.Count
+                Total = subjectLevels.Count()
             };
         }
 
-        public async Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetThreeCourseOfAnyTutorAsync(int tutorId, string? level, string subject, int page = 1)
+        public async Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetThreeCourseOfAnyTutorAsync(int tutorId, string? level, string? subject, int page = 1)
         {
             var subjectLevels = await _subjectLevelRepo.GetAllAsync();
        
-            subjectLevels = subjectLevels.Where(x => x.TutorId == tutorId).Take(3).ToList();
+            subjectLevels = subjectLevels.Where(x => x.TutorId == tutorId).Take(3);
             if (!string.IsNullOrEmpty(level))
             {
                 subjectLevels = subjectLevels.Where(x => x.Level.Name.IndexOf(level, StringComparison.OrdinalIgnoreCase) >= 0);
@@ -627,18 +627,108 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Success = true,
                 Message = "Đây là danh sách các môn học của hệ thống",
                 Data = subjectLevelResponses,
-                Total = result.Count
+                Total = subjectLevels.Count()
             };
         }
 
-        public Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllByLevelIdAsync(string userId, string? level, string subject, int page = 1)
+        public async Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllByLevelIdAsync(int levelId, string? tutor, string? subject, int page = 1)
         {
-            throw new NotImplementedException();
+            var subjectLevels = await _subjectLevelRepo.GetAllAsync();
+            subjectLevels = subjectLevels.Where(x => x.LevelId == levelId);
+
+            if (!string.IsNullOrEmpty(tutor))
+            {
+                subjectLevels = subjectLevels.Where(x => x.Tutor.User.FullName.IndexOf(tutor, StringComparison.OrdinalIgnoreCase) >= 0);
+            }
+
+            if (!string.IsNullOrEmpty(subject))
+            {
+                subjectLevels = subjectLevels.Where(x => x.Subject.Name.IndexOf(subject, StringComparison.OrdinalIgnoreCase) >= 0);
+            }
+
+            var result = PaginatedList<SubjectLevel>.Create(subjectLevels, page, PAGE_SIZE);
+
+            if (result.IsNullOrEmpty())
+            {
+                return new ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>
+                {
+                    Success = true,
+                    Message = "Hiện tại chưa có dịch vụ môn học nào được thêm."
+                };
+            }
+
+            var subjectLevelResponses = new List<SubjectLevelResponseDTO>();
+            foreach (var subjectLevel in result)
+            {
+                var studentJoins = subjectLevel.StudentJoins;
+                var count = studentJoins.Count();
+                var subjectLevelResponse = _mapper.Map<SubjectLevelResponseDTO>(subjectLevel);
+                subjectLevelResponse.LevelName = subjectLevel.Level.Name;
+                subjectLevelResponse.SubjectName = subjectLevel.Subject.Name;
+                subjectLevelResponse.TutorName = subjectLevel.Tutor.User.FullName;
+                subjectLevelResponse.ServiceName = subjectLevel.Name;
+                subjectLevelResponse.LimitMember = $"{count}/{subjectLevel.LimitMember}";
+                subjectLevelResponse.IsLocked = subjectLevel.Tutor.User.IsLocked;
+                subjectLevelResponses.Add(subjectLevelResponse);
+            }
+
+            return new ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>
+            {
+                Success = true,
+                Message = "Đây là danh sách các môn học của hệ thống",
+                Data = subjectLevelResponses,
+                Total = subjectLevels.Count()
+            };
         }
 
-        public Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllBySubjectIdAsync(string userId, string? level, string subject, int page = 1)
+        public async Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllBySubjectIdAsync(int subjectId, string? tutor, string? level, int page = 1)
         {
-            throw new NotImplementedException();
+            var subjectLevels = await _subjectLevelRepo.GetAllAsync();
+            subjectLevels = subjectLevels.Where(x => x.SubjectId == subjectId);
+
+            if (!string.IsNullOrEmpty(tutor))
+            {
+                subjectLevels = subjectLevels.Where(x => x.Tutor.User.FullName.IndexOf(tutor, StringComparison.OrdinalIgnoreCase) >= 0);
+            }
+
+            if (!string.IsNullOrEmpty(level))
+            {
+                subjectLevels = subjectLevels.Where(x => x.Subject.Name.IndexOf(level, StringComparison.OrdinalIgnoreCase) >= 0);
+            }
+
+            var result = PaginatedList<SubjectLevel>.Create(subjectLevels, page, PAGE_SIZE);
+
+            if (result.IsNullOrEmpty())
+            {
+                return new ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>
+                {
+                    Success = true,
+                    Message = "Hiện tại chưa có dịch vụ môn học nào được thêm."
+                };
+            }
+
+            var subjectLevelResponses = new List<SubjectLevelResponseDTO>();
+            foreach (var subjectLevel in result)
+            {
+                var studentJoins = subjectLevel.StudentJoins;
+                var count = studentJoins.Count();
+                var subjectLevelResponse = _mapper.Map<SubjectLevelResponseDTO>(subjectLevel);
+                subjectLevelResponse.LevelName = subjectLevel.Level.Name;
+                subjectLevelResponse.SubjectName = subjectLevel.Subject.Name;
+                subjectLevelResponse.TutorName = subjectLevel.Tutor.User.FullName;
+                subjectLevelResponse.ServiceName = subjectLevel.Name;
+                subjectLevelResponse.LimitMember = $"{count}/{subjectLevel.LimitMember}";
+                subjectLevelResponse.IsLocked = subjectLevel.Tutor.User.IsLocked;
+                subjectLevelResponses.Add(subjectLevelResponse);
+            }
+
+            return new ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>
+            {
+                Success = true,
+                Message = "Đây là danh sách các môn học của hệ thống",
+                Data = subjectLevelResponses,
+                Total = subjectLevels.Count()
+            };
         }
     }
 }

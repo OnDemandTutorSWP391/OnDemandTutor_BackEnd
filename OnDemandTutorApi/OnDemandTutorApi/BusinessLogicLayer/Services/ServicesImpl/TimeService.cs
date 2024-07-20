@@ -172,7 +172,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Date = x.Date.Date.ToString("dd/MM/yyyy"),
                     IsLocked = x.SubjectLevel.Tutor.User.IsLocked,
                 }),
-                Total = result.Count
+                Total = times.Count()
             };
         }
 
@@ -313,7 +313,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     EndSlot = x.EndSlot.TimeOfDay.ToString(@"hh\:mm\:ss"),
                     Date = x.Date.Date.ToString("dd/MM/yyyy"),
                 }),
-                Total = result.Count
+                Total = times.Count()
             };
         }
 
@@ -454,7 +454,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Date = x.Date.Date.ToString("dd/MM/yyyy"),
                     IsLocked = x.SubjectLevel.Tutor.User.IsLocked,
                 }),
-                Total = result.Count
+                Total = times.Count()
             };
         }
 

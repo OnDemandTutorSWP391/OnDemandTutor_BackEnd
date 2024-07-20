@@ -254,7 +254,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Email = x.User.Email,
                     IsLocked = x.User.IsLocked,
                 }),
-                Total = result.Count
+                Total = studentJoins.Count()
             };
         }
 
@@ -301,7 +301,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Email = x.User.Email,
                     IsLocked = x.User.IsLocked
                 }),
-                Total = result.Count
+                Total = studentJoins.Count()
             };
         }
 
@@ -347,7 +347,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Email = x.User.Email,
                     IsLocked = x.User.IsLocked
                 }),
-                Total = result.Count
+                Total = studentJoins.Count()
             };
         }
 

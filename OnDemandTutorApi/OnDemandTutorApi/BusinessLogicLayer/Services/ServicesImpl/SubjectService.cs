@@ -116,7 +116,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Id = x.Id,
                     Name = x.Name,
                 }),
-                Total = result.Count
+                Total = subjects.Count()
             };
         }
 

@@ -106,7 +106,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Star = x.Star,
                     Description = x.Description,
                 }),
-                Total = result.Count
+                Total = ratings.Count()
             };
         }
 
@@ -148,7 +148,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Star = x.Star,
                     Description = x.Description,
                 }),
-                Total = result.Count
+                Total = ratings.Count()
             };
         }
 
@@ -239,7 +239,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Star = x.Star,
                     Description = x.Description,
                 }),
-                Total = result.Count
+                Total = ratings.Count()
             };
         }
 
@@ -347,7 +347,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Star = x.Star,
                     Description = x.Description,
                 }),
-                Total = result.Count
+                Total = ratings.Count()
             };
         }
     }

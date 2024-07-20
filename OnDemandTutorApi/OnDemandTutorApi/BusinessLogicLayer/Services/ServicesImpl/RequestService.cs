@@ -128,7 +128,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Description = x.Description,
                     Status = x.Status,
                 }),
-                Total = result.Count
+                Total = userRequests.Count()
             };
         }
 
@@ -192,7 +192,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Status = x.Status,
                     IsLocked = x.User.IsLocked
                 }),
-                Total = result.Count
+                Total = requests.Count()
             };
         }
 

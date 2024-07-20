@@ -187,7 +187,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Success = true,
                 Message = "Here is current users match your request.",
                 Data = userResponseDTOs,
-                Total = result.Count
+                Total = allUsers.Count()
             };
         }
         public async Task<ResponseApiDTO> UpdateUserAsync(string id, UserUpdateDTO userUpdateDTO)
@@ -432,7 +432,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Date = x.Date,
                     TransactionId = x.TransactionId,
                 }),
-                Total = result.Count
+                Total = records.Count()
             };
         }
 

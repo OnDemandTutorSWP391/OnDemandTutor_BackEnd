@@ -113,8 +113,34 @@ namespace OnDemandTutorApi.Controllers
         [HttpGet("get-three-subject-level-of-any-tutor")]
         public async Task<IActionResult> GetThreeCourseOfAnyTutorAsync(int tutorId, string? level, string? subject, int page = 1)
         {
-            var userId = HttpContext.User.FindFirstValue("Id");
             var result = await _subjectLevelService.GetThreeCourseOfAnyTutorAsync(tutorId, level, subject, page);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        
+        [HttpGet("get-all-subject-level-by-level-id")]
+        public async Task<IActionResult> GetAllByLevelIdAsync(int levelId, string? tutor, string? subject, int page = 1)
+        {
+            var result = await _subjectLevelService.GetAllByLevelIdAsync(levelId, tutor, subject, page);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet("get-all-subject-level-by-subject-id")]
+        public async Task<IActionResult> GetAllBySubjectIdAsync(int subjectId, string? tutor, string? level, int page = 1)
+        {
+            var result = await _subjectLevelService.GetAllBySubjectIdAsync(subjectId, tutor, level, page);
 
             if (!result.Success)
             {

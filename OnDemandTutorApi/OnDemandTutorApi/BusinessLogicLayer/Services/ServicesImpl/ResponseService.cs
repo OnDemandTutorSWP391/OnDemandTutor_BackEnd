@@ -100,7 +100,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Description = x.Description,
                     IsLocked = x.Request.User.IsLocked,
                 }),
-                Total = result.Count
+                Total = responses.Count()
             };
         }
 

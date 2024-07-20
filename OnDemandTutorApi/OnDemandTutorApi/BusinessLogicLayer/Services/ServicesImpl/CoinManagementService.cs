@@ -140,7 +140,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Coin = x.Coin,
                     Date = x.Date,
                 }).ToList(),
-                Total = result.Count,
+                Total = records.Count(),
             };
         }
 
