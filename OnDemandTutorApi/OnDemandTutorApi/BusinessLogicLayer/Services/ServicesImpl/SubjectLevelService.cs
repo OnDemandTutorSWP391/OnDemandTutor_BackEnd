@@ -630,5 +630,15 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Total = result.Count
             };
         }
+
+        public Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllByLevelIdAsync(string userId, string? level, string subject, int page = 1)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllBySubjectIdAsync(string userId, string? level, string subject, int page = 1)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
