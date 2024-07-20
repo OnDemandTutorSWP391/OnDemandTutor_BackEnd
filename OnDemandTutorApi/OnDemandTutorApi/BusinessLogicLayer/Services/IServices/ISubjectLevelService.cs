@@ -7,6 +7,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.IServices
         public Task<ResponseApiDTO<SubjectLevelResponseDTO>> CreateAsync(string userId, SubjectLevelRequestDTO subjectLevelDTO);
         public Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllAsync(string? level, string? subject, string? tutor, int page = 1);
         public Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllByTutorIdAsync(string userId, string? level, string subject, int page = 1);
+        public Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllByLevelIdAsync(string userId, string? level, string subject, int page = 1);
+        public Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllBySubjectIdAsync(string userId, string? level, string subject, int page = 1);
         public Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllForStaffAsync(string? level, string? subject, string? tutor, int page = 1);
         public Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllFollowRatingAsync(string? level, string? subject, string? tutor, int page = 1);
         public Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetThreeCourseOfAnyTutorAsync(int tutorId, string? level, string subject, int page = 1);
