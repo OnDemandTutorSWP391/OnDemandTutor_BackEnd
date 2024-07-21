@@ -33,13 +33,13 @@ namespace OnDemandTutorApi.Controllers
 
             if (!vnPayResponse.Success)
             {
-                string urlFailed = $"http://localhost:5173/payment-result?" +
+                string urlFailed = $"https://purple-wave-0f7075200.5.azurestaticapps.net/?" +
                                    $"success={WebUtility.UrlEncode(vnPayResponse.Success.ToString())}" +
                                    $"&message={WebUtility.UrlEncode(vnPayResponse.Message)}";
                 return Redirect(urlFailed);
             }
 
-            string urlSuccess = $"http://localhost:5173/payment-result?" +
+            string urlSuccess = $"https://purple-wave-0f7075200.5.azurestaticapps.net/?" +
                          $"success={WebUtility.UrlEncode(vnPayResponse.Success.ToString())}" +
                          $"&paymentMethod={WebUtility.UrlEncode(vnPayResponse.Data.PaymentMethod)}" +
                          $"&orderDescription={WebUtility.UrlEncode(vnPayResponse.Data.OrderDescription)}" +
@@ -52,6 +52,8 @@ namespace OnDemandTutorApi.Controllers
 
             return Redirect(urlSuccess);
         }
+
+        //http://localhost:5173/payment-result?
 
 
         //[HttpGet("response-payment")]
