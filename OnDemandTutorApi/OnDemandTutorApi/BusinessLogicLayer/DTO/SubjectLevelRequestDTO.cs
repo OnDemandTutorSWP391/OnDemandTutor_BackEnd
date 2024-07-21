@@ -34,6 +34,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         public string SubjectName { get; set; } = null!;
         public int TutorId { get; set; }
         public string TutorName { get; set; } = null!;
+        public string? TutorAvata { get; set; }
         public string ServiceName { get; set; } = null!;
         public string Description { get; set; } = null!;
         public string Url { get; set; } = null!;

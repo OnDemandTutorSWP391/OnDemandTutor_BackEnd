@@ -148,6 +148,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 subjectLevelResponse.LevelName = subjectLevel.Level.Name;
                 subjectLevelResponse.SubjectName = subjectLevel.Subject.Name;
                 subjectLevelResponse.TutorName = subjectLevel.Tutor.User.FullName;
+                subjectLevelResponse.TutorAvata = subjectLevel.Tutor.User.Avatar;
                 subjectLevelResponse.ServiceName = subjectLevel.Name;
                 subjectLevelResponse.LimitMember = $"{count}/{subjectLevel.LimitMember}";
                 subjectLevelResponse.IsLocked = subjectLevel.Tutor.User.IsLocked;
@@ -202,6 +203,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 subjectLevelResponse.LevelName = subjectLevel.Level.Name;
                 subjectLevelResponse.SubjectName = subjectLevel.Subject.Name;
                 subjectLevelResponse.TutorName = subjectLevel.Tutor.User.FullName;
+                subjectLevelResponse.TutorAvata = subjectLevel.Tutor.User.Avatar;
                 subjectLevelResponse.ServiceName = subjectLevel.Name;
                 subjectLevelResponse.LimitMember = $"{count}/{subjectLevel.LimitMember}";
                 subjectLevelResponse.IsLocked = subjectLevel.Tutor.User.IsLocked;
@@ -241,6 +243,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     SubjectName = subjectLevel.Subject.Name,
                     TutorId = subjectLevel.TutorId,
                     TutorName = subjectLevel.Tutor.User.FullName,
+                    TutorAvata = subjectLevel.Tutor.User.Avatar,
                     ServiceName = subjectLevel.Name,
                     Description = subjectLevel.Description,
                     Url = subjectLevel.Url,
@@ -505,6 +508,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 subjectLevelResponse.LevelName = subjectLevel.Level.Name;
                 subjectLevelResponse.SubjectName = subjectLevel.Subject.Name;
                 subjectLevelResponse.TutorName = subjectLevel.Tutor.User.FullName;
+                subjectLevelResponse.TutorAvata = subjectLevel.Tutor.User.Avatar;
                 subjectLevelResponse.ServiceName = subjectLevel.Name;
                 subjectLevelResponse.LimitMember = $"{count}/{subjectLevel.LimitMember}";
                 subjectLevelResponse.IsLocked = subjectLevel.Tutor.User.IsLocked;
@@ -566,6 +570,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 subjectLevelResponse.LevelName = subjectLevel.Level.Name;
                 subjectLevelResponse.SubjectName = subjectLevel.Subject.Name;
                 subjectLevelResponse.TutorName = subjectLevel.Tutor.User.FullName;
+                subjectLevelResponse.TutorAvata = subjectLevel.Tutor.User.Avatar;
                 subjectLevelResponse.ServiceName = subjectLevel.Name;
                 subjectLevelResponse.LimitMember = $"{count}/{subjectLevel.LimitMember}";
                 subjectLevelResponse.IsLocked = subjectLevel.Tutor.User.IsLocked;
@@ -616,6 +621,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 subjectLevelResponse.LevelName = subjectLevel.Level.Name;
                 subjectLevelResponse.SubjectName = subjectLevel.Subject.Name;
                 subjectLevelResponse.TutorName = subjectLevel.Tutor.User.FullName;
+                subjectLevelResponse.TutorAvata = subjectLevel.Tutor.User.Avatar;
                 subjectLevelResponse.ServiceName = subjectLevel.Name;
                 subjectLevelResponse.LimitMember = $"{count}/{subjectLevel.LimitMember}";
                 subjectLevelResponse.IsLocked = subjectLevel.Tutor.User.IsLocked;
@@ -666,6 +672,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 subjectLevelResponse.LevelName = subjectLevel.Level.Name;
                 subjectLevelResponse.SubjectName = subjectLevel.Subject.Name;
                 subjectLevelResponse.TutorName = subjectLevel.Tutor.User.FullName;
+                subjectLevelResponse.TutorAvata = subjectLevel.Tutor.User.Avatar;
                 subjectLevelResponse.ServiceName = subjectLevel.Name;
                 subjectLevelResponse.LimitMember = $"{count}/{subjectLevel.LimitMember}";
                 subjectLevelResponse.IsLocked = subjectLevel.Tutor.User.IsLocked;
@@ -716,6 +723,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 subjectLevelResponse.LevelName = subjectLevel.Level.Name;
                 subjectLevelResponse.SubjectName = subjectLevel.Subject.Name;
                 subjectLevelResponse.TutorName = subjectLevel.Tutor.User.FullName;
+                subjectLevelResponse.TutorAvata = subjectLevel.Tutor.User.Avatar;
                 subjectLevelResponse.ServiceName = subjectLevel.Name;
                 subjectLevelResponse.LimitMember = $"{count}/{subjectLevel.LimitMember}";
                 subjectLevelResponse.IsLocked = subjectLevel.Tutor.User.IsLocked;
