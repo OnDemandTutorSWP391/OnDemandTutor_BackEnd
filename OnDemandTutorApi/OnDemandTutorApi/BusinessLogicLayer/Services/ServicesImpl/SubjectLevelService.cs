@@ -42,7 +42,26 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         }
         public async Task<ResponseApiDTO<SubjectLevelResponseDTO>> CreateAsync(string userId, SubjectLevelRequestDTO subjectLevelDTO)
         {
+            var checkValid = ValidationMachine.CheckValidCreateSubjectLevel(subjectLevelDTO);
+            if(!checkValid.Success)
+            {
+                return new ResponseApiDTO<SubjectLevelResponseDTO>
+                {
+                    Success = false,
+                    Message = checkValid.Message
+                };
+            }
+
             var tutor = await _tutorRepo.GetTutorByUserIdAsync(userId);
+
+            if(tutor == null)
+            {
+                return new ResponseApiDTO<SubjectLevelResponseDTO>
+                {
+                    Success = false,
+                    Message = "Hệ thống không tìm thấy gia sư."
+                };
+            }
 
             if(!tutor.Status.Equals("Chấp thuận"))
             {
