@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OnDemandTutorApi.BusinessLogicLayer.DTO;
+using OnDemandTutorApi.BusinessLogicLayer.Helper;
 using OnDemandTutorApi.BusinessLogicLayer.Services.IServices;
 using OnDemandTutorApi.DataAccessLayer.DAO;
 using OnDemandTutorApi.DataAccessLayer.Entity;
@@ -254,6 +255,16 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
         public async Task<ResponseApiDTO<TokenDTO>> SignInAsync(UserAuthenDTO userAuthen)
         {
+            var checkValid = ValidationMachine.CheckValidAuthen(userAuthen);
+            if(!checkValid.Success)
+            {
+                return new ResponseApiDTO<TokenDTO>
+                {
+                    Success = false,
+                    Message = checkValid.Message,
+                };
+            }
+
             var adminEmail = _configuration["Admin:email"];
             
             if(userAuthen.Email.Equals(adminEmail))
@@ -313,6 +324,15 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
         public async Task<ResponseApiDTO> SignUpAsync(UserRequestDTO userRequestDTO)
         {
+            var checkValid = ValidationMachine.CheckValidRegister(userRequestDTO);
+            if(!checkValid.Success)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = checkValid.Message
+                };
+            }
             //check User exist
             var existedUser = await _userManager.FindByEmailAsync(userRequestDTO.Email);
             if (existedUser != null)

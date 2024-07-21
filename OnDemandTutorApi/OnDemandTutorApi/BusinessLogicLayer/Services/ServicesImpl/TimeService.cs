@@ -178,6 +178,15 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
         public async Task<ResponseApiDTO> CheckValidTime(TimeRequestDTO timeRequestDTO, int tutorId)
         {
+            if(timeRequestDTO.SlotName == null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Tên buổi học không được để trống."
+                };
+            }
+
             if(timeRequestDTO.StartSlot.Date != timeRequestDTO.EndSlot.Date ||
                 timeRequestDTO.StartSlot.Date != timeRequestDTO.Date || timeRequestDTO.EndSlot.Date != timeRequestDTO.Date)
             {

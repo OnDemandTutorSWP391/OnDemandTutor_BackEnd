@@ -30,9 +30,28 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         //DEPOSIT
         public async Task<ResponseApiDTO<CoinResponseDTO>> DepositAsync(CoinDTO coinRequest)
         {
+            var checkValid = ValidationMachine.CheckValidCoin(coinRequest.Coin);
+            if(!checkValid.Success)
+            {
+                return new ResponseApiDTO<CoinResponseDTO>
+                {
+                    Success = false,
+                    Message = checkValid.Message,
+                };
+            }
+
             var coinRecord = _mapper.Map<CoinManagement>(coinRequest);
 
             var user = await _userRepo.GetByIdAsync(coinRecord.UserId);
+
+            if(user == null)
+            {
+                return new ResponseApiDTO<CoinResponseDTO>
+                {
+                    Success = false,
+                    Message = "Hệ thống không tìm thấy người dùng."
+                };
+            }
 
             var existCoinRecords = await _coinManagementRepo.GetAllAsync();
             existCoinRecords = existCoinRecords.Where(x => x.UserId == user.Id);
@@ -41,7 +60,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 return new ResponseApiDTO<CoinResponseDTO>
                 {
                     Success = false,
-                    Message = "Hệ thống gặp lỗi khi lưu lại giao dịch của người dùng"
+                    Message = "Mã giao dịch này đã được sử dụng."
                 };
             }
 
@@ -151,12 +170,21 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 
             var receiver = await _userRepo.GetByIdAsync(receiverId);
 
-            if(receiver == null)
+            if (sender == null)
             {
                 return new ResponseApiDTO<CoinTransferResponseDTO>
                 {
                     Success = false,
-                    Message = "Người dùng không tồn tại trong hệ thống."
+                    Message = "Người gửi không tồn tại trong hệ thống."
+                };
+            }
+
+            if (receiver == null)
+            {
+                return new ResponseApiDTO<CoinTransferResponseDTO>
+                {
+                    Success = false,
+                    Message = "Người nhận không tồn tại trong hệ thống."
                 };
             }
 
