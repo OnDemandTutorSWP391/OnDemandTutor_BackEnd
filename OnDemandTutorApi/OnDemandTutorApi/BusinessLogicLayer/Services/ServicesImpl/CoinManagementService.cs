@@ -30,15 +30,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         //DEPOSIT
         public async Task<ResponseApiDTO<CoinResponseDTO>> DepositAsync(CoinDTO coinRequest)
         {
-            var checkValid = ValidationMachine.CheckValidCoin(coinRequest.Coin);
-            if(!checkValid.Success)
-            {
-                return new ResponseApiDTO<CoinResponseDTO>
-                {
-                    Success = false,
-                    Message = checkValid.Message,
-                };
-            }
+            
 
             var coinRecord = _mapper.Map<CoinManagement>(coinRequest);
 
