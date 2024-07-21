@@ -33,7 +33,7 @@ namespace OnDemandTutorApi.Controllers
 
             if (!vnPayResponse.Success)
             {
-                string urlFailed = $"https://purple-wave-0f7075200.5.azurestaticapps.net/?" +
+                string urlFailed = $"https://www.youtube.com/" +
                                    $"success={WebUtility.UrlEncode(vnPayResponse.Success.ToString())}" +
                                    $"&message={WebUtility.UrlEncode(vnPayResponse.Message)}";
                 return Redirect(urlFailed);
