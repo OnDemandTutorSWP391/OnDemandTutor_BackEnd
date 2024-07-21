@@ -39,7 +39,7 @@ namespace OnDemandTutorApi.Controllers
                 return Redirect(urlFailed);
             }
 
-            string urlSuccess = $"https://purple-wave-0f7075200.5.azurestaticapps.net/?" +
+            string urlSuccess = $"https://purple-wave-0f7075200.5.azurestaticapps.net/payment-result?" +
                          $"success={WebUtility.UrlEncode(vnPayResponse.Success.ToString())}" +
                          $"&paymentMethod={WebUtility.UrlEncode(vnPayResponse.Data.PaymentMethod)}" +
                          $"&orderDescription={WebUtility.UrlEncode(vnPayResponse.Data.OrderDescription)}" +
