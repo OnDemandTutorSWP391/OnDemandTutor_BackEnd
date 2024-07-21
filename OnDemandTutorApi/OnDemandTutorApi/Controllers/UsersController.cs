@@ -84,7 +84,7 @@ namespace OnDemandTutorApi.Controllers
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var forgotPasswordLink = $"https://localhost:5173/api/Users/reset-password-view?token={token}&email={user.Email}";
+            var forgotPasswordLink = $"https://purple-wave-0f7075200.5.azurestaticapps.net/confirm-password/token={token}&email={user.Email}";
             var message = new EmailDTO
                 (
                     new string[] { user.Email! },
