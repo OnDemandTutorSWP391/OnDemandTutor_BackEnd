@@ -94,7 +94,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             }
 
             var tutorRequest = _mapper.Map(profileTutor, tutor);
-            tutorRequest.Status = "Chờ phê duyệt";
+
+            if (tutorRequest.Status != "Chấp thuận")
+            {
+                tutorRequest.Status = "Chờ phê duyệt";
+            }
+            
             var updateProfile = await _tutorRepo.UpdateTutorAsync(tutorRequest);
             if(!updateProfile)
             {

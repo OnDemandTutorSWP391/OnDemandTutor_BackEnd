@@ -150,6 +150,9 @@ builder.Services.AddSingleton(emailConfig);
 var vnPayConfig = builder.Configuration.GetSection("VnPayConfiguration").Get<VnPayConfiguration>();
 builder.Services.AddSingleton(vnPayConfig);
 
+////Add Validation Machine
+//builder.Services.AddScoped<ValidationMachine>();
+
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
