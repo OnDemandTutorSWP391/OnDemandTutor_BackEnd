@@ -31,7 +31,6 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         public async Task<ResponseApiDTO<CoinResponseDTO>> DepositAsync(CoinDTO coinRequest)
         {
             
-
             var coinRecord = _mapper.Map<CoinManagement>(coinRequest);
 
             var user = await _userRepo.GetByIdAsync(coinRecord.UserId);

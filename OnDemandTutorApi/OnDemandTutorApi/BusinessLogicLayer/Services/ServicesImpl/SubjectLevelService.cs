@@ -543,14 +543,14 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             };
         }
 
-        public async Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetAllFollowRatingAsync(string? level, string? subject, string? tutor, int page = 1)
+        public async Task<ResponseApiDTO<IEnumerable<SubjectLevelResponseDTO>>> GetTop6FollowRatingAsync(string? level, string? subject, string? tutor, int page = 1)
         {
             var subjectLevels = await _subjectLevelRepo.GetAllAsync();
             subjectLevels = subjectLevels.Where(x =>
                 x.Tutor.User.IsLocked == false &&
                 x.Tutor.Ratings.Any() &&
                 x.Tutor.Ratings.Average(r => r.Star) >= 4
-            );
+            ).Take(6);
 
 
 

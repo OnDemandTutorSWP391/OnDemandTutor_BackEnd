@@ -96,10 +96,10 @@ namespace OnDemandTutorApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("get-all-subject-level-follow-rating")]
-        public async Task<IActionResult> GetAllFollowRatingAsync(string? level, string? subject, string? tutor, int page = 1)
+        [HttpGet("get-top-6-subject-level-follow-rating")]
+        public async Task<IActionResult> GetTop6FollowRatingAsync(string? level, string? subject, string? tutor, int page = 1)
         {
-            var result = await _subjectLevelService.GetAllFollowRatingAsync(level, subject, tutor, page);
+            var result = await _subjectLevelService.GetTop6FollowRatingAsync(level, subject, tutor, page);
 
             if (!result.Success)
             {
