@@ -117,7 +117,7 @@ builder.Services.AddScoped<IRatingService, RatingService>();
 
 
 //Add config for Required Email
-//builder.Services.Configure<IdentityOptions>(opts => opts.SignIn.RequireConfirmedEmail = true);
+builder.Services.Configure<IdentityOptions>(opts => opts.SignIn.RequireConfirmedEmail = true);
 
 //Add config for verify token
 builder.Services.Configure<DataProtectionTokenProviderOptions>(opts => opts.TokenLifespan = TimeSpan.FromHours(1));

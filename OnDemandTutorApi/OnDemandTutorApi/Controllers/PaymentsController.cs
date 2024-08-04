@@ -26,6 +26,36 @@ namespace OnDemandTutorApi.Controllers
             return Ok(new { Url = paymentUrl });
         }
 
+        // [HttpGet("response-payment")]
+        // public IActionResult ResponsePayment()
+        // {
+        //     var vnPayResponse = _vnPayService.PaymentExcute(Request.Query);
+        //
+        //     if (!vnPayResponse.Success)
+        //     {
+        //         string urlFailed = $"https://www.youtube.com/" +
+        //                            $"success={WebUtility.UrlEncode(vnPayResponse.Success.ToString())}" +
+        //                            $"&message={WebUtility.UrlEncode(vnPayResponse.Message)}";
+        //         return Redirect(urlFailed);
+        //     }
+        //
+        //     string urlSuccess = $"https://purple-wave-0f7075200.5.azurestaticapps.net/payment-result?" +
+        //                  $"success={WebUtility.UrlEncode(vnPayResponse.Success.ToString())}" +
+        //                  $"&paymentMethod={WebUtility.UrlEncode(vnPayResponse.Data.PaymentMethod)}" +
+        //                  $"&orderDescription={WebUtility.UrlEncode(vnPayResponse.Data.OrderDescription)}" +
+        //                  $"&orderId={WebUtility.UrlEncode(vnPayResponse.Data.OrderId)}" +
+        //                  $"&transactionId={WebUtility.UrlEncode(vnPayResponse.Data.TransactionId)}" +
+        //                  $"&token={WebUtility.UrlEncode(vnPayResponse.Data.Token)}" +
+        //                  $"&vnPayResponseCode={WebUtility.UrlEncode(vnPayResponse.Data.VnPayResponseCode)}" +
+        //                  $"&message={WebUtility.UrlEncode(vnPayResponse.Message)}" +
+        //                  $"&amount={WebUtility.UrlEncode(vnPayResponse.Data.Amount.ToString())}";
+        //
+        //     return Redirect(urlSuccess);
+        // }
+
+        //http://localhost:5173/payment-result?
+
+
         [HttpGet("response-payment")]
         public IActionResult ResponsePayment()
         {
@@ -33,41 +63,11 @@ namespace OnDemandTutorApi.Controllers
 
             if (!vnPayResponse.Success)
             {
-                string urlFailed = $"https://www.youtube.com/" +
-                                   $"success={WebUtility.UrlEncode(vnPayResponse.Success.ToString())}" +
-                                   $"&message={WebUtility.UrlEncode(vnPayResponse.Message)}";
-                return Redirect(urlFailed);
+                return BadRequest(vnPayResponse);
             }
 
-            string urlSuccess = $"https://purple-wave-0f7075200.5.azurestaticapps.net/payment-result?" +
-                         $"success={WebUtility.UrlEncode(vnPayResponse.Success.ToString())}" +
-                         $"&paymentMethod={WebUtility.UrlEncode(vnPayResponse.Data.PaymentMethod)}" +
-                         $"&orderDescription={WebUtility.UrlEncode(vnPayResponse.Data.OrderDescription)}" +
-                         $"&orderId={WebUtility.UrlEncode(vnPayResponse.Data.OrderId)}" +
-                         $"&transactionId={WebUtility.UrlEncode(vnPayResponse.Data.TransactionId)}" +
-                         $"&token={WebUtility.UrlEncode(vnPayResponse.Data.Token)}" +
-                         $"&vnPayResponseCode={WebUtility.UrlEncode(vnPayResponse.Data.VnPayResponseCode)}" +
-                         $"&message={WebUtility.UrlEncode(vnPayResponse.Message)}" +
-                         $"&amount={WebUtility.UrlEncode(vnPayResponse.Data.Amount.ToString())}";
-
-            return Redirect(urlSuccess);
+            return Ok(vnPayResponse);
         }
-
-        //http://localhost:5173/payment-result?
-
-
-        //[HttpGet("response-payment")]
-        //public IActionResult ResponsePayment()
-        //{
-        //    var vnPayResponse = _vnPayService.PaymentExcute(Request.Query);
-
-        //    if (!vnPayResponse.Success)
-        //    {
-        //        return BadRequest(vnPayResponse);
-        //    }
-
-        //    return Ok(vnPayResponse);
-        //}
 
 
     }
