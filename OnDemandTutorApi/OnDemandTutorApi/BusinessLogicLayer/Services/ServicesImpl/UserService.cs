@@ -13,6 +13,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Policy;
 using System.Text;
+using System.Web;
 
 namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
 {
@@ -253,6 +254,38 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             };
         }
 
+        public async Task<ResponseApiDTO> ConfirmEmailAsync(string token, string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Không tìm thấy người dùng."
+                };
+            }
+            
+            var decodedToken = HttpUtility.UrlDecode(token);
+            Console.WriteLine("DecodeToken: " + decodedToken);
+
+            var result = await _userManager.ConfirmEmailAsync(user, decodedToken.Replace(" ", "+"));
+            if (!result.Succeeded)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Hệ thống gặp lỗi trong quá trình xác nhận email"
+                };
+            }
+
+            return new ResponseApiDTO
+            {
+                Success = true,
+                Message = "Xác thực email thành công."
+            };
+        }
+
         public async Task<ResponseApiDTO<TokenDTO>> SignInAsync(UserAuthenDTO userAuthen)
         {
             var checkValid = ValidationMachine.CheckValidAuthen(userAuthen);
@@ -300,6 +333,31 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 {
                     Success = false,
                     Message = "Invalid email or password."
+                };
+            }
+
+            if (user.EmailConfirmed == false)
+            {
+                //Add Token to verify Email
+                var confirmToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                Console.WriteLine("ConfirmToken: " + confirmToken);
+                // Console.WriteLine($"Generated Token: {confirmToken}");
+                var encodedToken = HttpUtility.UrlEncode(confirmToken);
+                Console.WriteLine("EncodeToken: " + encodedToken);
+                var confirmationLink = $"https://localhost:7259/api/Users/ConfirmEmail?token={encodedToken}&email={user.Email}";
+
+                var message = new EmailDTO
+                (
+                    new string[] { user.Email! },
+                    "Confirmation Email Link!",
+                    confirmationLink!
+                );
+                _emailService.SendEmail(message);
+                return new ResponseApiDTO<TokenDTO>
+                {
+                    Success = false,
+                    Message =
+                        "Tài khoản của bạn chưa được xác thực. Vui lòng xác thực email của bạn để tiếp tục đăng nhập."
                 };
             }
 
@@ -384,11 +442,21 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                         var tutor = _mapper.Map<Tutor>(tutorDTO);
                         await _tutorRepo.AddTutorAsync(tutor);
                 }
-
+                
+                //Add Token to verify Email
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var confirmationLink = $"https://localhost:7259/api/Users/ConfirmEmail?token={token}&email={user.Email}";
+                var message = new EmailDTO
+                (
+                    new string[] { user.Email! },
+                    "Confirmation Email Link!",
+                    confirmationLink!
+                );
+                _emailService.SendEmail(message);
                 return new ResponseApiDTO
                 {
                     Success = true,
-                    Message = "Sign up successfully."
+                    Message = $"Đăng kí thành công. Vui lòng xác thực thông tin đã gửi ở Email: {user.Email}."
                 };
             }
             else

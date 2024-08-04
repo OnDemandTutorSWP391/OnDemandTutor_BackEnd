@@ -7,6 +7,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.IServices
     public interface IUserService
     {
         public Task<ResponseApiDTO> SignUpAsync(UserRequestDTO userRequestDTO);
+        public Task<ResponseApiDTO> ConfirmEmailAsync(string token, string email);
         public Task<ResponseApiDTO<TokenDTO>> SignInAsync(UserAuthenDTO userAuthen);
         public Task<ResponseApiDTO<TokenDTO>> RenewTokenAsync(TokenDTO tokenDTO);
         public Task<ResponseApiDTO> ResetPassAsync(UserResetPassDTO userReset);

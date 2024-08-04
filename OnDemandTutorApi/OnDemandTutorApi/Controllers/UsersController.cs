@@ -44,6 +44,19 @@ namespace OnDemandTutorApi.Controllers
             return BadRequest(result);
         }
 
+        [AllowAnonymous]
+        [HttpGet("ConfirmEmail")]
+        public async Task<IActionResult> ConfirmEmailAsync(string token, string email)
+        {
+            var result = await _userService.ConfirmEmailAsync(token, email);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+
+            return Ok(result.Message);
+        }
+
         [HttpPost("SignIn")]
         [AllowAnonymous]
         public async Task<IActionResult> SignIn(UserAuthenDTO userAuthen)
@@ -84,7 +97,8 @@ namespace OnDemandTutorApi.Controllers
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var forgotPasswordLink = $"https://localhost:5173/api/Users/reset-password-view?token={token}&email={user.Email}";
+            // var forgotPasswordLink = $"https://localhost:5173/api/Users/reset-password-view?token={token}&email={user.Email}";
+            var forgotPasswordLink = $"https://localhost:7259/api/Users/reset-password-view?token={token}&email={user.Email}";
             var message = new EmailDTO
                 (
                     new string[] { user.Email! },
