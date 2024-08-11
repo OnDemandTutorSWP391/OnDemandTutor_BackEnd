@@ -158,7 +158,7 @@ namespace OnDemandTutorApi.Controllers
         public async Task<IActionResult> UpdatUserProfileAsync(UserProfileUpdateDTO userUpdate)
         {
             var userId = HttpContext.User.FindFirstValue("Id");
-            var result = await _userService.UpdatUserProfileAsync(userId, userUpdate);
+            var result = await _userService.UpdateUserProfileAsync(userId, userUpdate);
 
             if (!result.Success)
             {
@@ -181,6 +181,33 @@ namespace OnDemandTutorApi.Controllers
             }
 
             return StatusCode(StatusCodes.Status200OK, result);
+        }
+        
+        [Authorize]
+        [HttpPut("turn-on-2fa")]
+        public async Task<IActionResult> TurnOn2FA(string password)
+        {
+            var userId = HttpContext.User.FindFirstValue("Id");
+            var result = await _userService.TurnOn2FAAsync(userId, password);
+
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, result);
+            }
+
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
+        
+        [HttpPost("SignIn2FA")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SignIn2FA(UserAuthen2FADTO userAuthen2Fa)
+        {
+            var result = await _userService.SignIn2FAAsync(userAuthen2Fa);
+            if(!result.Success)
+            {
+                return Unauthorized(result);
+            }
+            return Ok(result);
         }
 
         [Authorize]

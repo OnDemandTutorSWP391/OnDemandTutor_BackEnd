@@ -27,11 +27,12 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
         private readonly ITutorRepo _tutorRepo;
         private readonly MyDbContext _context;
         private readonly IEmailService _emailService;
+        private readonly SignInManager<User> _signInManager;
 
         public UserService(IUserRepo userRepo, IMapper mapper, 
                            RoleManager<IdentityRole> roleManager, UserManager<User> userManager, 
                            IConfiguration configuration, ITutorRepo tutorRepo,  
-                           MyDbContext context, IEmailService emailService)
+                           MyDbContext context, IEmailService emailService, SignInManager<User> signInManger)
         {
             _userRepo = userRepo;
             _mapper = mapper;
@@ -41,6 +42,58 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             _tutorRepo = tutorRepo;
             _context = context;
             _emailService = emailService;
+            _signInManager = signInManger;
+        }
+
+        public async Task<ResponseApiDTO> TurnOn2FAAsync(string userId, string password)
+        {
+            var user = await _userRepo.GetByIdAsync(userId);
+            if (user == null)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Không tìm thấy người dùng."
+                };
+            }
+
+            var isValidPassword = await _userManager.CheckPasswordAsync(user, password);
+            if (!isValidPassword)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Mật khẩu không khớp với tài khoản của bạn."
+                };
+            }
+
+            user.TwoFactorEnabled = true;
+            var result = await _userRepo.UpdateUserAsync(user);
+            if (!result.Succeeded)
+            {
+                return new ResponseApiDTO
+                {
+                    Success = false,
+                    Message = "Hệ thống gặp lỗi trong quá trình kích hoạt bảo mật 2 lớp."
+                };
+            }
+            await _signInManager.SignOutAsync();
+            await _signInManager.PasswordSignInAsync(user, password, true, false);
+            var token = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+            var message = new EmailDTO
+            (
+                new string[] {user.Email},
+                "OTP Confirmation",
+                $@"
+<p>- Mã OTP là riêng tư và <b>tuyệt đối không chia sẽ nó cho bất kì ai khác</b>.</p>
+<p>- Đây là mã OTP của bạn: {token}</p>"
+            );
+            _emailService.SendEmail(message);
+            return new ResponseApiDTO
+            {
+                Success = true,
+                Message = $"Mã OTP đã được gửi đến Email: {user.Email}"
+            };
         }
 
         public async Task<ResponseApiDTO> DeleteUserAsync(string userId)
@@ -108,6 +161,38 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 Success = true,
                 Message = "Get user profile successfully.",
                 Data = userProfile
+            };
+        }
+
+        public async Task<ResponseApiDTO<TokenDTO>> SignIn2FAAsync(UserAuthen2FADTO userAuthen2Fa)
+        {
+            var user = await _userManager.FindByEmailAsync(userAuthen2Fa.Email);
+            if (user == null)
+            {
+                return new ResponseApiDTO<TokenDTO>
+                {
+                    Success = false,
+                    Message = $"Không tìm thấy người dùng với Email: {userAuthen2Fa.Email}"
+                };
+            }
+
+            var signIn = await _signInManager.TwoFactorSignInAsync("Email", userAuthen2Fa.Code, false, false);
+            if (!signIn.Succeeded)
+            {
+                return new ResponseApiDTO<TokenDTO>
+                {
+                    Success = false,
+                    Message = $"Mã OTP {userAuthen2Fa.Code} không hợp lệ."
+                };
+            }
+            
+            var token = await _userRepo.GenerateTokenAsync(user);
+
+            return new ResponseApiDTO<TokenDTO>
+            {
+                Success = true,
+                Message = "Đăng nhập thành công.",
+                Data = token
             };
         }
 
@@ -344,7 +429,8 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 // Console.WriteLine($"Generated Token: {confirmToken}");
                 var encodedToken = HttpUtility.UrlEncode(confirmToken);
                 Console.WriteLine("EncodeToken: " + encodedToken);
-                var confirmationLink = $"https://localhost:7259/api/Users/ConfirmEmail?token={encodedToken}&email={user.Email}";
+                var confirmationLink =
+                    $"https://localhost:7259/api/Users/ConfirmEmail?token={encodedToken}&email={user.Email}";
 
                 var message = new EmailDTO
                 (
@@ -370,12 +456,33 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                 };
             }
 
+            if (user.TwoFactorEnabled)
+            {
+                await _signInManager.SignOutAsync();
+                await _signInManager.PasswordSignInAsync(user, userAuthen.Password, true, false);
+                var otp = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+                var message = new EmailDTO
+                (
+                    new string[] {user.Email},
+                    "OTP Confirmation",
+                    $@"
+<p>- Mã OTP là riêng tư và <b>tuyệt đối không chia sẽ nó cho bất kì ai khác</b>.</p>
+<p>- Đây là mã OTP của bạn: {otp}</p>"
+                );
+                _emailService.SendEmail(message);
+                return new ResponseApiDTO<TokenDTO>
+                {
+                    Success = true,
+                    Message = $"Mã OTP đã được gửi đến Email: {user.Email}"
+                };
+            }
+
             var token = await _userRepo.GenerateTokenAsync(user);
 
             return new ResponseApiDTO<TokenDTO>
             {
                 Success = true,
-                Message = "Authenticate succesfull.",
+                Message = "Đăng nhập thành công.",
                 Data = token
             };
         }
@@ -412,6 +519,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
                     Message = "Invalid Role. Choose either Tutor and Student.",
                 };
             }
+            
             // Map UserDTORequest to User entity
             var user = _mapper.Map<User>(userRequestDTO);
             user.UserName = userRequestDTO.Email;
@@ -520,7 +628,7 @@ namespace OnDemandTutorApi.BusinessLogicLayer.Services.ServicesImpl
             };
         }
 
-        public async Task<ResponseApiDTO<UserGetProfileDTO>> UpdatUserProfileAsync(string id, UserProfileUpdateDTO userUpdate)
+        public async Task<ResponseApiDTO<UserGetProfileDTO>> UpdateUserProfileAsync(string id, UserProfileUpdateDTO userUpdate)
         {
             var user = await _userManager.FindByIdAsync(id);
 

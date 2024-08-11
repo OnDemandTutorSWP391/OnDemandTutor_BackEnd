@@ -65,6 +65,14 @@ namespace OnDemandTutorApi.BusinessLogicLayer.DTO
         [Required]
         public string? Password { get; set; }
     }
+    
+    public class UserAuthen2FADTO
+    {
+        [Required, EmailAddress]
+        public string? Email { get; set; }
+        [Required]
+        public string? Code { get; set; }
+    }
 
     public class UserForgotPassDTO
     {
